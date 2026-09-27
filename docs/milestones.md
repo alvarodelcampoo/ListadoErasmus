@@ -1,7 +1,7 @@
-[M0] Modelo del dominio y estructura de datos de destinos Erasmus
+[M0] Datos de destinos y notas de corte disponibles
 
-A partir de las necesidades descritas en [HU1], definir e implementar la estructura del modelo de datos del problema (entidades para representar al estudiante, sus idiomas, los destinos ofertados y las adjudicaciones con sus notas de corte). Serás viable si es aprobado por el product manager.
+El objetivo es que a partir de las necesidades descritas en [HU1], tengamos disponibles los datos de los destinos, requisitos y las respectivas notas de corte para cada lugar disponibles y consultables. Será viable si para un destino, se puede consultar su información y coincide con el de la fuente original.
 
-[M1] Cálculo de viabilidad y bonificación para el listado completo de destinos
+[M1] Nota final del estudiante por destino
 
-A partir del modelo de datos del M0, primero hay que extraer la información relevante de estas fuentes de datos, y hecho esto, tenemos que implementar una función que calcule la diferencia de nivel de idioma entre el exigido para cada destino y el del usuario, para poder calcular la bonificación  y aplicarla en función de esta diferencia, con el objetivo de mostrar la nota final del usuario en todos los destinos del listado. [HU2] Está asignada a este milestone, y será viable si al pasarle la lista de destinos, la función devuelve para cada uno la nota final calculada y si el alumno es apto o no, sin errores en los cálculos.
+A partir de los datos disponibles gracias al M0, permite consultar, para cada destino del listado, la nota final del estudiante (teniendo en cuenta las bonificaciones) y si resulta apto o no según sus requisitos de idioma. Relacionado con [HU2]. Será viable si al pasarle la lista de destinos, al consultar la lista de destinos devuelve para cada uno la nota final calculada y si el alumno es apto o no, sin errores.
