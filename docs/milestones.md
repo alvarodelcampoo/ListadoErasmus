@@ -1,15 +1,15 @@
-[M0] Modelo inicial de datos de destinos
+[M0] Paquete de estructuras de datos Erasmus
 
-El objetivo es representar de forma estructurada los conceptos mínimos necesarios para abordar el problema (destinos, notas de corte y requisitos de idioma) sin incluir todavía la lógica de negocio ni los cálculos. (Relacionado con [HU1]).
+El objetivo es  crear un paquete de código que contenga las estructuras de datos necesarias para almacenar en memoria la información de las diferentes convocatorias Erasmus y el perfil del estudiante. (Relacionado con [HU1]).
 
-Se debe entregar la implementación en código del modelo del problema, es decir, la estructura mínima necesaria para representar un destino Erasmus y sus requisitos, sin añadir todavía nada de lógica de negocio.
+Se debe entregar la implementación empaquetada como una librería que representa la información del dominio (estudiantes, destinos y requisitos), sin añadir todavía nada de lógica de negocio ni cálculos.
 
-Será viable si para un destino, se puede consultar su información y coincide con la de la fuente original.
+Será viable si, mediante una revisión del código, se comprueba que las estructuras programadas reflejan fielmente los conceptos extraídos de las historias de usuario, y que los tipos de datos definidos permiten almacenar de forma exacta la información que aparece en la fuente original (sin omitir conceptos clave ni inventar atributos innecesarios).
 
 [M1] Módulo de cálculo de bonificaciones
 
 A partir de los datos disponibles gracias al M0, el objetivo es calcular la nota final del estudiante para cada destino del listado teniendo en cuenta las bonificaciones por idioma. (Relacionado con [HU2]). 
 
-Se debe entregar el código con la lógica de cálculo. Un conjunto de funciones que reciba los parámetros del estudiante y los destinos para aplicar las bonificaciones correspondientes.
+Se debe entregar el código con la lógica de cálculo. Un conjunto de funciones que reciba los parámetros del estudiante y los destinos para aplicar las bonificaciones correspondientes. Junto al código de negocio, se deben entregar las pruebas automatizadas preparadas para ejecutarse.
 
-Será viable si al pasarle los datos de un alumno y la lista de destinos, se devuelve para cada uno la nota final calculada y si es apto o no.
+Será viable si al ejecutar las pruebas automatizadas, estas demuestran que al pasarle al sistema los datos de distintos perfiles de alumnos y listas de destinos, se devuelve para cada uno la nota final calculada correctamente y se valida con exactitud si es apto o no.
