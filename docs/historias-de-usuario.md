@@ -2,4 +2,4 @@
 
 [HU2] Confusión sobre la ponderación de mi nota: Estoy planteandome la opción de irme de Erasmus y necesito obtener mi nota de corte real y definitiva para cada destino basada en la ponderación de mi nivel de idioma en la nota final, en función de si tengo acreditado un nivel de B1 o de B2, para así resolver el latazo del cálculo manual. ([Más información sobre el contexto en el journey de Pablo](/user-journey.md)).
 
-[HU3] Recordar mis parámetros entre consultas: Soy una persona que necesita estar consultando cada dos por tres mis ideas. Por ello, necesito resolver el problema de la pérdida de estado para no tener que volver a introducir y mi nivel de idioma en cada consulta, manteniendo la posibilidad de alterar los parámetros para simular una mejora en alguno de ellos.
+[HU3] Recordar mis parámetros entre consultas: Soy una persona que necesita estar consultando cada dos por tres mis ideas. Por ello, necesito resolver el problema de la pérdida de estado para no tener que volver a introducir mis datos y mi nivel de idioma en cada consulta, manteniendo la posibilidad de alterar los parámetros para simular una mejora en alguno de ellos.
