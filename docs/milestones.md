@@ -6,7 +6,7 @@ Se debe entregar la implementación empaquetada como una librería que represent
 
 Será viable si, mediante una revisión del código, se comprueba que las estructuras programadas reflejan fielmente los conceptos extraídos de las historias de usuario, y que los tipos de datos definidos permiten almacenar de forma exacta la información que aparece en la fuente original (sin omitir conceptos clave ni inventar atributos innecesarios).
 
-[M1] Módulo de cálculo de bonificaciones
+[M1] Lógica de cálculo de bonificaciones
 
 A partir de los datos disponibles gracias al M0, el objetivo es calcular la nota final del estudiante para cada destino del listado teniendo en cuenta las bonificaciones por idioma. (Relacionado con [HU2]). 
 
