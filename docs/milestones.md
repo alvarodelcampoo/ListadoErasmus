@@ -1,6 +1,6 @@
 [M0] Paquete de estructuras de datos Erasmus
 
-El objetivo es crear un paquete de código que contenga las estructuras de datos necesarias para almacenar en memoria la información de las diferentes convocatorias Erasmus y el perfil del estudiante. (Relacionado con [HU1]).
+El objetivo es crear un paquete de código que contenga las estructuras de datos necesarias para almacenar en memoria la información de las diferentes convocatorias Erasmus y el perfil del estudiante. (Relacionado con [HU1] y [HU4]).
 
 Se debe entregar la implementación empaquetada como una librería que representa la información del dominio (estudiantes, destinos y requisitos), sin añadir todavía nada de lógica de negocio ni cálculos. Junto al código, se debe entregar un documento de trazabilidad. Este documento es simplemente una lista explicativa que conecte el mundo real con el código, es decir, debe indicar de qué archivo oficial (de los que se menciona como fuentes de datos públicas que aparecen en el README) sale cada dato necesario y en qué variable del código se ha guardado.
 

@@ -11,3 +11,8 @@
 [HU3] Recordar mis parámetros entre consultas: Soy una persona que necesita estar consultando cada dos por tres mis ideas. Por ello, me gustaría no tener el problema de volver a introducir mi nota y mi nivel de idioma cada vez que hago una consulta, manteniendo la posibilidad de alterar los parámetros para simular una mejora en alguno de ellos.
 
 - Contexto: [Más información en los journeys de María y Pablo](/user-journey.md).
+
+[HU4] Extracción de los datos (Interna): Como desarrollador del sistema, necesito procesar y extraer los datos de los ficheros poco estructurados de la UGR (PDFs de destinos y adjudicaciones) para transformarlos en las estructuras de datos del modelo, ya que sin esta información limpia, las funcionalidades de cálculo y viabilidad no tienen datos reales sobre los que operar.
+
+- Fuente de datos: [Ver apartado "Descripción del problema" en el README](../README.md). 
+
