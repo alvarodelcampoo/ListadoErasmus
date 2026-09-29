@@ -1,10 +1,10 @@
 [M0] Paquete de estructuras de datos Erasmus
 
-El objetivo es  crear un paquete de código que contenga las estructuras de datos necesarias para almacenar en memoria la información de las diferentes convocatorias Erasmus y el perfil del estudiante. (Relacionado con [HU1]).
+El objetivo es crear un paquete de código que contenga las estructuras de datos necesarias para almacenar en memoria la información de las diferentes convocatorias Erasmus y el perfil del estudiante. (Relacionado con [HU1]).
 
-Se debe entregar la implementación empaquetada como una librería que representa la información del dominio (estudiantes, destinos y requisitos), sin añadir todavía nada de lógica de negocio ni cálculos.
+Se debe entregar la implementación empaquetada como una librería que representa la información del dominio (estudiantes, destinos y requisitos), sin añadir todavía nada de lógica de negocio ni cálculos. Junto al código, se debe entregar un documento de trazabilidad. Este documento es simplemente una lista explicativa que conecte el mundo real con el código, es decir, debe indicar de qué archivo oficial (de los que se menciona como fuentes de datos públicas que aparecen en el README) sale cada dato necesario y en qué variable del código se ha guardado.
 
-Será viable si, mediante una revisión del código, se comprueba que las estructuras programadas reflejan fielmente los conceptos extraídos de las historias de usuario, y que los tipos de datos definidos permiten almacenar de forma exacta la información que aparece en la fuente original (sin omitir conceptos clave ni inventar atributos innecesarios).
+Será válido si, al leer el documento explicativo, se puede comprobar que no se ha olvidado incluir ningún dato que sea necesario para resolver la HU y que cada variable que hay en el código viene directamente de los documentos originales (es decir, no hay atributos inventados por el programador que no existan en la fuente oficial).
 
 [M1] Lógica de cálculo de bonificaciones
 
