@@ -4,7 +4,7 @@ El objetivo es aplicar una metodología de diseño guiado por dominio (DDD) para
 
 Se debe entregar la implementación empaquetada como una librería que representa los conceptos del dominio, sin añadir todavía nada de lógica de negocio ni cálculos.
 
-Será válido si se puede comprobar que se ha aplicado el proceso metodológico (DDD). Esto se verificará con el código empaquetado, comprobando en el propio código que los términos usados coinciden exactamente con los de las HU y que las entidades (con identidad propia, como un identificador) se distinguen claramente de los objetos valor (definidos solo por sus atributos, sin identidad).
+Será válido si se puede comprobar que se ha aplicado el proceso metodológico (DDD). Esto se verificará con el código empaquetado, comprobando en el propio código que los términos usados coinciden exactamente con los de las HU y que cada concepto modelado como entidad u objeto valor viene acompañado de una breve justificación de por qué se ha clasificado así.	
 
 [M1] Lógica de negocio
 
