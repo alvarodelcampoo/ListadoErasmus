@@ -1,10 +1,10 @@
 [M0] Paquete de dominio Erasmus
 
-El objetivo es aplicar una metodología de diseño guiado por dominio (DDD) sobre las historias de usuario para extraer el lenguaje ubicuo y modelar las entidades y objetos valor que componen el problema. (Relacionado con [HU1] y [HU4]).
+El objetivo es aplicar una metodología de diseño guiado por dominio (DDD) para extraer los términos que aparecen en las HU y el problema. Modelar las entidades y objetos valor que componen el problema. (Relacionado con [HU1] y [HU2]).
 
-Se debe entregar la implementación empaquetada como una librería que representa los conceptos del dominio (estudiantes, destinos y requisitos), sin añadir todavía nada de lógica de negocio ni cálculos. Para evidenciar que se ha seguido la metodología correcta, el código se acompañará de un documento de diseño que recoja las decisiones tomadas, actuando como mapa de trazabilidad entre el código y el mundo real (indicando de qué fuente oficial o HU del README sale cada dato modelado).
+Se debe entregar la implementación empaquetada como una librería que representa los conceptos del dominio, sin añadir todavía nada de lógica de negocio ni cálculos.
 
-Será válido si se puede comprobar que se ha aplicado el proceso metodológico (DDD). Esto se verificará leyendo el documento de diseño y comprobando que no se ha olvidado incluir ningún dato que sea necesario para resolver la HU y que cada atributo del código procede estrictamente de los documentos originales (sin variables inventadas por el programador que no existan en la fuente oficial).
+Será válido si se puede comprobar que se ha aplicado el proceso metodológico (DDD). Esto se verificará con el código empaquetado, comprobando en el propio código que los términos usados coinciden exactamente con los de las HU y qué la distinción entre entidad y objeto valor es coherente. Gracias a que se utiliza una metodología, si hay algo que el desarrollador no ha seguido, puede volver a ella.
 
 [M1] Lógica de negocio
 

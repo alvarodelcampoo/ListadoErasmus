@@ -3,7 +3,7 @@
 - Fuente de datos y reglas de viabilidad: [Ver apartado "Descripción del problema" en el README](../README.md). 
 - Contexto: [Más información sobre el contexto en el journey de María](/user-journey.md).
 
-[HU2] Extracción de los datos (Interna): Como desarrollador del sistema, necesito procesar y extraer los datos de los ficheros poco estructurados de la UGR (PDFs de destinos y adjudicaciones) para transformarlos en las estructuras de datos del modelo, ya que sin esta información limpia, las funcionalidades de cálculo y viabilidad no tienen datos reales sobre los que operar.
+[HU2] Extracción de los datos (Interna): Como desarrollador del sistema, los datos de los destinos y de las adjudicaciones están disponibles, el problema que tienen es que están en varios archivos diferentes. Están en formato PDF y hay algunas columnas de información que no nos interesan. Sin esta información limpia, las funcionalidades de cálculo y viabilidad no tienen datos reales sobre los que operar.
 
 - Fuente de datos: [Ver apartado "Descripción del problema" en el README](../README.md). 
 
