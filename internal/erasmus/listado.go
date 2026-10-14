@@ -1,5 +1,5 @@
 package erasmus
 
 type Listado struct {
-	Destinos map[int]Destino
+	Destinos map[string]Destino
 }
