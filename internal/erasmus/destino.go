@@ -4,4 +4,8 @@ type Destino struct {
 	NotasTotales []float64
 	Idiomas      map[string]Nivel
 	Meses        int
+	Institucion  string
+	Plazas       int
+	Cursos       []int
+	NotaMinima   float64
 }
