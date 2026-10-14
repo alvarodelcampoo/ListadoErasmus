@@ -1,3 +1,5 @@
 package erasmus
 
-type Destino struct{}
+type Destino struct {
+	NotasTotales []float64
+}
