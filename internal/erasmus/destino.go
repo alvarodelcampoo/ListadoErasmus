@@ -1,11 +1,74 @@
 package erasmus
 
+import (
+	"fmt"
+	"slices"
+	"strings"
+)
+
 type Destino struct {
-	NotasTotales []float64
-	Idiomas      map[string]Nivel
-	Meses        int
-	Institucion  string
-	Plazas       int
-	Cursos       []int
-	NotaMinima   float64
+	notasTotales []float64
+	idiomas      map[string]Nivel
+	meses        int
+	institucion  string
+	plazas       int
+	cursos       []int
+	notaMinima   float64
+}
+
+type ErrorDestinoSinInstitucion struct{}
+
+func (e ErrorDestinoSinInstitucion) Error() string {
+	return "el destino no tiene nombre de institución"
+}
+
+type ErrorCantidadNoPositiva struct {
+	Dato  string
+	Valor int
+}
+
+func (e ErrorCantidadNoPositiva) Error() string {
+	return fmt.Sprintf("%s %d no válido: tiene que ser mayor que 0", e.Dato, e.Valor)
+}
+
+func NuevoDestino(institucion string, plazas, meses int, cursos []int, notaMinima float64, idiomas map[string]string, notasTotales []float64) (Destino, error) {
+	if strings.TrimSpace(institucion) == "" {
+		return Destino{}, ErrorDestinoSinInstitucion{}
+	}
+	if plazas <= 0 {
+		return Destino{}, ErrorCantidadNoPositiva{Dato: "plazas", Valor: plazas}
+	}
+	if meses <= 0 {
+		return Destino{}, ErrorCantidadNoPositiva{Dato: "meses", Valor: meses}
+	}
+	for _, curso := range cursos {
+		if curso <= 0 {
+			return Destino{}, ErrorCantidadNoPositiva{Dato: "curso", Valor: curso}
+		}
+	}
+	if err := comprobarNota("nota mínima", notaMinima, 10); err != nil {
+		return Destino{}, err
+	}
+	for _, nota := range notasTotales {
+		if err := comprobarNota("nota total", nota, 12); err != nil {
+			return Destino{}, err
+		}
+	}
+	niveles := make(map[string]Nivel, len(idiomas))
+	for idioma, texto := range idiomas {
+		nivel, err := NuevoNivel(texto)
+		if err != nil {
+			return Destino{}, err
+		}
+		niveles[idioma] = nivel
+	}
+	return Destino{
+		notasTotales: slices.Clone(notasTotales),
+		idiomas:      niveles,
+		meses:        meses,
+		institucion:  institucion,
+		plazas:       plazas,
+		cursos:       slices.Clone(cursos),
+		notaMinima:   notaMinima,
+	}, nil
 }
