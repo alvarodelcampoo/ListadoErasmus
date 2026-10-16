@@ -2,16 +2,16 @@ package erasmus
 
 type Estudiante struct {
 	notaMedia float64
-	niveles   map[string]Nivel
+	niveles   map[string]nivel
 }
 
 func NuevoEstudiante(notaMedia float64, niveles map[string]string) (Estudiante, error) {
 	if err := comprobarNota("nota media", notaMedia, 10); err != nil {
 		return Estudiante{}, err
 	}
-	nivelesIdioma := make(map[string]Nivel, len(niveles))
+	nivelesIdioma := make(map[string]nivel, len(niveles))
 	for idioma, texto := range niveles {
-		nivel, err := NuevoNivel(texto)
+		nivel, err := nuevoNivel(texto)
 		if err != nil {
 			return Estudiante{}, err
 		}

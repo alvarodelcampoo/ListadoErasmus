@@ -8,7 +8,7 @@ import (
 
 type Destino struct {
 	notasTotales []float64
-	idiomas      map[string]Nivel
+	idiomas      map[string]nivel
 	meses        int
 	institucion  string
 	plazas       int
@@ -54,9 +54,9 @@ func NuevoDestino(institucion string, plazas, meses int, cursos []int, notaMinim
 			return Destino{}, err
 		}
 	}
-	niveles := make(map[string]Nivel, len(idiomas))
+	niveles := make(map[string]nivel, len(idiomas))
 	for idioma, texto := range idiomas {
-		nivel, err := NuevoNivel(texto)
+		nivel, err := nuevoNivel(texto)
 		if err != nil {
 			return Destino{}, err
 		}
