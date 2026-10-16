@@ -31,6 +31,9 @@ func (l *Listado) Registrar(numeroOrden string, destino Destino) error {
 	if !formatoNumeroOrden.MatchString(numeroOrden) {
 		return ErrorNumeroOrdenMalFormado{NumeroOrden: numeroOrden}
 	}
+	if destino.institucion == "" {
+		return ErrorDestinoSinInstitucion{}
+	}
 	if _, existe := l.destinos[numeroOrden]; existe {
 		return ErrorNumeroOrdenRepetido{NumeroOrden: numeroOrden}
 	}
