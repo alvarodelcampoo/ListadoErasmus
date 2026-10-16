@@ -1,6 +1,9 @@
 package erasmus
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type nivel int
 
@@ -19,6 +22,12 @@ func (e ErrorNivelIdioma) Error() string {
 	return fmt.Sprintf("nivel de idioma %q no válido: solo se admiten B1, B2, C1 y C2", e.Nivel)
 }
 
+type ErrorIdiomaSinNombre struct{}
+
+func (e ErrorIdiomaSinNombre) Error() string {
+	return "hay un idioma sin nombre"
+}
+
 func nuevoNivel(texto string) (nivel, error) {
 	switch texto {
 	case "B1":
@@ -31,4 +40,19 @@ func nuevoNivel(texto string) (nivel, error) {
 		return nivelC2, nil
 	}
 	return 0, ErrorNivelIdioma{Nivel: texto}
+}
+
+func nuevosNiveles(textos map[string]string) (map[string]nivel, error) {
+	niveles := make(map[string]nivel, len(textos))
+	for idioma, texto := range textos {
+		if strings.TrimSpace(idioma) == "" {
+			return nil, ErrorIdiomaSinNombre{}
+		}
+		nivel, err := nuevoNivel(texto)
+		if err != nil {
+			return nil, err
+		}
+		niveles[idioma] = nivel
+	}
+	return niveles, nil
 }

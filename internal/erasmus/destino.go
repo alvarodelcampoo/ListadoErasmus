@@ -54,13 +54,9 @@ func NuevoDestino(institucion string, plazas, meses int, cursos []int, notaMinim
 			return Destino{}, err
 		}
 	}
-	niveles := make(map[string]nivel, len(idiomas))
-	for idioma, texto := range idiomas {
-		nivel, err := nuevoNivel(texto)
-		if err != nil {
-			return Destino{}, err
-		}
-		niveles[idioma] = nivel
+	niveles, err := nuevosNiveles(idiomas)
+	if err != nil {
+		return Destino{}, err
 	}
 	return Destino{
 		notasTotales: slices.Clone(notasTotales),
