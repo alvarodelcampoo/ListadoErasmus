@@ -2,7 +2,6 @@ package erasmus
 
 import (
 	"errors"
-	"fmt"
 	"slices"
 	"strings"
 )
@@ -17,30 +16,26 @@ type Destino struct {
 	notaMinima   float64
 }
 
-var ErrDestinoSinInstitucion = errors.New("el destino no tiene nombre de institución")
-
-type ErrorCantidadNoPositiva struct {
-	Dato  string
-	Valor int
-}
-
-func (e ErrorCantidadNoPositiva) Error() string {
-	return fmt.Sprintf("%s %d no válido: tiene que ser mayor que 0", e.Dato, e.Valor)
-}
+var (
+	ErrDestinoSinInstitucion = errors.New("el destino no tiene nombre de institución")
+	ErrPlazasNoPositivas     = errors.New("las plazas tienen que ser mayores que 0")
+	ErrMesesNoPositivos      = errors.New("los meses tienen que ser mayores que 0")
+	ErrCursoNoPositivo       = errors.New("los cursos tienen que ser mayores que 0")
+)
 
 func NuevoDestino(institucion string, plazas, meses int, cursos []int, notaMinima float64, idiomas map[string]string, notasTotales []float64) (Destino, error) {
 	if strings.TrimSpace(institucion) == "" {
 		return Destino{}, ErrDestinoSinInstitucion
 	}
 	if plazas <= 0 {
-		return Destino{}, ErrorCantidadNoPositiva{Dato: "plazas", Valor: plazas}
+		return Destino{}, ErrPlazasNoPositivas
 	}
 	if meses <= 0 {
-		return Destino{}, ErrorCantidadNoPositiva{Dato: "meses", Valor: meses}
+		return Destino{}, ErrMesesNoPositivos
 	}
 	for _, curso := range cursos {
 		if curso <= 0 {
-			return Destino{}, ErrorCantidadNoPositiva{Dato: "curso", Valor: curso}
+			return Destino{}, ErrCursoNoPositivo
 		}
 	}
 	if err := comprobarNota("nota mínima", notaMinima, 10); err != nil {
