@@ -5,7 +5,7 @@ import (
 	"regexp"
 )
 
-type Listado struct {
+type ListadoDestinos struct {
 	destinos map[string]Destino
 }
 
@@ -27,7 +27,7 @@ func (e ErrorNumeroOrdenRepetido) Error() string {
 
 var formatoNumeroOrden = regexp.MustCompile(`^015-\d{3}$`)
 
-func (l *Listado) Registrar(numeroOrden string, destino Destino) error {
+func (l *ListadoDestinos) Registrar(numeroOrden string, destino Destino) error {
 	if !formatoNumeroOrden.MatchString(numeroOrden) {
 		return ErrorNumeroOrdenMalFormado{NumeroOrden: numeroOrden}
 	}
