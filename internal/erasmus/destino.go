@@ -43,12 +43,12 @@ func NuevoDestino(numeroOrden int, institucion string, plazas, meses int, cursos
 			return Destino{}, ErrCursoNoPositivo
 		}
 	}
-	if err := comprobarNota("nota mínima", notaMinima, 10); err != nil {
-		return Destino{}, err
+	if !notaEnRango(notaMinima, notaMaxima) {
+		return Destino{}, ErrNotaMinimaFueraDeRango
 	}
 	for _, nota := range notasTotales {
-		if err := comprobarNota("nota total", nota, 12); err != nil {
-			return Destino{}, err
+		if !notaEnRango(nota, notaTotalMaxima) {
+			return Destino{}, ErrNotaTotalFueraDeRango
 		}
 	}
 	niveles, err := nuevosNiveles(idiomas)

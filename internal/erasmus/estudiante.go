@@ -6,8 +6,8 @@ type Estudiante struct {
 }
 
 func NuevoEstudiante(notaMedia float64, niveles map[string]string) (Estudiante, error) {
-	if err := comprobarNota("nota media", notaMedia, 10); err != nil {
-		return Estudiante{}, err
+	if !notaEnRango(notaMedia, notaMaxima) {
+		return Estudiante{}, ErrNotaMediaFueraDeRango
 	}
 	nivelesIdioma, err := nuevosNiveles(niveles)
 	if err != nil {
