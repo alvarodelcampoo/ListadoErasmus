@@ -6,13 +6,13 @@ import (
 	"strings"
 )
 
-type nivel int
+type NivelIdioma int
 
 const (
-	nivelB1 nivel = iota + 1
-	nivelB2
-	nivelC1
-	nivelC2
+	NivelB1 NivelIdioma = iota + 1
+	NivelB2
+	NivelC1
+	NivelC2
 )
 
 type ErrorNivelIdioma struct {
@@ -25,31 +25,31 @@ func (e ErrorNivelIdioma) Error() string {
 
 var ErrIdiomaSinNombre = errors.New("hay un idioma sin nombre")
 
-func nuevoNivel(texto string) (nivel, error) {
+func nuevoNivelIdioma(texto string) (NivelIdioma, error) {
 	switch texto {
 	case "B1":
-		return nivelB1, nil
+		return NivelB1, nil
 	case "B2":
-		return nivelB2, nil
+		return NivelB2, nil
 	case "C1":
-		return nivelC1, nil
+		return NivelC1, nil
 	case "C2":
-		return nivelC2, nil
+		return NivelC2, nil
 	}
 	return 0, ErrorNivelIdioma{Nivel: texto}
 }
 
-func nuevosNiveles(textos map[string]string) (map[string]nivel, error) {
-	niveles := make(map[string]nivel, len(textos))
+func nuevosNiveles(textos map[string]string) (map[string]NivelIdioma, error) {
+	niveles := make(map[string]NivelIdioma, len(textos))
 	for idioma, texto := range textos {
 		if strings.TrimSpace(idioma) == "" {
 			return nil, ErrIdiomaSinNombre
 		}
-		nivel, err := nuevoNivel(texto)
+		nivelIdioma, err := nuevoNivelIdioma(texto)
 		if err != nil {
 			return nil, err
 		}
-		niveles[idioma] = nivel
+		niveles[idioma] = nivelIdioma
 	}
 	return niveles, nil
 }

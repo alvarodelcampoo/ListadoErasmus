@@ -2,7 +2,7 @@ package erasmus
 
 type Estudiante struct {
 	notaMedia float64
-	niveles   map[string]nivel
+	niveles   map[string]NivelIdioma
 }
 
 func NuevoEstudiante(notaMedia float64, niveles map[string]string) (Estudiante, error) {

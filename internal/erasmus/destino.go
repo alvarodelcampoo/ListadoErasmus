@@ -8,7 +8,7 @@ import (
 
 type Destino struct {
 	notasTotales []float64
-	idiomas      map[string]nivel
+	idiomas      map[string]NivelIdioma
 	meses        int
 	institucion  string
 	plazas       int
