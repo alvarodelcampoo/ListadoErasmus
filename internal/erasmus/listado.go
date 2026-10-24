@@ -1,45 +1,23 @@
 package erasmus
 
-import (
-	"fmt"
-	"regexp"
-)
+import "errors"
 
 type ListadoDestinos struct {
-	destinos map[string]Destino
+	destinosPorOrden map[int]Destino
 }
 
-type ErrorNumeroOrdenMalFormado struct {
-	NumeroOrden string
-}
+var ErrNumeroOrdenRepetido = errors.New("el nº de orden ya está en el listado")
 
-func (e ErrorNumeroOrdenMalFormado) Error() string {
-	return fmt.Sprintf("nº de orden %q mal formado: tiene que ser 015-NNN", e.NumeroOrden)
-}
-
-type ErrorNumeroOrdenRepetido struct {
-	NumeroOrden string
-}
-
-func (e ErrorNumeroOrdenRepetido) Error() string {
-	return fmt.Sprintf("nº de orden %q repetido en el listado", e.NumeroOrden)
-}
-
-var formatoNumeroOrden = regexp.MustCompile(`^015-\d{3}$`)
-
-func (l *ListadoDestinos) Registrar(numeroOrden string, destino Destino) error {
-	if !formatoNumeroOrden.MatchString(numeroOrden) {
-		return ErrorNumeroOrdenMalFormado{NumeroOrden: numeroOrden}
-	}
+func (l *ListadoDestinos) Registrar(destino Destino) error {
 	if destino.institucion == "" {
 		return ErrDestinoSinInstitucion
 	}
-	if _, existe := l.destinos[numeroOrden]; existe {
-		return ErrorNumeroOrdenRepetido{NumeroOrden: numeroOrden}
+	if _, existe := l.destinosPorOrden[destino.numeroOrden]; existe {
+		return ErrNumeroOrdenRepetido
 	}
-	if l.destinos == nil {
-		l.destinos = make(map[string]Destino)
+	if l.destinosPorOrden == nil {
+		l.destinosPorOrden = make(map[int]Destino)
 	}
-	l.destinos[numeroOrden] = destino
+	l.destinosPorOrden[destino.numeroOrden] = destino
 	return nil
 }
