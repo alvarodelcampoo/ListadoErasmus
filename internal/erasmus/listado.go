@@ -32,7 +32,7 @@ func (l *ListadoDestinos) Registrar(numeroOrden string, destino Destino) error {
 		return ErrorNumeroOrdenMalFormado{NumeroOrden: numeroOrden}
 	}
 	if destino.institucion == "" {
-		return ErrorDestinoSinInstitucion{}
+		return ErrDestinoSinInstitucion
 	}
 	if _, existe := l.destinos[numeroOrden]; existe {
 		return ErrorNumeroOrdenRepetido{NumeroOrden: numeroOrden}

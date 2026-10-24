@@ -1,6 +1,7 @@
 package erasmus
 
 import (
+	"errors"
 	"fmt"
 	"slices"
 	"strings"
@@ -16,11 +17,7 @@ type Destino struct {
 	notaMinima   float64
 }
 
-type ErrorDestinoSinInstitucion struct{}
-
-func (e ErrorDestinoSinInstitucion) Error() string {
-	return "el destino no tiene nombre de institución"
-}
+var ErrDestinoSinInstitucion = errors.New("el destino no tiene nombre de institución")
 
 type ErrorCantidadNoPositiva struct {
 	Dato  string
@@ -33,7 +30,7 @@ func (e ErrorCantidadNoPositiva) Error() string {
 
 func NuevoDestino(institucion string, plazas, meses int, cursos []int, notaMinima float64, idiomas map[string]string, notasTotales []float64) (Destino, error) {
 	if strings.TrimSpace(institucion) == "" {
-		return Destino{}, ErrorDestinoSinInstitucion{}
+		return Destino{}, ErrDestinoSinInstitucion
 	}
 	if plazas <= 0 {
 		return Destino{}, ErrorCantidadNoPositiva{Dato: "plazas", Valor: plazas}
