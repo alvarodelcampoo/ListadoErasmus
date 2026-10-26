@@ -41,11 +41,11 @@ func NuevoDestino(numeroOrden int, institucion string, plazas int, duracion Dura
 			return Destino{}, ErrCursoNoPositivo
 		}
 	}
-	if !notaEnRango(notaMinima, notaMaxima) {
+	if !notaEnRango(notaMinima, notaExpedienteMaxima) {
 		return Destino{}, fmt.Errorf("%w: %v", ErrNotaMinimaFueraDeRango, notaMinima)
 	}
 	for i, nota := range notasTotales {
-		if !notaEnRango(nota, notaTotalMaxima) {
+		if !notaEnRango(nota, notaConBonificacionMaxima) {
 			return Destino{}, fmt.Errorf("%w: %v (la %d.ª)", ErrNotaTotalFueraDeRango, nota, i+1)
 		}
 	}

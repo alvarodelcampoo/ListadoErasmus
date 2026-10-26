@@ -3,8 +3,9 @@ package erasmus
 import "errors"
 
 const (
-	notaMaxima      = 10
-	notaTotalMaxima = 12
+	notaExpedienteMaxima      = 10
+	bonificacionIdiomaMaxima  = 2
+	notaConBonificacionMaxima = notaExpedienteMaxima + bonificacionIdiomaMaxima
 )
 
 var (
