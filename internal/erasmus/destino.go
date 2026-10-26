@@ -2,6 +2,7 @@ package erasmus
 
 import (
 	"errors"
+	"fmt"
 	"maps"
 	"slices"
 	"strings"
@@ -41,11 +42,11 @@ func NuevoDestino(numeroOrden int, institucion string, plazas int, duracion Dura
 		}
 	}
 	if !notaEnRango(notaMinima, notaMaxima) {
-		return Destino{}, ErrNotaMinimaFueraDeRango
+		return Destino{}, fmt.Errorf("%w: %v", ErrNotaMinimaFueraDeRango, notaMinima)
 	}
-	for _, nota := range notasTotales {
+	for i, nota := range notasTotales {
 		if !notaEnRango(nota, notaTotalMaxima) {
-			return Destino{}, ErrNotaTotalFueraDeRango
+			return Destino{}, fmt.Errorf("%w: %v (la %d.ª)", ErrNotaTotalFueraDeRango, nota, i+1)
 		}
 	}
 	return Destino{
