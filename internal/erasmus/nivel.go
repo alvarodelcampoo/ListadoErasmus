@@ -19,31 +19,16 @@ var (
 	ErrIdiomaSinNombre     = errors.New("hay un idioma sin nombre")
 )
 
-func nuevoNivelIdioma(texto string) (NivelIdioma, error) {
-	switch texto {
-	case "B1":
-		return NivelB1, nil
-	case "B2":
-		return NivelB2, nil
-	case "C1":
-		return NivelC1, nil
-	case "C2":
-		return NivelC2, nil
-	}
-	return 0, ErrNivelIdiomaNoValido
-}
-
-func nuevosNiveles(textos map[string]string) (map[string]NivelIdioma, error) {
-	niveles := make(map[string]NivelIdioma, len(textos))
-	for idioma, texto := range textos {
+func nuevosNiveles(niveles map[string]NivelIdioma) (map[string]NivelIdioma, error) {
+	copia := make(map[string]NivelIdioma, len(niveles))
+	for idioma, nivelIdioma := range niveles {
 		if strings.TrimSpace(idioma) == "" {
 			return nil, ErrIdiomaSinNombre
 		}
-		nivelIdioma, err := nuevoNivelIdioma(texto)
-		if err != nil {
-			return nil, err
+		if nivelIdioma < NivelB1 || nivelIdioma > NivelC2 {
+			return nil, ErrNivelIdiomaNoValido
 		}
-		niveles[idioma] = nivelIdioma
+		copia[idioma] = nivelIdioma
 	}
-	return niveles, nil
+	return copia, nil
 }

@@ -25,7 +25,7 @@ var (
 	ErrCursoNoPositivo       = errors.New("los cursos tienen que ser mayores que 0")
 )
 
-func NuevoDestino(numeroOrden int, institucion string, plazas, meses int, cursos []int, notaMinima float64, idiomas map[string]string, notasTotales []float64) (Destino, error) {
+func NuevoDestino(numeroOrden int, institucion string, plazas, meses int, cursos []int, notaMinima float64, idiomas map[string]NivelIdioma, notasTotales []float64) (Destino, error) {
 	if numeroOrden <= 0 {
 		return Destino{}, ErrNumeroOrdenNoPositivo
 	}
