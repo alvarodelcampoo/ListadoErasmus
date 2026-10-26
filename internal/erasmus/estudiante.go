@@ -1,5 +1,7 @@
 package erasmus
 
+import "maps"
+
 type Estudiante struct {
 	notaMedia float64
 	niveles   map[string]NivelIdioma
@@ -9,9 +11,5 @@ func NuevoEstudiante(notaMedia float64, niveles map[string]NivelIdioma) (Estudia
 	if !notaEnRango(notaMedia, notaMaxima) {
 		return Estudiante{}, ErrNotaMediaFueraDeRango
 	}
-	nivelesIdioma, err := nuevosNiveles(niveles)
-	if err != nil {
-		return Estudiante{}, err
-	}
-	return Estudiante{notaMedia: notaMedia, niveles: nivelesIdioma}, nil
+	return Estudiante{notaMedia: notaMedia, niveles: maps.Clone(niveles)}, nil
 }

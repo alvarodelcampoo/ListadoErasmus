@@ -2,6 +2,7 @@ package erasmus
 
 import (
 	"errors"
+	"maps"
 	"slices"
 	"strings"
 )
@@ -47,14 +48,10 @@ func NuevoDestino(numeroOrden int, institucion string, plazas int, duracion Dura
 			return Destino{}, ErrNotaTotalFueraDeRango
 		}
 	}
-	niveles, err := nuevosNiveles(idiomas)
-	if err != nil {
-		return Destino{}, err
-	}
 	return Destino{
 		numeroOrden:  numeroOrden,
 		notasTotales: slices.Clone(notasTotales),
-		idiomas:      niveles,
+		idiomas:      maps.Clone(idiomas),
 		duracion:     duracion,
 		institucion:  institucion,
 		plazas:       plazas,
