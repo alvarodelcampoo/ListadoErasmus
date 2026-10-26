@@ -10,7 +10,7 @@ type Destino struct {
 	numeroOrden  int
 	notasTotales []float64
 	idiomas      map[string]NivelIdioma
-	meses        int
+	duracion     Duracion
 	institucion  string
 	plazas       int
 	cursos       []int
@@ -21,11 +21,10 @@ var (
 	ErrNumeroOrdenNoPositivo = errors.New("el nº de orden tiene que ser mayor que 0")
 	ErrDestinoSinInstitucion = errors.New("el destino no tiene nombre de institución")
 	ErrPlazasNoPositivas     = errors.New("las plazas tienen que ser mayores que 0")
-	ErrMesesNoPositivos      = errors.New("los meses tienen que ser mayores que 0")
 	ErrCursoNoPositivo       = errors.New("los cursos tienen que ser mayores que 0")
 )
 
-func NuevoDestino(numeroOrden int, institucion string, plazas, meses int, cursos []int, notaMinima float64, idiomas map[string]NivelIdioma, notasTotales []float64) (Destino, error) {
+func NuevoDestino(numeroOrden int, institucion string, plazas int, duracion Duracion, cursos []int, notaMinima float64, idiomas map[string]NivelIdioma, notasTotales []float64) (Destino, error) {
 	if numeroOrden <= 0 {
 		return Destino{}, ErrNumeroOrdenNoPositivo
 	}
@@ -34,9 +33,6 @@ func NuevoDestino(numeroOrden int, institucion string, plazas, meses int, cursos
 	}
 	if plazas <= 0 {
 		return Destino{}, ErrPlazasNoPositivas
-	}
-	if meses <= 0 {
-		return Destino{}, ErrMesesNoPositivos
 	}
 	for _, curso := range cursos {
 		if curso <= 0 {
@@ -59,7 +55,7 @@ func NuevoDestino(numeroOrden int, institucion string, plazas, meses int, cursos
 		numeroOrden:  numeroOrden,
 		notasTotales: slices.Clone(notasTotales),
 		idiomas:      niveles,
-		meses:        meses,
+		duracion:     duracion,
 		institucion:  institucion,
 		plazas:       plazas,
 		cursos:       slices.Clone(cursos),
