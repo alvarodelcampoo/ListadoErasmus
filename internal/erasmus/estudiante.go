@@ -8,8 +8,8 @@ type Estudiante struct {
 }
 
 func NuevoEstudiante(notaMedia float64, niveles map[string]NivelIdioma) (Estudiante, error) {
-	if err := comprobarNota("media", notaMedia, notaExpedienteMaxima); err != nil {
-		return Estudiante{}, err
+	if !notaEnRango(notaMedia, notaExpedienteMaxima) {
+		return Estudiante{}, &NotaMediaFueraDeRangoError{Nota: notaMedia}
 	}
 	return Estudiante{notaMedia: notaMedia, niveles: maps.Clone(niveles)}, nil
 }

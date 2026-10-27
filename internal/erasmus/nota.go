@@ -8,19 +8,31 @@ const (
 	notaConBonificacionMaxima = notaExpedienteMaxima + bonificacionIdiomaMaxima
 )
 
-type ErrorNotaFueraDeRango struct {
-	Nota   string
-	Valor  float64
-	Maximo float64
+type NotaMediaFueraDeRangoError struct {
+	Nota float64
 }
 
-func (e ErrorNotaFueraDeRango) Error() string {
-	return fmt.Sprintf("la nota %s es %v y tiene que estar entre 0 y %v", e.Nota, e.Valor, e.Maximo)
+func (e *NotaMediaFueraDeRangoError) Error() string {
+	return fmt.Sprintf("la nota media es %v y tiene que estar entre 0 y %v", e.Nota, notaExpedienteMaxima)
 }
 
-func comprobarNota(nota string, valor, maximo float64) error {
-	if valor < 0 || valor > maximo {
-		return ErrorNotaFueraDeRango{Nota: nota, Valor: valor, Maximo: maximo}
-	}
-	return nil
+type NotaMinimaFueraDeRangoError struct {
+	Nota float64
+}
+
+func (e *NotaMinimaFueraDeRangoError) Error() string {
+	return fmt.Sprintf("la nota mínima es %v y tiene que estar entre 0 y %v", e.Nota, notaExpedienteMaxima)
+}
+
+type NotaConBonificacionFueraDeRangoError struct {
+	Nota     float64
+	Posicion int
+}
+
+func (e *NotaConBonificacionFueraDeRangoError) Error() string {
+	return fmt.Sprintf("la nota con bonificación de idioma n.º %d es %v y tiene que estar entre 0 y %v", e.Posicion, e.Nota, notaConBonificacionMaxima)
+}
+
+func notaEnRango(nota, maximo float64) bool {
+	return nota >= 0 && nota <= maximo
 }

@@ -1,6 +1,7 @@
 package erasmus
 
 import (
+	"errors"
 	"fmt"
 	"maps"
 	"slices"
@@ -17,39 +18,42 @@ type Destino struct {
 	notaMinima   float64
 }
 
-type ErrorDestinoSinInstitucion struct{}
+var ErrDestinoSinInstitucion = errors.New("el destino no tiene nombre de institución")
 
-func (ErrorDestinoSinInstitucion) Error() string {
-	return "el destino no tiene nombre de institución"
+type PlazasNoPositivasError struct {
+	Plazas int
 }
 
-type ErrorCantidadNoPositiva struct {
-	Cantidad string
-	Valor    int
+func (e *PlazasNoPositivasError) Error() string {
+	return fmt.Sprintf("las plazas son %d y tienen que ser más de 0", e.Plazas)
 }
 
-func (e ErrorCantidadNoPositiva) Error() string {
-	return fmt.Sprintf("%s es %d y tiene que ser mayor que 0", e.Cantidad, e.Valor)
+type CursoNoPositivoError struct {
+	Curso int
+}
+
+func (e *CursoNoPositivoError) Error() string {
+	return fmt.Sprintf("el curso es %d y tiene que ser mayor que 0", e.Curso)
 }
 
 func NuevoDestino(institucion string, plazas int, duracion Duracion, cursos []int, notaMinima float64, idiomas map[string]NivelIdioma, notasTotales []float64) (Destino, error) {
 	if strings.TrimSpace(institucion) == "" {
-		return Destino{}, ErrorDestinoSinInstitucion{}
+		return Destino{}, ErrDestinoSinInstitucion
 	}
 	if plazas <= 0 {
-		return Destino{}, ErrorCantidadNoPositiva{Cantidad: "el nº de plazas", Valor: plazas}
+		return Destino{}, &PlazasNoPositivasError{Plazas: plazas}
 	}
 	for _, curso := range cursos {
 		if curso <= 0 {
-			return Destino{}, ErrorCantidadNoPositiva{Cantidad: "el curso", Valor: curso}
+			return Destino{}, &CursoNoPositivoError{Curso: curso}
 		}
 	}
-	if err := comprobarNota("mínima", notaMinima, notaExpedienteMaxima); err != nil {
-		return Destino{}, err
+	if !notaEnRango(notaMinima, notaExpedienteMaxima) {
+		return Destino{}, &NotaMinimaFueraDeRangoError{Nota: notaMinima}
 	}
 	for i, nota := range notasTotales {
-		if err := comprobarNota(fmt.Sprintf("total n.º %d", i+1), nota, notaConBonificacionMaxima); err != nil {
-			return Destino{}, err
+		if !notaEnRango(nota, notaConBonificacionMaxima) {
+			return Destino{}, &NotaConBonificacionFueraDeRangoError{Nota: nota, Posicion: i + 1}
 		}
 	}
 	return Destino{
