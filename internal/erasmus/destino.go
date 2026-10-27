@@ -1,7 +1,6 @@
 package erasmus
 
 import (
-	"errors"
 	"fmt"
 	"maps"
 	"slices"
@@ -19,34 +18,42 @@ type Destino struct {
 	notaMinima   float64
 }
 
-var (
-	ErrNumeroOrdenNoPositivo = errors.New("el nº de orden tiene que ser mayor que 0")
-	ErrDestinoSinInstitucion = errors.New("el destino no tiene nombre de institución")
-	ErrPlazasNoPositivas     = errors.New("las plazas tienen que ser mayores que 0")
-	ErrCursoNoPositivo       = errors.New("los cursos tienen que ser mayores que 0")
-)
+type ErrorDestinoSinInstitucion struct{}
+
+func (ErrorDestinoSinInstitucion) Error() string {
+	return "el destino no tiene nombre de institución"
+}
+
+type ErrorCantidadNoPositiva struct {
+	Cantidad string
+	Valor    int
+}
+
+func (e ErrorCantidadNoPositiva) Error() string {
+	return fmt.Sprintf("%s es %d y tiene que ser mayor que 0", e.Cantidad, e.Valor)
+}
 
 func NuevoDestino(numeroOrden int, institucion string, plazas int, duracion Duracion, cursos []int, notaMinima float64, idiomas map[string]NivelIdioma, notasTotales []float64) (Destino, error) {
 	if numeroOrden <= 0 {
-		return Destino{}, ErrNumeroOrdenNoPositivo
+		return Destino{}, ErrorCantidadNoPositiva{Cantidad: "el nº de orden", Valor: numeroOrden}
 	}
 	if strings.TrimSpace(institucion) == "" {
-		return Destino{}, ErrDestinoSinInstitucion
+		return Destino{}, ErrorDestinoSinInstitucion{}
 	}
 	if plazas <= 0 {
-		return Destino{}, ErrPlazasNoPositivas
+		return Destino{}, ErrorCantidadNoPositiva{Cantidad: "el nº de plazas", Valor: plazas}
 	}
 	for _, curso := range cursos {
 		if curso <= 0 {
-			return Destino{}, ErrCursoNoPositivo
+			return Destino{}, ErrorCantidadNoPositiva{Cantidad: "el curso", Valor: curso}
 		}
 	}
-	if !notaEnRango(notaMinima, notaExpedienteMaxima) {
-		return Destino{}, fmt.Errorf("%w: %v", ErrNotaMinimaFueraDeRango, notaMinima)
+	if err := comprobarNota("mínima", notaMinima, notaExpedienteMaxima); err != nil {
+		return Destino{}, err
 	}
 	for i, nota := range notasTotales {
-		if !notaEnRango(nota, notaConBonificacionMaxima) {
-			return Destino{}, fmt.Errorf("%w: %v (la %d.ª)", ErrNotaTotalFueraDeRango, nota, i+1)
+		if err := comprobarNota(fmt.Sprintf("total n.º %d", i+1), nota, notaConBonificacionMaxima); err != nil {
+			return Destino{}, err
 		}
 	}
 	return Destino{

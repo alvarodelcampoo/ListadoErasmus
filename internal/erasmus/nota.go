@@ -1,6 +1,6 @@
 package erasmus
 
-import "errors"
+import "fmt"
 
 const (
 	notaExpedienteMaxima      = 10
@@ -8,12 +8,19 @@ const (
 	notaConBonificacionMaxima = notaExpedienteMaxima + bonificacionIdiomaMaxima
 )
 
-var (
-	ErrNotaMediaFueraDeRango  = errors.New("la nota media está fuera de rango")
-	ErrNotaMinimaFueraDeRango = errors.New("la nota mínima está fuera de rango")
-	ErrNotaTotalFueraDeRango  = errors.New("una nota total está fuera de rango")
-)
+type ErrorNotaFueraDeRango struct {
+	Nota   string
+	Valor  float64
+	Maximo float64
+}
 
-func notaEnRango(nota, maximo float64) bool {
-	return nota >= 0 && nota <= maximo
+func (e ErrorNotaFueraDeRango) Error() string {
+	return fmt.Sprintf("la nota %s es %v y tiene que estar entre 0 y %v", e.Nota, e.Valor, e.Maximo)
+}
+
+func comprobarNota(nota string, valor, maximo float64) error {
+	if valor < 0 || valor > maximo {
+		return ErrorNotaFueraDeRango{Nota: nota, Valor: valor, Maximo: maximo}
+	}
+	return nil
 }
