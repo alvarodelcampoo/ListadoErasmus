@@ -8,7 +8,6 @@ import (
 )
 
 type Destino struct {
-	numeroOrden  int
 	notasTotales []float64
 	idiomas      map[string]NivelIdioma
 	duracion     Duracion
@@ -33,10 +32,7 @@ func (e ErrorCantidadNoPositiva) Error() string {
 	return fmt.Sprintf("%s es %d y tiene que ser mayor que 0", e.Cantidad, e.Valor)
 }
 
-func NuevoDestino(numeroOrden int, institucion string, plazas int, duracion Duracion, cursos []int, notaMinima float64, idiomas map[string]NivelIdioma, notasTotales []float64) (Destino, error) {
-	if numeroOrden <= 0 {
-		return Destino{}, ErrorCantidadNoPositiva{Cantidad: "el nº de orden", Valor: numeroOrden}
-	}
+func NuevoDestino(institucion string, plazas int, duracion Duracion, cursos []int, notaMinima float64, idiomas map[string]NivelIdioma, notasTotales []float64) (Destino, error) {
 	if strings.TrimSpace(institucion) == "" {
 		return Destino{}, ErrorDestinoSinInstitucion{}
 	}
@@ -57,7 +53,6 @@ func NuevoDestino(numeroOrden int, institucion string, plazas int, duracion Dura
 		}
 	}
 	return Destino{
-		numeroOrden:  numeroOrden,
 		notasTotales: slices.Clone(notasTotales),
 		idiomas:      maps.Clone(idiomas),
 		duracion:     duracion,
