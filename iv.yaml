@@ -1,2 +1,2 @@
 lenguaje: go
-entidad: internal/erasmus/destino.go
+entidad: internal/erasmus/listado_destinos.go
