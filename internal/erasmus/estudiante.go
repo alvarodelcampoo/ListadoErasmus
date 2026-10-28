@@ -7,7 +7,7 @@ type Estudiante struct {
 	niveles   map[string]NivelIdioma
 }
 
-func NuevoEstudiante(notaMedia float64, niveles map[string]NivelIdioma) (Estudiante, error) {
+func NewEstudiante(notaMedia float64, niveles map[string]NivelIdioma) (Estudiante, error) {
 	if !notaEnRango(notaMedia, notaExpedienteMaxima) {
 		return Estudiante{}, &NotaMediaFueraDeRangoError{Nota: notaMedia}
 	}

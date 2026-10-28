@@ -36,7 +36,7 @@ func (e *CursoNoPositivoError) Error() string {
 	return fmt.Sprintf("el curso es %d y tiene que ser mayor que 0", e.Curso)
 }
 
-func NuevoDestino(institucion string, plazas int, duracion Duracion, cursos []int, notaMinima float64, idiomas map[string]NivelIdioma, notasTotales []float64) (Destino, error) {
+func NewDestino(institucion string, plazas int, duracion Duracion, cursos []int, notaMinima float64, idiomas map[string]NivelIdioma, notasTotales []float64) (Destino, error) {
 	if strings.TrimSpace(institucion) == "" {
 		return Destino{}, ErrDestinoSinInstitucion
 	}
