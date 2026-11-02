@@ -174,3 +174,11 @@ Para probar cada opción usamos el mismo entorno que en el #14 y el #26: un cont
 `go build` y `go vet` también fallan con el error de tipos, así que comprueban más que la sintaxis: `go build` compila el código y `go vet` además lo analiza. Ninguna de las tres órdenes crea ficheros en el directorio. Por eso la tarea `check` usará `gofmt -e`.
 
 ![go build y go vet con los tres casos](../images/Captura_check_comparacion.png)
+
+**Solo `go`.** No hace falta instalar nada más que Go, y las tres tareas funcionan con el código en solo lectura sin crear ningún fichero: `go mod download` para las dependencias, `gofmt -e .` para la sintaxis y `go test ./...` para los tests. El problema es que son tres órdenes sueltas que cada persona tiene que conocer, y `gofmt` ni siquiera es una orden de `go`, sino otro programa. No hay ningún fichero de tareas que las reúna.
+
+![Las tres tareas solo con go](../images/Captura_sologo1.png)
+
+Para generar ficheros, Go tiene `go generate`, pero no comprueba si el fichero de origen ha cambiado: lo ejecutamos dos veces seguidas sin tocar `entrada.txt` y las dos veces vuelve a generar `salida.txt`.
+
+![go generate regenera siempre](../images/Captura_sologo2.png)
