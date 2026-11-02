@@ -164,3 +164,13 @@ Para trabajar con el código hacen falta tres tareas: instalar las dependencias,
 Hay más opciones, pero se parecen a alguna de estas: goyek también define las tareas en Go, como Mage; un script de shell es como usar `go` directamente pero en un fichero; y Earthly o Bazel son sistemas de construcción completos, más de lo que hace falta aquí. Por eso probamos una de cada tipo.
 
 ### Pruebas
+
+Para probar cada opción usamos el mismo entorno que en el #14 y el #26: un contenedor de podman con Ubuntu 24.04 y el usuario `alumno`, sin permisos de administrador.
+
+**Orden para comprobar la sintaxis.** Antes de comparar los gestores de tareas, hay que elegir qué orden ejecuta la tarea `check`, porque solo tiene que comprobar la sintaxis. Lo probamos con tres ficheros: uno válido pero mal formateado, uno con un error de sintaxis y uno con un error de tipos (una variable que no existe), que es un error de compilación pero no de sintaxis. `gofmt -e` solo falla con el error de sintaxis, e indica la línea y la columna.
+
+![gofmt -e con los tres casos](../images/Captura_check_gofmt.png)
+
+`go build` y `go vet` también fallan con el error de tipos, así que comprueban más que la sintaxis: `go build` compila el código y `go vet` además lo analiza. Ninguna de las tres órdenes crea ficheros en el directorio. Por eso la tarea `check` usará `gofmt -e`.
+
+![go build y go vet con los tres casos](../images/Captura_check_comparacion.png)
