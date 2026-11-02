@@ -125,3 +125,11 @@ Además, ya no se puede instalar. Con `go install` descarga sus dependencias, pe
 Tampoco se puede instalar: con `go install` falla porque una de sus dependencias, `codegangsta/cli`, ha cambiado de nombre a `urfave/cli`, y termina con error.
 
 ![Error al instalar Glide](../images/Captura_glide1.png)
+
+**Bazel.** Está mantenido: la versión que descarga, la 9.3.1, es de octubre de 2026. Se instala sin permisos de administrador a través de bazelisk, un programa de 7,5 MB que descarga y lanza Bazel. La primera vez que se ejecuta descarga Bazel, 73 MB más, y tardó casi 3 minutos. Además, arranca un servidor de Java para funcionar. Todo esto habría que instalarlo aparte de Go en cada máquina, en el contenedor y en la integración continua.
+
+![Instalación de Bazel con bazelisk](../images/Captura_bazel1.png)
+
+Tampoco sustituye a Go modules. Según la documentación de rules_go, Bazel ignora el `go.mod`, y las dependencias hay que declararlas otra vez en sus propios ficheros (`deps` en cada `go_library`) o generarlas a partir del `go.mod` con otra herramienta, Gazelle. Es decir, las dependencias quedarían en dos sitios.
+
+![Bazel y el go.mod según rules_go](../images/Captura_bazel_doc.png)
