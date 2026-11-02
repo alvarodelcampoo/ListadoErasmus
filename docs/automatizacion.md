@@ -72,3 +72,13 @@ Permite fijar la versión, pero en su propio fichero, `.go-version`, así que, i
 Por defecto no lee la versión del `go.mod`: sin `.go-version`, `goenv version` devuelve la del sistema. Con la variable `GOENV_GOMOD_VERSION_ENABLE=1` sí la lee, pero es una variable de cada usuario, no del repositorio. Igual que con mise, o se añade un `.go-version` al repositorio, o cada persona, el contenedor y la CI tienen que configurarla.
 
 ![goenv leyendo el go.mod](../images/Captura_goenv4.png)
+
+### Decisión
+
+Elegimos el **binario oficial**, y la versión se fija en el `go.mod` con el mecanismo propio de Go.
+
+Es la única opción que cumple los tres criterios sin añadir nada al proyecto. apt necesita permisos de administrador. `golang.org/dl` necesita tener Go instalado antes y no deja la versión fijada en el repositorio. mise y goenv sí cumplen los criterios, pero cada uno escribe la versión en su propio fichero (`mise.toml` o `.go-version`), además de en el `go.mod`. Para que lean el `go.mod`, cada persona, el contenedor y la integración continua tendrían que configurarlos, y eso es justo lo que queremos evitar.
+
+Esta opción también tiene su coste: hay que añadir `~/.local/go/bin` al `PATH` a mano, y cada versión que Go descarga ocupa unos 253 MB más. Aun así es menos que con `golang.org/dl` (350 MB por versión), y no hace falta instalar ninguna herramienta aparte.
+
+La versión quedará escrita en el `go.mod` cuando se cree, en el #26.
