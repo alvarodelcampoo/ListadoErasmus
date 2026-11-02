@@ -141,3 +141,26 @@ Elegimos **Go modules**.
 Es la única opción que cumple los tres criterios. dep y Glide están abandonados y ni siquiera se pueden instalar con las versiones actuales de sus dependencias. Bazel está mantenido, pero hay que instalarlo aparte de Go en cada máquina, en el contenedor y en la integración continua (unos 80 MB más), y además ignora el `go.mod`, así que las dependencias quedarían en dos sitios. Go modules viene con Go, no necesita instalar nada más y funciona con el código en solo lectura.
 
 Como todavía no hay dependencias, el `go.mod` solo tiene el nombre del módulo y la versión de Go. Ahí queda fijada la versión del proyecto, como se decidió en el #14.
+
+## Gestor de tareas (#27)
+
+Para trabajar con el código hacen falta tres tareas: instalar las dependencias, comprobar la sintaxis y pasar los tests. Ahora cada una es una orden distinta de `go` que hay que conocer, y lo mismo pasará en el contenedor y en la integración continua.
+
+### Criterios
+
+- **Hace las tres tareas desde un fichero de tareas.** Así hay un único sitio con todas las órdenes del proyecto.
+- **No hace falta instalar nada aparte.** Igual que con las dependencias: cada herramienta extra hay que instalarla en cada máquina, en el contenedor y en la integración continua.
+- **No escribe en el código.** En el contenedor el código estará montado en solo lectura.
+- **Puede generar un fichero a partir de otro, solo cuando este cambia.** No entra en este milestone, pero más adelante habrá que generar los datos a partir de los PDF de la UGR, y así no habría que cambiar de herramienta.
+
+### Opciones
+
+- **Solo `go`:** usar directamente las órdenes de Go, sin fichero de tareas.
+- **[Make](https://www.gnu.org/software/make/):** gestor de tareas genérico, con un `Makefile`.
+- **[Task](https://taskfile.dev/):** gestor de tareas escrito en Go, con un `Taskfile.yml`.
+- **[Just](https://github.com/casey/just):** gestor de tareas escrito en Rust, con un `justfile`.
+- **[Mage](https://magefile.org/):** las tareas se escriben en Go, en un `magefile.go`.
+
+Hay más opciones, pero se parecen a alguna de estas: goyek también define las tareas en Go, como Mage; un script de shell es como usar `go` directamente pero en un fichero; y Earthly o Bazel son sistemas de construcción completos, más de lo que hace falta aquí. Por eso probamos una de cada tipo.
+
+### Pruebas
