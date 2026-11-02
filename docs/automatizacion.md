@@ -117,3 +117,11 @@ Para probar cada opción usamos el mismo entorno que en el #14: un contenedor de
 Además, ya no se puede instalar. Con `go install` descarga sus dependencias, pero no compila porque las versiones actuales de esas dependencias han cambiado (por ejemplo, la de `semver`) y termina con error. Como el proyecto está archivado, nadie lo va a arreglar.
 
 ![Error al instalar dep](../images/Captura_dep1.png)
+
+**Glide.** Su propio README dice que la comunidad de Go usa ahora Go modules, recomienda usarlo en su lugar y avisa de que Glide "is now mostly unmaintained" (está prácticamente sin mantener).
+
+![README de Glide](../images/Captura_glide_repo.png)
+
+Tampoco se puede instalar: con `go install` falla porque una de sus dependencias, `codegangsta/cli`, ha cambiado de nombre a `urfave/cli`, y termina con error.
+
+![Error al instalar Glide](../images/Captura_glide1.png)
