@@ -133,3 +133,11 @@ Tampoco se puede instalar: con `go install` falla porque una de sus dependencias
 Tampoco sustituye a Go modules. Según la documentación de rules_go, Bazel ignora el `go.mod`, y las dependencias hay que declararlas otra vez en sus propios ficheros (`deps` en cada `go_library`) o generarlas a partir del `go.mod` con otra herramienta, Gazelle. Es decir, las dependencias quedarían en dos sitios.
 
 ![Bazel y el go.mod según rules_go](../images/Captura_bazel_doc.png)
+
+### Decisión
+
+Elegimos **Go modules**.
+
+Es la única opción que cumple los tres criterios. dep y Glide están abandonados y ni siquiera se pueden instalar con las versiones actuales de sus dependencias. Bazel está mantenido, pero hay que instalarlo aparte de Go en cada máquina, en el contenedor y en la integración continua (unos 80 MB más), y además ignora el `go.mod`, así que las dependencias quedarían en dos sitios. Go modules viene con Go, no necesita instalar nada más y funciona con el código en solo lectura.
+
+Como todavía no hay dependencias, el `go.mod` solo tiene el nombre del módulo y la versión de Go. Ahí queda fijada la versión del proyecto, como se decidió en el #14.
