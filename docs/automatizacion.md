@@ -56,3 +56,19 @@ Por defecto no lee la versión del `go.mod`: sin `mise.toml`, `mise current go` 
 
 ![mise leyendo el go.mod](../images/Captura_mise3.png)
 ![Dónde guarda mise la opción](../images/Captura_mise4.png)
+
+**goenv.** Es un gestor de versiones solo para Go. Se instala sin permisos de administrador con un `git clone` en `~/.goenv`, que tardó 3,7 s y ocupa 8,1 MB. A cambio, necesita `git` y tres líneas en el `~/.bashrc`: la variable `GOENV_ROOT`, el `PATH` y `eval "$(goenv init -)"`.
+
+![Instalación de goenv](../images/Captura_goenv1.png)
+
+Su lista de versiones de Go está al día: incluye la 1.26.10 y la 1.27.3.
+
+![Versiones disponibles en goenv](../images/Captura_goenv2.png)
+
+Permite fijar la versión, pero en su propio fichero, `.go-version`, así que, igual que con mise, la versión quedaría en dos sitios. Cambiar de versión es una orden (`goenv local <versión>`) y después `go` usa esa versión directamente, sin `exec`. Antes hay que instalarla con `goenv install`. La 1.26.10 ocupa 270 MB y la 1.27.3, 283 MB.
+
+![Fijar y cambiar la versión con goenv](../images/Captura_goenv3.png)
+
+Por defecto no lee la versión del `go.mod`: sin `.go-version`, `goenv version` devuelve la del sistema. Con la variable `GOENV_GOMOD_VERSION_ENABLE=1` sí la lee, pero es una variable de cada usuario, no del repositorio. Igual que con mise, o se añade un `.go-version` al repositorio, o cada persona, el contenedor y la CI tienen que configurarla.
+
+![goenv leyendo el go.mod](../images/Captura_goenv4.png)
