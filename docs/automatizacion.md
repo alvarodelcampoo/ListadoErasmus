@@ -27,3 +27,11 @@ Para probar cada opción usamos un entorno limpio con un usuario sin permisos de
 **apt.** Sin permisos de administrador no se puede instalar Go con apt, como se ve en la captura. Por eso esta opción queda descartada.
 
 ![apt sin permisos de administrador](../images/Captura_apt.png)
+
+**Binario oficial.** Sí se puede descargar e instalar sin permisos de administrador, en `~/.local/go`. La descarga es de 63,8 MB y, una vez instalado, ocupa 270 MB. Hay un paso manual: añadir `~/.local/go/bin` al `PATH` en el `~/.bashrc`.
+
+![Instalación del binario oficial](../images/Captura_instalacion_binario.png)
+
+La versión queda fijada en el propio `go.mod` (`go mod init` escribe `go 1.26.10`) y no hace falta ningún otro fichero. Para cambiar de versión basta una orden, `go mod edit -go=1.27.3`: la siguiente vez que se ejecuta `go`, descarga la 1.27.3 y la usa. Cada versión que se descarga así ocupa 253 MB más.
+
+![Fijar y cambiar la versión con el binario oficial](../images/Captura_prueba_binario.png)
