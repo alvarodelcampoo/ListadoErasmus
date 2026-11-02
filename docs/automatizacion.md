@@ -103,3 +103,9 @@ Ahora mismo el código no es un módulo de Go y no hay forma de declarar ni inst
 Hay más opciones, pero se parecen a alguna de estas: Buck2 es un sistema de construcción como Bazel, y godep, govendor o el modo GOPATH son anteriores a Go modules, como dep y Glide. Por eso probamos una de cada tipo.
 
 ### Pruebas
+
+Para probar cada opción usamos el mismo entorno que en el #14: un contenedor de podman con Ubuntu 24.04 y el usuario `alumno`, sin permisos de administrador.
+
+**Go modules.** No hace falta instalar nada más que Go. `go mod init` crea el `go.mod` con el nombre del módulo y la versión de Go, y no crea ningún otro fichero. Como todavía no hay dependencias, `go mod download` no descarga nada. Para comprobar lo del solo lectura, quitamos los permisos de escritura del directorio con `chmod -R a-w .`: `go build ./...` termina sin errores y el directorio queda igual que antes, sin ningún fichero nuevo. Al ser parte de Go, se mantiene junto con el lenguaje.
+
+![Go modules con el código en solo lectura](../images/Captura_gomod.png)
