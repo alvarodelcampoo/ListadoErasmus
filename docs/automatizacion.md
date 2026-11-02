@@ -109,3 +109,11 @@ Para probar cada opción usamos el mismo entorno que en el #14: un contenedor de
 **Go modules.** No hace falta instalar nada más que Go. `go mod init` crea el `go.mod` con el nombre del módulo y la versión de Go, y no crea ningún otro fichero. Como todavía no hay dependencias, `go mod download` no descarga nada. Para comprobar lo del solo lectura, quitamos los permisos de escritura del directorio con `chmod -R a-w .`: `go build ./...` termina sin errores y el directorio queda igual que antes, sin ningún fichero nuevo. Al ser parte de Go, se mantiene junto con el lenguaje.
 
 ![Go modules con el código en solo lectura](../images/Captura_gomod.png)
+
+**dep.** No está mantenido: su repositorio está archivado desde el 9 de septiembre de 2020 y ahora es de solo lectura.
+
+![Repositorio de dep archivado](../images/Captura_dep_repo.png)
+
+Además, ya no se puede instalar. Con `go install` descarga sus dependencias, pero no compila porque las versiones actuales de esas dependencias han cambiado (por ejemplo, la de `semver`) y termina con error. Como el proyecto está archivado, nadie lo va a arreglar.
+
+![Error al instalar dep](../images/Captura_dep1.png)
