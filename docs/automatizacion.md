@@ -82,3 +82,24 @@ Es la única opción que cumple los tres criterios sin añadir nada al proyecto.
 Esta opción también tiene su coste: hay que añadir `~/.local/go/bin` al `PATH` a mano, y cada versión que Go descarga ocupa unos 253 MB más. Aun así es menos que con `golang.org/dl` (350 MB por versión), y no hace falta instalar ninguna herramienta aparte.
 
 La versión quedará escrita en el `go.mod` cuando se cree, en el #26.
+
+## Gestión de las dependencias (#26)
+
+Ahora mismo el código no es un módulo de Go y no hay forma de declarar ni instalar dependencias. Todavía no tenemos ninguna, pero en este milestone pueden llegar (por ejemplo, para los tests), y lo que elijamos se va a instalar también en el contenedor y en la integración continua.
+
+### Criterios
+
+- **Está mantenido.** Una herramienta abandonada habría que cambiarla más adelante.
+- **No hace falta instalar nada más que Go.** Cada herramienta extra hay que instalarla en cada máquina, en el contenedor y en la integración continua.
+- **No escribe en el código al compilar.** En el contenedor el código estará montado en solo lectura.
+
+### Opciones
+
+- **[Go modules](https://go.dev/ref/mod):** el sistema de dependencias que trae Go, con el fichero `go.mod`.
+- **[dep](https://github.com/golang/dep):** el gestor experimental que se usaba antes de Go modules.
+- **[Glide](https://github.com/Masterminds/glide):** otro gestor externo anterior a Go modules.
+- **[Bazel](https://bazel.build/) con [rules_go](https://github.com/bazel-contrib/rules_go):** un sistema de construcción que también gestiona dependencias.
+
+Hay más opciones, pero se parecen a alguna de estas: Buck2 es un sistema de construcción como Bazel, y godep, govendor o el modo GOPATH son anteriores a Go modules, como dep y Glide. Por eso probamos una de cada tipo.
+
+### Pruebas
