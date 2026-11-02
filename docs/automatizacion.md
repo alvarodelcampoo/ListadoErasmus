@@ -182,3 +182,15 @@ Para probar cada opción usamos el mismo entorno que en el #14 y el #26: un cont
 Para generar ficheros, Go tiene `go generate`, pero no comprueba si el fichero de origen ha cambiado: lo ejecutamos dos veces seguidas sin tocar `entrada.txt` y las dos veces vuelve a generar `salida.txt`.
 
 ![go generate regenera siempre](../images/Captura_sologo2.png)
+
+**Make.** No viene en un Ubuntu limpio: en ese caso habría que instalarlo con apt, que necesita permisos de administrador. Sí viene en la imagen oficial de Go (GNU Make 4.4.1), que es la que usaríamos en el contenedor, y suele estar ya instalado en las máquinas de desarrollo.
+
+![Make en Ubuntu limpio, en la imagen de Go y en la máquina de desarrollo](../images/Captura_make1.png)
+
+Las tres tareas quedan en un `Makefile` (`make installdeps`, `make check` y `make test`) y funcionan con el código en solo lectura, sin crear ningún fichero.
+
+![Las tres tareas con Make en solo lectura](../images/Captura_make2.png)
+
+Además, puede generar un fichero a partir de otro solo cuando hace falta: la segunda vez que se ejecuta, dice que `salida.txt` ya está al día y no hace nada, y en cuanto cambia `entrada.txt` lo vuelve a generar.
+
+![Make solo regenera cuando cambia el fichero de origen](../images/Captura_make3.png)
