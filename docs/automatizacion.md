@@ -230,3 +230,13 @@ Las tareas se escriben en Go, en un `magefile.go`, que para las mismas tres órd
 Puede generar un fichero solo cuando cambia el de origen, con su librería `target`: la segunda vez dice que está al día y, al cambiar `entrada.txt`, lo vuelve a generar. Pero para usar esa librería Mage tiene que añadirse como dependencia del proyecto, en el `go.mod` y con un `go.sum`.
 
 ![Mage genera solo cuando cambia, pero como dependencia](../images/Captura_mage3.png)
+
+### Decisión
+
+Elegimos **Make**.
+
+Es la única opción que cumple los cuatro criterios. Usar solo `go` no da un fichero de tareas: son tres órdenes sueltas, una de ellas de otro programa (`gofmt`), y `go generate` regenera los ficheros siempre. Task funciona, pero instalarlo tardó casi 7 minutos y ocupa 73 MB, o, si se fija en el `go.mod`, le añade 130 líneas y un `go.sum` de 252 a un proyecto sin dependencias; además, para saber qué regenerar crea una carpeta `.task` dentro del proyecto. Just es otra herramienta que instalar aparte y no puede generar ficheros solo cuando cambian. Mage ni siquiera funciona con el código en solo lectura, y para generar ficheros tiene que añadirse como dependencia.
+
+Make está en la imagen oficial de Go, así que en el contenedor y en la integración continua no hay que instalar nada, funciona con el código en solo lectura y es el único que genera un fichero a partir de otro solo cuando cambia sin escribir nada más en el proyecto. Su coste es que no viene en un Ubuntu limpio: en una máquina de desarrollo sin Make hay que instalarlo con apt, con permisos de administrador.
+
+No usamos el gestor de dependencias (`go`) como gestor de tareas porque no tiene un fichero de tareas, pero Make no lo sustituye: cada tarea del `Makefile` es una orden de `go` o `gofmt`.
