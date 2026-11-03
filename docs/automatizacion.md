@@ -194,3 +194,15 @@ Las tres tareas quedan en un `Makefile` (`make installdeps`, `make check` y `mak
 Además, puede generar un fichero a partir de otro solo cuando hace falta: la segunda vez que se ejecuta, dice que `salida.txt` ya está al día y no hace nada, y en cuanto cambia `entrada.txt` lo vuelve a generar.
 
 ![Make solo regenera cuando cambia el fichero de origen](../images/Captura_make3.png)
+
+**Task.** No viene instalado. Se puede instalar con `go install`, sin permisos de administrador, pero tardó casi 7 minutos en compilarse y el programa ocupa 73 MB. También se puede dejar fijado en el `go.mod` del proyecto con `go get -tool`, pero entonces mete todas sus dependencias: el `go.mod` pasa de 3 líneas a 130 y aparece un `go.sum` de 252 líneas, cuando el proyecto no tiene ninguna dependencia.
+
+![Instalación de Task](../images/Captura_task1.png)
+
+Las tres tareas quedan en un `Taskfile.yml` y funcionan con el código en solo lectura.
+
+![Las tres tareas con Task en solo lectura](../images/Captura_task2.png)
+
+También puede generar un fichero solo cuando cambia el de origen: la segunda vez dice que la tarea está al día, y al cambiar `entrada.txt` la vuelve a ejecutar. Pero para saberlo guarda sus comprobaciones en una carpeta `.task` dentro del proyecto, que habría que añadir al `.gitignore` y que no podría escribir con el código en solo lectura.
+
+![Task genera solo cuando cambia, pero crea .task](../images/Captura_task3.png)
