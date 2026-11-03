@@ -71,6 +71,7 @@ Descarga Go desde [go.dev/dl](https://go.dev/dl/) e instálalo en tu usuario, si
     curl -LO https://go.dev/dl/go1.26.10.linux-amd64.tar.gz
     mkdir -p ~/.local && tar -C ~/.local -xzf go1.26.10.linux-amd64.tar.gz
     echo 'export PATH="$HOME/.local/go/bin:$PATH"' >> ~/.bashrc
+	source ~/.bashrc
 
 La versión que usa el proyecto está en el `go.mod`. Si tienes una más antigua, Go descarga la necesaria automáticamente.
 
