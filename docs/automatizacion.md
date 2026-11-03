@@ -206,3 +206,15 @@ Las tres tareas quedan en un `Taskfile.yml` y funcionan con el código en solo l
 También puede generar un fichero solo cuando cambia el de origen: la segunda vez dice que la tarea está al día, y al cambiar `entrada.txt` la vuelve a ejecutar. Pero para saberlo guarda sus comprobaciones en una carpeta `.task` dentro del proyecto, que habría que añadir al `.gitignore` y que no podría escribir con el código en solo lectura.
 
 ![Task genera solo cuando cambia, pero crea .task](../images/Captura_task3.png)
+
+**Just.** No viene instalado y, como está escrito en Rust, no se puede instalar con Go ni fijar en el `go.mod`. Su script oficial descarga el programa ya compilado sin permisos de administrador: tardó 12 s y ocupa 6,3 MB. Aun así, es una herramienta más que habría que instalar en cada máquina, en el contenedor y en la integración continua.
+
+![Instalación de Just](../images/Captura_just1.png)
+
+Las tres tareas quedan en un `justfile` y funcionan con el código en solo lectura, sin crear ningún fichero.
+
+![Las tres tareas con Just en solo lectura](../images/Captura_just2.png)
+
+No puede generar un fichero solo cuando cambia el de origen: al ejecutar la misma tarea dos veces seguidas sin cambiar `entrada.txt`, vuelve a copiarlo las dos veces.
+
+![Just ejecuta la tarea siempre](../images/Captura_just3.png)
