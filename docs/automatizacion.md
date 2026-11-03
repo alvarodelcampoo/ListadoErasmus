@@ -218,3 +218,15 @@ Las tres tareas quedan en un `justfile` y funcionan con el código en solo lectu
 No puede generar un fichero solo cuando cambia el de origen: al ejecutar la misma tarea dos veces seguidas sin cambiar `entrada.txt`, vuelve a copiarlo las dos veces.
 
 ![Just ejecuta la tarea siempre](../images/Captura_just3.png)
+
+**Mage.** No viene instalado. Se instala con `go install`, sin permisos de administrador: tardó 15 s y ocupa 6,5 MB.
+
+![Instalación de Mage](../images/Captura_mage1.png)
+
+Las tareas se escriben en Go, en un `magefile.go`, que para las mismas tres órdenes necesitó 18 líneas. Pero con el código en solo lectura no funciona: las tres tareas fallan porque, para ejecutarlas, Mage intenta escribir un fichero (`mage_output_file.go`) dentro del proyecto.
+
+![Mage falla con el código en solo lectura](../images/Captura_mage2.png)
+
+Puede generar un fichero solo cuando cambia el de origen, con su librería `target`: la segunda vez dice que está al día y, al cambiar `entrada.txt`, lo vuelve a generar. Pero para usar esa librería Mage tiene que añadirse como dependencia del proyecto, en el `go.mod` y con un `go.sum`.
+
+![Mage genera solo cuando cambia, pero como dependencia](../images/Captura_mage3.png)
