@@ -28,15 +28,15 @@ Hay más opciones, pero hacen lo mismo que alguna de estas: asdf es parecido a m
 
 ![apt sin permisos de administrador](../images/Captura_apt.png)
 
-**Binario oficial.** Sí se puede descargar e instalar sin permisos de administrador, en `~/.local/go`. Hay un paso manual: añadir `~/.local/go/bin` al `PATH` en el `~/.bashrc`.
+**Binario oficial.** Sí se puede descargar e instalar sin permisos de administrador, en `~/.local/go`. La descarga es de 63,8 MB y, una vez instalado, ocupa 270 MB. Hay un paso manual: añadir `~/.local/go/bin` al `PATH` en el `~/.bashrc`.
 
 ![Instalación del binario oficial](../images/Captura_instalacion_binario.png)
 
-La versión queda fijada en el propio `go.mod` (`go mod init` escribe `go 1.26.10`) y no hace falta ningún otro fichero. Para cambiar de versión basta una orden, `go mod edit -go=1.27.3`: la siguiente vez que se ejecuta `go`, descarga la 1.27.3 y la usa.
+La versión queda fijada en el propio `go.mod` (`go mod init` escribe `go 1.26.10`) y no hace falta ningún otro fichero. Para cambiar de versión basta una orden, `go mod edit -go=1.27.3`: la siguiente vez que se ejecuta `go`, descarga la 1.27.3 y la usa. Cada versión que se descarga así ocupa 253 MB más.
 
 ![Fijar y cambiar la versión con el binario oficial](../images/Captura_prueba_binario.png)
 
-**Versiones paralelas oficiales (`golang.org/dl`).** Para usarlas hace falta tener Go instalado antes, así que no sirven para instalar Go, solo para añadir otras versiones. Se instalan sin permisos de administrador.
+**Versiones paralelas oficiales (`golang.org/dl`).** Para usarlas hace falta tener Go instalado antes, así que no sirven para instalar Go, solo para añadir otras versiones. Se instalan sin permisos de administrador. Instalar la orden `go1.27.3` tardó 9 s y la versión descargada ocupa 350 MB, más que los 253 MB de la misma versión con el binario oficial.
 
 ![Instalación de golang.org/dl](../images/Captura_golang1.png)
 
@@ -44,11 +44,11 @@ Las dos versiones conviven: `go` sigue siendo la 1.26.10 y `go1.27.3` es la 1.27
 
 ![Uso de golang.org/dl](../images/Captura_golang2.png)
 
-**mise.** Es un gestor de versiones para varios lenguajes, no solo para Go. Se instala sin permisos de administrador: el script deja el programa en `~/.local/bin`.
+**mise.** Es un gestor de versiones para varios lenguajes, no solo para Go. Se instala sin permisos de administrador: el script deja el programa en `~/.local/bin` y tardó 13 s. El programa ocupa 169 MB antes de instalar ninguna versión de Go.
 
 ![Instalación de mise](../images/Captura_mise1.png)
 
-Permite fijar la versión de Go, pero en su propio fichero, `mise.toml`, así que la versión quedaría escrita en dos sitios: ahí y en el `go.mod`. Cambiar de versión es una orden (`mise use go@<versión>`), pero para usarla hay que lanzar las órdenes con `mise exec` o activar mise en la terminal.
+Permite fijar la versión de Go, pero en su propio fichero, `mise.toml`, así que la versión quedaría escrita en dos sitios: ahí y en el `go.mod`. Cambiar de versión es una orden (`mise use go@<versión>`), pero para usarla hay que lanzar las órdenes con `mise exec` o activar mise en la terminal. La 1.26.10 ocupa 270 MB y la 1.27.3, 283 MB.
 
 ![Fijar y cambiar la versión con mise](../images/Captura_mise2.png)
 
@@ -57,7 +57,7 @@ Por defecto no lee la versión del `go.mod`: sin `mise.toml`, `mise current go` 
 ![mise leyendo el go.mod](../images/Captura_mise3.png)
 ![Dónde guarda mise la opción](../images/Captura_mise4.png)
 
-**goenv.** Es un gestor de versiones solo para Go. Se instala sin permisos de administrador con un `git clone` en `~/.goenv`. A cambio, necesita `git` y tres líneas en el `~/.bashrc`: la variable `GOENV_ROOT`, el `PATH` y `eval "$(goenv init -)"`.
+**goenv.** Es un gestor de versiones solo para Go. Se instala sin permisos de administrador con un `git clone` en `~/.goenv`, que tardó 3,7 s y ocupa 8,1 MB. A cambio, necesita `git` y tres líneas en el `~/.bashrc`: la variable `GOENV_ROOT`, el `PATH` y `eval "$(goenv init -)"`.
 
 ![Instalación de goenv](../images/Captura_goenv1.png)
 
@@ -79,7 +79,7 @@ Elegimos el **binario oficial**, y la versión se fija en el `go.mod` con el mec
 
 Es la única opción que cumple los tres criterios sin añadir nada al proyecto. apt necesita permisos de administrador. `golang.org/dl` necesita tener Go instalado antes y no deja la versión fijada en el repositorio. mise y goenv sí cumplen los criterios, pero cada uno escribe la versión en su propio fichero (`mise.toml` o `.go-version`), además de en el `go.mod`. Para que lean el `go.mod`, cada persona, el contenedor y la integración continua tendrían que configurarlos, y eso es justo lo que queremos evitar.
 
-Esta opción también tiene su coste: hay que añadir `~/.local/go/bin` al `PATH` a mano.
+Esta opción también tiene su coste: hay que añadir `~/.local/go/bin` al `PATH` a mano, y cada versión que Go descarga ocupa unos 253 MB más. Aun así es menos que con `golang.org/dl` (350 MB por versión), y no hace falta instalar ninguna herramienta aparte.
 
 La versión quedará escrita en el `go.mod` cuando se cree, en el #26.
 
@@ -124,7 +124,7 @@ Tampoco se puede instalar: con `go install` falla porque una de sus dependencias
 
 ![Error al instalar Glide](../images/Captura_glide1.png)
 
-**Bazel.** Está mantenido: la versión que descarga, la 9.3.1, es de octubre de 2026. Se instala sin permisos de administrador a través de bazelisk, un programa de 7,5 MB que descarga y lanza Bazel. La primera vez que se ejecuta descarga Bazel, 73 MB más. Además, arranca un servidor de Java para funcionar. Todo esto habría que instalarlo aparte de Go.
+**Bazel.** Está mantenido: la versión que descarga, la 9.3.1, es de octubre de 2026. Se instala sin permisos de administrador a través de bazelisk, un programa de 7,5 MB que descarga y lanza Bazel. La primera vez que se ejecuta descarga Bazel, 73 MB más, y tardó casi 3 minutos. Además, arranca un servidor de Java para funcionar. Todo esto habría que instalarlo aparte de Go.
 
 ![Instalación de Bazel con bazelisk](../images/Captura_bazel1.png)
 
@@ -191,7 +191,7 @@ Además, puede generar un fichero a partir de otro solo cuando hace falta: la se
 
 ![Make solo regenera cuando cambia el fichero de origen](../images/Captura_make3.png)
 
-**Task.** No viene instalado. Se puede instalar con `go install`, sin permisos de administrador, pero el programa ocupa 73 MB. También se puede dejar fijado en el `go.mod` del proyecto con `go get -tool`, pero entonces mete todas sus dependencias: el `go.mod` pasa de 3 líneas a 130 y aparece un `go.sum` de 252 líneas, cuando el proyecto no tiene ninguna dependencia.
+**Task.** No viene instalado. Se puede instalar con `go install`, sin permisos de administrador, pero tardó casi 7 minutos en compilarse y el programa ocupa 73 MB. También se puede dejar fijado en el `go.mod` del proyecto con `go get -tool`, pero entonces mete todas sus dependencias: el `go.mod` pasa de 3 líneas a 130 y aparece un `go.sum` de 252 líneas, cuando el proyecto no tiene ninguna dependencia.
 
 ![Instalación de Task](../images/Captura_task1.png)
 
@@ -203,7 +203,7 @@ También puede generar un fichero solo cuando cambia el de origen: la segunda ve
 
 ![Task genera solo cuando cambia, pero crea .task](../images/Captura_task3.png)
 
-**Just.** No viene instalado y, como está escrito en Rust, no se puede instalar con Go ni fijar en el `go.mod`. Su script oficial descarga el programa ya compilado sin permisos de administrador: ocupa 6,3 MB. Aun así, es una herramienta más que habría que instalar en cada máquina, en el contenedor y en la integración continua.
+**Just.** No viene instalado y, como está escrito en Rust, no se puede instalar con Go ni fijar en el `go.mod`. Su script oficial descarga el programa ya compilado sin permisos de administrador: tardó 12 s y ocupa 6,3 MB. Aun así, es una herramienta más que habría que instalar en cada máquina, en el contenedor y en la integración continua.
 
 ![Instalación de Just](../images/Captura_just1.png)
 
@@ -215,7 +215,7 @@ No puede generar un fichero solo cuando cambia el de origen: al ejecutar la mism
 
 ![Just ejecuta la tarea siempre](../images/Captura_just3.png)
 
-**Mage.** No viene instalado. Se instala con `go install`, sin permisos de administrador: ocupa 6,5 MB.
+**Mage.** No viene instalado. Se instala con `go install`, sin permisos de administrador: tardó 15 s y ocupa 6,5 MB.
 
 ![Instalación de Mage](../images/Captura_mage1.png)
 
@@ -231,7 +231,7 @@ Puede generar un fichero solo cuando cambia el de origen, con su librería `targ
 
 Elegimos **Make**.
 
-Es la única opción que cumple los cuatro criterios. Usar solo `go` no da un fichero de tareas: son tres órdenes sueltas, una de ellas de otro programa (`gofmt`), y `go generate` regenera los ficheros siempre. Task funciona, pero hay que instalarlo aparte (73 MB), o, si se fija en el `go.mod`, le añade 130 líneas y un `go.sum` de 252 a un proyecto sin dependencias; además, para saber qué regenerar crea una carpeta `.task` dentro del proyecto. Just es otra herramienta que instalar aparte y no puede generar ficheros solo cuando cambian. Mage ni siquiera funciona con el código en solo lectura, y para generar ficheros tiene que añadirse como dependencia.
+Es la única opción que cumple los cuatro criterios. Usar solo `go` no da un fichero de tareas: son tres órdenes sueltas, una de ellas de otro programa (`gofmt`), y `go generate` regenera los ficheros siempre. Task funciona, pero instalarlo tardó casi 7 minutos y ocupa 73 MB, o, si se fija en el `go.mod`, le añade 130 líneas y un `go.sum` de 252 a un proyecto sin dependencias; además, para saber qué regenerar crea una carpeta `.task` dentro del proyecto. Just es otra herramienta que instalar aparte y no puede generar ficheros solo cuando cambian. Mage ni siquiera funciona con el código en solo lectura, y para generar ficheros tiene que añadirse como dependencia.
 
 Make está en la imagen oficial de Go, así que en el contenedor y en la integración continua no hay que instalar nada, funciona con el código en solo lectura y es el único que genera un fichero a partir de otro solo cuando cambia sin escribir nada más en el proyecto. Su coste es que no viene en un Ubuntu limpio: en una máquina de desarrollo sin Make hay que instalarlo con apt, con permisos de administrador.
 
