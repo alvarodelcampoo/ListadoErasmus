@@ -1,6 +1,6 @@
 # Herramientas para trabajar con el proyecto
 
-Todo lo que se elige aquí se usará también en el contenedor y en la integración continua. Para probar cada opción usamos un contenedor de podman con Ubuntu 24.04 y el usuario alumno, sin permisos de administrador.
+Todo lo que se elige aquí se usará también en el contenedor y en la integración continua. Para probar cada opción usamos un contenedor de podman con Ubuntu 24.04 y el usuario alumno, sin permisos de administrador. Los tiempos de descarga dependen mucho de la red (descargas del mismo tamaño tardaron desde segundos hasta minutos), así que para comparar el coste de instalación nos fijamos sobre todo en el espacio. Los tiempos que no dependen de la red, como compilar una herramienta, sí sirven para comparar.
 
 ## Instalación y versión de Go (#14)
 
@@ -11,6 +11,7 @@ Para trabajar en el proyecto hay que instalar Go y poder cambiar de versión des
 - **Sin permisos de administrador.** Se tiene que poder instalar en el espacio del usuario, como acordamos en el #14.
 - **Fija la versión en el repositorio.** Así todos, el contenedor y la integración continua usan la misma versión.
 - **Cambia de versión con una orden.** Para probar el código con otra versión sin reinstalar nada a mano.
+- **Coste de instalación (tiempo y espacio).** Se instalará cada vez que se construya el contenedor y en cada ejecución de la integración continua, así que cuanto menos tarde y menos ocupe, mejor.
 
 ### Opciones
 
@@ -77,7 +78,7 @@ Por defecto no lee la versión del `go.mod`: sin `.go-version`, `goenv version` 
 
 Elegimos el **binario oficial**, y la versión se fija en el `go.mod` con el mecanismo propio de Go.
 
-Es la única opción que cumple los tres criterios sin añadir nada al proyecto. apt necesita permisos de administrador. `golang.org/dl` necesita tener Go instalado antes y no deja la versión fijada en el repositorio. mise y goenv sí cumplen los criterios, pero cada uno escribe la versión en su propio fichero (`mise.toml` o `.go-version`), además de en el `go.mod`. Para que lean el `go.mod`, cada persona, el contenedor y la integración continua tendrían que configurarlos, y eso es justo lo que queremos evitar.
+Es la única opción que cumple los cuatro criterios sin añadir nada al proyecto. apt necesita permisos de administrador. `golang.org/dl` necesita tener Go instalado antes y no deja la versión fijada en el repositorio. mise y goenv sí cumplen los criterios, pero cada uno escribe la versión en su propio fichero (`mise.toml` o `.go-version`), además de en el `go.mod`. Para que lean el `go.mod`, cada persona, el contenedor y la integración continua tendrían que configurarlos, y eso es justo lo que queremos evitar.
 
 Esta opción también tiene su coste: hay que añadir `~/.local/go/bin` al `PATH` a mano, y cada versión que Go descarga ocupa unos 253 MB más. Aun así es menos que con `golang.org/dl` (350 MB por versión), y no hace falta instalar ninguna herramienta aparte.
 
@@ -92,6 +93,7 @@ Ahora mismo el código no es un módulo de Go y no hay forma de declarar ni inst
 - **Está mantenido.** Una herramienta abandonada habría que cambiarla más adelante.
 - **No hace falta instalar nada más que Go.** Cada herramienta extra hay que instalarla en cada máquina, en el contenedor y en la integración continua.
 - **No escribe en el código al compilar.** En el contenedor el código estará montado en solo lectura.
+- **Coste de instalación (tiempo y espacio).** Se instalará cada vez que se construya el contenedor y en cada ejecución de la integración continua, así que cuanto menos tarde y menos ocupe, mejor.
 
 ### Opciones
 
@@ -104,7 +106,7 @@ Hay más opciones, pero se parecen a alguna de estas: Buck2 es un sistema de con
 
 ### Pruebas
 
-**Go modules.** No hace falta instalar nada más que Go. `go mod init` crea el `go.mod` con el nombre del módulo y la versión de Go, y no crea ningún otro fichero. Como todavía no hay dependencias, `go mod download` no descarga nada. Para comprobar lo del solo lectura, quitamos los permisos de escritura del directorio con `chmod -R a-w .`: `go build ./...` termina sin errores y el directorio queda igual que antes, sin ningún fichero nuevo. Al ser parte de Go, se mantiene junto con el lenguaje.
+**Go modules.** No hace falta instalar nada más que Go. `go mod init` crea el `go.mod` con el nombre del módulo y la versión de Go, y no crea ningún otro fichero. Como todavía no hay dependencias, `go mod download` no descarga nada. Para comprobar lo del solo lectura, quitamos los permisos de escritura del directorio con `chmod -R a-w .`: `go build ./...` termina sin errores y el directorio queda igual que antes, sin ningún fichero nuevo. Al ser parte de Go, se mantiene junto con el lenguaje. Tanto go mod init como go mod download tardaron 0,01 s, y no hay que instalar nada.
 
 ![Go modules con el código en solo lectura](../images/Captura_gomod.png)
 
@@ -136,7 +138,7 @@ Tampoco sustituye a Go modules. Según la documentación de rules_go, Bazel igno
 
 Elegimos **Go modules**.
 
-Es la única opción que cumple los tres criterios. dep y Glide están abandonados y ni siquiera se pueden instalar con las versiones actuales de sus dependencias. Bazel está mantenido, pero hay que instalarlo aparte de Go (unos 80 MB más), y además ignora el `go.mod`, así que las dependencias quedarían en dos sitios. Go modules viene con Go, no necesita instalar nada más y funciona con el código en solo lectura.
+Es la única opción que cumple los cuatro criterios. dep y Glide están abandonados y ni siquiera se pueden instalar con las versiones actuales de sus dependencias. Bazel está mantenido, pero hay que instalarlo aparte de Go (unos 80 MB más), y además ignora el `go.mod`, así que las dependencias quedarían en dos sitios. Go modules viene con Go, no necesita instalar nada más y funciona con el código en solo lectura.
 
 Como todavía no hay dependencias, el `go.mod` solo tiene el nombre del módulo y la versión de Go. Ahí queda fijada la versión del proyecto, como se decidió en el #14.
 
@@ -150,6 +152,7 @@ Para trabajar con el código hacen falta tres tareas: instalar las dependencias,
 - **No hace falta instalar nada aparte.** Por lo mismo que en el gestor de dependencias.
 - **No escribe en el código.** En el contenedor el código estará montado en solo lectura.
 - **Puede generar un fichero a partir de otro, solo cuando este cambia.** No entra en este milestone, pero más adelante habrá que generar los datos a partir de los PDF de la UGR, y así no habría que cambiar de herramienta.
+- **Coste de instalación (tiempo y espacio).** Se instalará cada vez que se construya el contenedor y en cada ejecución de la integración continua, así que cuanto menos tarde y menos ocupe, mejor.
 
 ### Opciones
 
@@ -231,7 +234,7 @@ Puede generar un fichero solo cuando cambia el de origen, con su librería `targ
 
 Elegimos **Make**.
 
-Es la única opción que cumple los cuatro criterios. Usar solo `go` no da un fichero de tareas: son tres órdenes sueltas, una de ellas de otro programa (`gofmt`), y `go generate` regenera los ficheros siempre. Task funciona, pero instalarlo tardó casi 7 minutos y ocupa 73 MB, o, si se fija en el `go.mod`, le añade 130 líneas y un `go.sum` de 252 a un proyecto sin dependencias; además, para saber qué regenerar crea una carpeta `.task` dentro del proyecto. Just es otra herramienta que instalar aparte y no puede generar ficheros solo cuando cambian. Mage ni siquiera funciona con el código en solo lectura, y para generar ficheros tiene que añadirse como dependencia.
+Es la única opción que cumple los cinco criterios. Usar solo `go` no da un fichero de tareas: son tres órdenes sueltas, una de ellas de otro programa (`gofmt`), y `go generate` regenera los ficheros siempre. Task funciona, pero instalarlo tardó casi 7 minutos y ocupa 73 MB, o, si se fija en el `go.mod`, le añade 130 líneas y un `go.sum` de 252 a un proyecto sin dependencias; además, para saber qué regenerar crea una carpeta `.task` dentro del proyecto. Just es otra herramienta que instalar aparte y no puede generar ficheros solo cuando cambian. Mage ni siquiera funciona con el código en solo lectura, y para generar ficheros tiene que añadirse como dependencia.
 
 Make está en la imagen oficial de Go, así que en el contenedor y en la integración continua no hay que instalar nada, funciona con el código en solo lectura y es el único que genera un fichero a partir de otro solo cuando cambia sin escribir nada más en el proyecto. Su coste es que no viene en un Ubuntu limpio: en una máquina de desarrollo sin Make hay que instalarlo con apt, con permisos de administrador.
 
