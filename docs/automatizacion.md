@@ -31,15 +31,11 @@ Hay más opciones, pero hacen lo mismo que alguna de estas: asdf es parecido a m
 
 **Binario oficial.** Sí se puede descargar e instalar sin permisos de administrador, en `~/.local/go`. La descarga es de 63,8 MB y, una vez instalado, ocupa 270 MB. Hay un paso manual: añadir `~/.local/go/bin` al `PATH` en el `~/.bashrc`.
 
-![Instalación del binario oficial](../images/Captura_instalacion_binario.png)
-
 La versión queda fijada en el propio `go.mod` (`go mod init` escribe `go 1.26.10`) y no hace falta ningún otro fichero. Para cambiar de versión basta una orden, `go mod edit -go=1.27.3`: la siguiente vez que se ejecuta `go`, descarga la 1.27.3 y la usa. Cada versión que se descarga así ocupa 253 MB más.
 
 ![Fijar y cambiar la versión con el binario oficial](../images/Captura_prueba_binario.png)
 
 **Versiones paralelas oficiales (`golang.org/dl`).** Para usarlas hace falta tener Go instalado antes, así que no sirven para instalar Go, solo para añadir otras versiones. Se instalan sin permisos de administrador. Instalar la orden `go1.27.3` tardó 9 s y la versión descargada ocupa 350 MB, más que los 253 MB de la misma versión con el binario oficial.
-
-![Instalación de golang.org/dl](../images/Captura_golang1.png)
 
 Las dos versiones conviven: `go` sigue siendo la 1.26.10 y `go1.27.3` es la 1.27.3. Para cambiar de versión hay que usar otra orden. El problema es que no fija la versión en el repositorio: en el directorio solo está el `go.mod`, y ese `go 1.26.10` lo escribió el `go` normal. Nada en el repositorio dice qué orden tiene que usar cada persona. Sirve para probar otra versión, pero no para fijar la del proyecto.
 
@@ -47,32 +43,19 @@ Las dos versiones conviven: `go` sigue siendo la 1.26.10 y `go1.27.3` es la 1.27
 
 **mise.** Es un gestor de versiones para varios lenguajes, no solo para Go. Se instala sin permisos de administrador: el script deja el programa en `~/.local/bin` y tardó 13 s. El programa ocupa 169 MB antes de instalar ninguna versión de Go.
 
-![Instalación de mise](../images/Captura_mise1.png)
-
 Permite fijar la versión de Go, pero en su propio fichero, `mise.toml`, así que la versión quedaría escrita en dos sitios: ahí y en el `go.mod`. Cambiar de versión es una orden (`mise use go@<versión>`), pero para usarla hay que lanzar las órdenes con `mise exec` o activar mise en la terminal. La 1.26.10 ocupa 270 MB y la 1.27.3, 283 MB.
 
 ![Fijar y cambiar la versión con mise](../images/Captura_mise2.png)
 
 Por defecto no lee la versión del `go.mod`: sin `mise.toml`, `mise current go` avisa de que no hay ninguna versión fijada. Se puede activar con `mise settings add idiomatic_version_file_enable_tools go`, pero esa opción se guarda en `~/.config/mise/config.toml`, en la configuración de cada usuario y no en el repositorio. Así que o se añade un `mise.toml` al repositorio, o cada persona, el contenedor y la CI tienen que configurarlo por su cuenta.
 
-![mise leyendo el go.mod](../images/Captura_mise3.png)
-![Dónde guarda mise la opción](../images/Captura_mise4.png)
-
 **goenv.** Es un gestor de versiones solo para Go. Se instala sin permisos de administrador con un `git clone` en `~/.goenv`, que tardó 3,7 s y ocupa 8,1 MB. A cambio, necesita `git` y tres líneas en el `~/.bashrc`: la variable `GOENV_ROOT`, el `PATH` y `eval "$(goenv init -)"`.
-
-![Instalación de goenv](../images/Captura_goenv1.png)
-
-Su lista de versiones de Go está al día: incluye la 1.26.10 y la 1.27.3.
-
-![Versiones disponibles en goenv](../images/Captura_goenv2.png)
 
 Permite fijar la versión, pero en su propio fichero, `.go-version`, así que, igual que con mise, la versión quedaría en dos sitios. Cambiar de versión es una orden (`goenv local <versión>`) y después `go` usa esa versión directamente, sin `exec`. Antes hay que instalarla con `goenv install`.
 
 ![Fijar y cambiar la versión con goenv](../images/Captura_goenv3.png)
 
 Por defecto no lee la versión del `go.mod`: sin `.go-version`, `goenv version` devuelve la del sistema. Con la variable `GOENV_GOMOD_VERSION_ENABLE=1` sí la lee, pero es una variable de cada usuario, no del repositorio. Igual que con mise, o se añade un `.go-version` al repositorio, o cada persona, el contenedor y la CI tienen que configurarla.
-
-![goenv leyendo el go.mod](../images/Captura_goenv4.png)
 
 ### Decisión
 
@@ -116,19 +99,13 @@ Hay más opciones, pero se parecen a alguna de estas: Buck2 es un sistema de con
 
 Además, ya no se puede instalar. Con `go install` descarga sus dependencias, pero no compila porque las versiones actuales de esas dependencias han cambiado (por ejemplo, la de `semver`) y termina con error. Como el proyecto está archivado, nadie lo va a arreglar.
 
-![Error al instalar dep](../images/Captura_dep1.png)
-
 **Glide.** Su propio README dice que la comunidad de Go usa ahora Go modules, recomienda usarlo en su lugar y avisa de que Glide "is now mostly unmaintained" (está prácticamente sin mantener).
 
 ![README de Glide](../images/Captura_glide_repo.png)
 
 Tampoco se puede instalar: con `go install` falla porque una de sus dependencias, `codegangsta/cli`, ha cambiado de nombre a `urfave/cli`, y termina con error.
 
-![Error al instalar Glide](../images/Captura_glide1.png)
-
 **Bazel.** Está mantenido: la versión que descarga, la 9.3.1, es de octubre de 2026. Se instala sin permisos de administrador a través de bazelisk, un programa de 7,5 MB que descarga y lanza Bazel. La primera vez que se ejecuta descarga Bazel, 73 MB más, y tardó casi 3 minutos. Además, arranca un servidor de Java para funcionar. Todo esto habría que instalarlo aparte de Go.
-
-![Instalación de Bazel con bazelisk](../images/Captura_bazel1.png)
 
 Tampoco sustituye a Go modules. Según la documentación de rules_go, Bazel ignora el `go.mod`, y las dependencias hay que declararlas otra vez en sus propios ficheros (`deps` en cada `go_library`) o generarlas a partir del `go.mod` con otra herramienta, Gazelle. Es decir, las dependencias quedarían en dos sitios.
 
@@ -176,8 +153,6 @@ Hay más opciones, pero se parecen a alguna de estas: goyek también define las 
 
 **Solo `go`.** No hace falta instalar nada más que Go, y las tres tareas funcionan con el código en solo lectura sin crear ningún fichero: `go mod download` para las dependencias, `gofmt -e .` para la sintaxis y `go test ./...` para los tests. El problema es que son tres órdenes sueltas que cada persona tiene que conocer, y `gofmt` ni siquiera es una orden de `go`, sino otro programa. No hay ningún fichero de tareas que las reúna.
 
-![Las tres tareas solo con go](../images/Captura_sologo1.png)
-
 Para generar ficheros, Go tiene `go generate`, pero no comprueba si el fichero de origen ha cambiado: lo ejecutamos dos veces seguidas sin tocar `entrada.txt` y las dos veces vuelve a generar `salida.txt`.
 
 ![go generate regenera siempre](../images/Captura_sologo2.png)
@@ -196,8 +171,6 @@ Además, puede generar un fichero a partir de otro solo cuando hace falta: la se
 
 **Task.** No viene instalado. Se puede instalar con `go install`, sin permisos de administrador, pero tardó casi 7 minutos en compilarse y el programa ocupa 73 MB. También se puede dejar fijado en el `go.mod` del proyecto con `go get -tool`, pero entonces mete todas sus dependencias: el `go.mod` pasa de 3 líneas a 130 y aparece un `go.sum` de 252 líneas, cuando el proyecto no tiene ninguna dependencia.
 
-![Instalación de Task](../images/Captura_task1.png)
-
 Las tres tareas quedan en un `Taskfile.yml` y funcionan con el código en solo lectura.
 
 ![Las tres tareas con Task en solo lectura](../images/Captura_task2.png)
@@ -208,8 +181,6 @@ También puede generar un fichero solo cuando cambia el de origen: la segunda ve
 
 **Just.** No viene instalado y, como está escrito en Rust, no se puede instalar con Go ni fijar en el `go.mod`. Su script oficial descarga el programa ya compilado sin permisos de administrador: tardó 12 s y ocupa 6,3 MB. Aun así, es una herramienta más que habría que instalar en cada máquina, en el contenedor y en la integración continua.
 
-![Instalación de Just](../images/Captura_just1.png)
-
 Las tres tareas quedan en un `justfile` y funcionan con el código en solo lectura, sin crear ningún fichero.
 
 ![Las tres tareas con Just en solo lectura](../images/Captura_just2.png)
@@ -219,8 +190,6 @@ No puede generar un fichero solo cuando cambia el de origen: al ejecutar la mism
 ![Just ejecuta la tarea siempre](../images/Captura_just3.png)
 
 **Mage.** No viene instalado. Se instala con `go install`, sin permisos de administrador: tardó 15 s y ocupa 6,5 MB.
-
-![Instalación de Mage](../images/Captura_mage1.png)
 
 Las tareas se escriben en Go, en un `magefile.go`, que para las mismas tres órdenes necesitó 18 líneas. Pero con el código en solo lectura no funciona: las tres tareas fallan porque, para ejecutarlas, Mage intenta escribir un fichero (`mage_output_file.go`) dentro del proyecto.
 
