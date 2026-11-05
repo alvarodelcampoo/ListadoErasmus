@@ -64,8 +64,35 @@ Es necesario tener acceso a las listas de las 3 convocatorias, ya que las person
 
 [Perfiles de Usuario](docs/perfiles-usuario.md)
 
+## Instalación de Go
 
+Descarga Go desde [go.dev/dl](https://go.dev/dl/) e instálalo en tu usuario, sin permisos de administrador:
 
+    curl -LO https://go.dev/dl/go1.26.10.linux-amd64.tar.gz
+    mkdir -p ~/.local && tar -C ~/.local -xzf go1.26.10.linux-amd64.tar.gz
+    echo 'export PATH="$HOME/.local/go/bin:$PATH"' >> ~/.bashrc
+	source ~/.bashrc
 
+La versión que usa el proyecto está en el `go.mod`. Si tienes una más antigua, Go descarga la necesaria automáticamente.
 
+La justificación de esta elección está en [docs/automatizacion.md](docs/automatizacion.md).
 
+## Tareas
+
+Las tareas del proyecto están en el `Makefile` y se ejecutan con `make` (si no lo tienes: `sudo apt install make`):
+
+- `make installdeps`: instala las dependencias con Go modules.
+- `make check`: comprueba solo la sintaxis de los fuentes con `gofmt -e`, sin compilarlos.
+- `make test`: ejecuta los tests.
+
+La justificación de las herramientas elegidas está en [docs/automatizacion.md](docs/automatizacion.md).
+
+## Entidad: ListadoDestinos
+
+`ListadoDestinos` ([internal/erasmus/listado_destinos.go](internal/erasmus/listado_destinos.go)) es el listado de destinos Erasmus de la ETSIIT tal y como lo publica la UGR. Guarda cada destino identificado por su número de orden en el listado.
+
+Cada destino (`Destino`) tiene la institución, el número de plazas, la duración (un cuatrimestre o el curso completo), los cursos desde los que se puede pedir, los idiomas que exigen un nivel mínimo, la nota mínima si la pide y las notas totales de quienes lo consiguieron en las adjudicaciones.
+
+En el servicio web, el listado será la base para responder a un estudiante qué destinos son viables para él: los que cumplen sus idiomas y cuya nota de corte no supera su nota con la bonificación por idioma.
+
+Para comprobar la sintaxis de la entidad: `make check`.
