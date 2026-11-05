@@ -10,6 +10,6 @@ Será válido si se puede comprobar que se ha aplicado el proceso metodológico 
 
 A partir del modelo de dominio construido en el M0, el objetivo es comenzar a resolver los problemas del usuario implementando las primeras reglas de la lógica de negocio (como las bonificaciones por idioma). (Relacionado con [HU3]). 
 
-Se debe entregar el código con la lógica de cálculo empaquetado como un módulo funcional. Junto al código de negocio, se deben entregar las pruebas automatizadas preparadas para ejecutarse.
+Se debe entregar el código con la lógica de cálculo empaquetado como un módulo funcional. Junto al código de negocio, se deben entregar las pruebas automatizadas preparadas para ejecutarse. También es necesario un fichero de tareas desde el que se puedan instalar las dependencias, comprobar la sintaxis y ejecutar los tests, cada una con una orden, y se debe explicar cómo instalar el lenguaje y qué versión usa el proyecto.
 
 Será viable si se demuestra que ha seguido una metodología basada en pruebas. El desarrollador sabrá que su trabajo es correcto y a la hora de revisarlo se podrá validar de forma objetiva y determinista, si al ejecutar las pruebas automatizadas estas pasan correctamente sin errores, demostrando que las reglas de negocio cumplen con los escenarios esperados.
