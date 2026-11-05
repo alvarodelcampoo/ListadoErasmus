@@ -152,7 +152,7 @@ Para trabajar con el código hacen falta tres tareas: instalar las dependencias,
 - **No hace falta instalar nada aparte.** Por lo mismo que en el gestor de dependencias.
 - **No escribe en el código.** En el contenedor el código estará montado en solo lectura.
 - **Puede generar un fichero a partir de otro, solo cuando este cambia.** No entra en este milestone, pero más adelante habrá que generar los datos a partir de los PDF de la UGR, y así no habría que cambiar de herramienta.
-- **Coste de instalación (tiempo y espacio).** Se instalará cada vez que se construya el contenedor y en cada ejecución de la integración continua, así que cuanto menos tarde y menos ocupe, mejor.
+- **Coste de instalación y de ejecución.** La herramienta se instalará cada vez que se construya el contenedor y las tareas se ejecutarán en cada ejecución de la integración continua, así que cuanto menos tarde y menos ocupe, mejor.
 
 ### Opciones
 
@@ -229,6 +229,23 @@ Las tareas se escriben en Go, en un `magefile.go`, que para las mismas tres órd
 Puede generar un fichero solo cuando cambia el de origen, con su librería `target`: la segunda vez dice que está al día y, al cambiar `entrada.txt`, lo vuelve a generar. Pero para usar esa librería Mage tiene que añadirse como dependencia del proyecto, en el `go.mod` y con un `go.sum`.
 
 ![Mage genera solo cuando cambia, pero como dependencia](../images/Captura_mage3.png)
+
+**Tiempo de ejecución.** Para medir cuánto añade cada gestor, ejecutamos `check` y `test` dos veces sobre el propio proyecto, en un contenedor nuevo para cada uno: la primera vez con la caché de Go vacía, como en la integración continua, y la segunda con la caché ya creada. Sin ningún gestor, `gofmt -e .` tarda 0,007 s, y `go test ./...` tarda 3,65 s la primera vez (casi todo es Go compilando lo necesario para los tests) y 0,09 s la segunda.
+
+![Tiempos sin gestor de tareas](../images/Captura_ejecucion_sologo.png)
+
+Make y Just casi no añaden nada: la primera vez, `check` tarda 0,03 s con Make y 0,013 s con Just, y `test` 3,65 s y 3,58 s.
+
+![Tiempos con Make](../images/Captura_ejecucion_make.png)
+![Tiempos con Just](../images/Captura_ejecucion_just.png)
+
+Task añade unos 75 ms a cada orden, porque antes de ejecutar nada lee el `Taskfile.yml`: `check` tarda 0,1 s. En `test` esa diferencia se pierde dentro de lo que tarda Go (3,54 s).
+
+![Tiempos con Task](../images/Captura_ejecucion_task.png)
+
+Mage es el único con una diferencia clara: con la caché vacía, el primer `mage check` tarda 3,57 s, porque antes de nada compila el `magefile.go`. Sumando las dos tareas en frío, como en la integración continua, Mage tarda 4,7 s y Make 3,7 s.
+
+![Tiempos con Mage](../images/Captura_ejecucion_mage.png)
 
 ### Decisión
 
