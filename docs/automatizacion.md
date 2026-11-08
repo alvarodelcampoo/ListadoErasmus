@@ -122,14 +122,14 @@ partir de él con otra herramienta, Gazelle, así que sigue dependiendo de Go mo
 
 **Go modules.** No hace falta instalar nada más que Go. `go mod init` crea el `go.mod` con el nombre del módulo y la versión de Go, y no crea ningún otro fichero. Como todavía no hay dependencias, `go mod 
 download` no descarga nada. Para comprobar lo del solo lectura, quitamos los permisos de escritura del directorio con `chmod -R a-w .`: `go build ./...` termina sin errores y el directorio queda igual que 
-antes, sin ningún fichero nuevo. Al ser parte de Go, se mantiene junto con el lenguaje. Tanto go mod init como go mod download tardaron 0,01 s, y no hay que instalar nada.
+antes, sin ningún fichero nuevo. Al ser parte de Go, se mantiene junto con el lenguaje. Como viene con Go, no hay nada que instalar y no añade tiempo de instalación.
 
 ![Go modules con el código en solo lectura](../images/Captura_gomod.png)
 
 ### Decisión
 
-Elegimos **Go modules**, el estándar de Go. Cumple los cuatro criterios: forma parte de Go y se mantiene con él, no hay que instalar nada más, funciona con el código en solo lectura y tanto `go mod init` 
-como `go mod download` tardaron 0,01 s.
+Elegimos **Go modules**, el estándar de Go. Cumple los cuatro criterios: forma parte de Go y se mantiene con él, no hay que instalar nada más, funciona con el código en solo lectura y no añade tiempo de 
+instalación, porque viene con Go.
 
 Como todavía no hay dependencias, el `go.mod` solo tiene el nombre del módulo y la versión de Go. Ahí queda fijada la versión del proyecto, como se decidió en el #14.
 
