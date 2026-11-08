@@ -68,7 +68,7 @@ Es necesario tener acceso a las listas de las 3 convocatorias, ya que las person
 
 Descarga Go desde [go.dev/dl](https://go.dev/dl/) e instálalo en tu usuario, sin permisos de administrador:
 
-    curl -LO https://go.dev/dl/go1.26.10.linux-amd64.tar.gz
+    wget https://go.dev/dl/go1.26.10.linux-amd64.tar.gz
     mkdir -p ~/.local && tar -C ~/.local -xzf go1.26.10.linux-amd64.tar.gz
     echo 'export PATH="$HOME/.local/go/bin:$PATH"' >> ~/.bashrc
 	source ~/.bashrc
