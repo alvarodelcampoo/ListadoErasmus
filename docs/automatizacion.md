@@ -152,7 +152,7 @@ Para trabajar con el código hacen falta tres tareas: instalar las dependencias,
 ### Criterios
 
 - **Hace las tres tareas desde un fichero de tareas.** Así hay un único sitio con todas las órdenes del proyecto.
-- **No hace falta instalar nada aparte.** Por lo mismo que en el gestor de dependencias.
+- **No hace falta instalar nada aparte en el contenedor ni en la integración continua.** Es donde se ejecutarán las tareas en cada cambio, y allí usaremos la imagen oficial de Go.
 - **No escribe en el código.** En el contenedor el código estará montado en solo lectura.
 - **Puede generar un fichero a partir de otro, solo cuando este cambia.** No entra en este milestone, pero más adelante habrá que generar los datos a partir de los PDF de la UGR, y así no habría que cambiar
 de herramienta.
@@ -191,8 +191,10 @@ Para generar ficheros, Go tiene `go generate`, pero no comprueba si el fichero d
 
 ![go generate regenera siempre](../images/Captura_sologo2.png)
 
-**Make.** No viene en un Ubuntu limpio: en ese caso habría que instalarlo con apt, que necesita permisos de administrador. Sí viene en la imagen oficial de Go (GNU Make 4.4.1), que es la que usaríamos en el 
-contenedor, y suele estar ya instalado en las máquinas de desarrollo.
+**Make.** No hace falta instalarlo donde se van a ejecutar las tareas: viene en la imagen oficial de Go (GNU Make 4.4.1), que es la que usaríamos en el contenedor, y en la máquina Ubuntu 24.04 de la 
+integración continua de GitHub, según su [lista oficial de software](https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md). En cambio, no viene ni en un Ubuntu mínimo ni en
+Ubuntu Desktop, según la [lista de paquetes de Ubuntu 24.04 Desktop](https://releases.ubuntu.com/24.04/ubuntu-24.04.5.1-desktop-amd64.manifest). En esas máquinas hay que instalarlo con apt, que necesita 
+permisos de administrador.
 
 ![Make en Ubuntu limpio, en la imagen de Go y en la máquina de desarrollo](../images/Captura_make1.png)
 
@@ -270,7 +272,8 @@ una carpeta `.task` dentro del proyecto. Just es otra herramienta que instalar a
 ficheros tiene que añadirse como dependencia.
 
 Make está en la imagen oficial de Go, así que en el contenedor y en la integración continua no hay que instalar nada, funciona con el código en solo lectura y es el único que genera un fichero a partir de 
-otro solo cuando cambia sin escribir nada más en el proyecto. Su coste es que no viene en un Ubuntu limpio: en una máquina de desarrollo sin Make hay que instalarlo con apt, con permisos de administrador.
+otro solo cuando cambia sin escribir nada más en el proyecto. Su coste es que no viene en Ubuntu Desktop ni en un Ubuntu mínimo: en una máquina de desarrollo sin Make hay que instalarlo con apt, con permisos 
+de administrador. Task, Just y Mage tampoco vienen en ninguna de esas máquinas, y además habría que instalarlos en el contenedor y en la integración continua.
 
 El tiempo de ejecución no cambia la decisión: Make es, junto con Just, el que menos añade a las órdenes de Go, y Mage, que ya fallaba con el código en solo lectura, es además el más lento cuando la caché 
 está vacía.
