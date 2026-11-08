@@ -44,18 +44,17 @@ se ejecuta `go`, descarga la 1.27.3 y la usa.
 ![Fijar y cambiar la versión con el binario oficial](../images/Captura_prueba_binario.png)
 
 **Versiones paralelas oficiales (`golang.org/dl`).** Para usarlas hace falta tener Go instalado antes, así que no sirven para instalar Go, solo para añadir otras versiones. Se instalan sin permisos de
-administrador. Instalar la orden `go1.27.3` tardó 9 s y la versión descargada ocupa 350 MB, más que los 253 MB de la misma versión con el binario oficial.
+administrador. Instalar la orden `go1.27.3` tardó 9 s.
 
 Las dos versiones conviven: `go` sigue siendo la 1.26.10 y `go1.27.3` es la 1.27.3. Para cambiar de versión hay que usar otra orden. El problema es que no fija la versión en el repositorio: en el directorio 
 solo está el `go.mod`, y ese `go 1.26.10` lo escribió el `go` normal. Nada en el repositorio dice qué orden tiene que usar cada persona. Sirve para probar otra versión, pero no para fijar la del proyecto.
 
 ![Uso de golang.org/dl](../images/Captura_golang2.png)
 
-**mise.** Es un gestor de versiones para varios lenguajes, no solo para Go. Se instala sin permisos de administrador: el script deja el programa en `~/.local/bin` y tardó 13 s. El programa ocupa 169 MB antes 
-de instalar ninguna versión de Go.
+**mise.** Es un gestor de versiones para varios lenguajes, no solo para Go. Se instala sin permisos de administrador: el script deja el programa en `~/.local/bin` y tardó 13 s.
 
 Permite fijar la versión de Go, pero en su propio fichero, `mise.toml`, así que la versión quedaría escrita en dos sitios: ahí y en el `go.mod`. Cambiar de versión es una orden (`mise use go@<versión>`),
-pero para usarla hay que lanzar las órdenes con `mise exec` o activar mise en la terminal. La 1.26.10 ocupa 270 MB y la 1.27.3, 283 MB.
+pero para usarla hay que lanzar las órdenes con `mise exec` o activar mise en la terminal.
 
 ![Fijar y cambiar la versión con mise](../images/Captura_mise2.png)
 
@@ -63,8 +62,8 @@ Por defecto no lee la versión del `go.mod`: sin `mise.toml`, `mise current go` 
 pero esa opción se guarda en `~/.config/mise/config.toml`, en la configuración de cada usuario y no en el repositorio. Así que o se añade un `mise.toml` al repositorio, o cada persona, el contenedor y la CI 
 tienen que configurarlo por su cuenta.
 
-**goenv.** Es un gestor de versiones solo para Go. Se instala sin permisos de administrador con un `git clone` en `~/.goenv`, que tardó 3,7 s y ocupa 8,1 MB. A cambio, necesita `git` y tres líneas en el `~/. 
-bashrc`: la variable `GOENV_ROOT`, el `PATH` y `eval "$(goenv init -)"`.
+**goenv.** Es un gestor de versiones solo para Go. Se instala sin permisos de administrador con un `git clone` en `~/.goenv`, que tardó 3,7 s. A cambio, necesita `git` y tres líneas en el 
+`~/.bashrc`: la variable `GOENV_ROOT`, el `PATH` y `eval "$(goenv init -)"`.
 
 Permite fijar la versión, pero en su propio fichero, `.go-version`, así que, igual que con mise, la versión quedaría en dos sitios. Cambiar de versión es una orden (`goenv local <versión>`) y después `go`
 usa esa versión directamente, sin `exec`. Antes hay que instalarla con `goenv install`.
@@ -82,8 +81,7 @@ Es la única opción que cumple los cuatro criterios sin añadir nada al proyect
 repositorio. mise y goenv sí cumplen los criterios, pero cada uno escribe la versión en su propio fichero (`mise.toml` o `.go-version`), además de en el `go.mod`. Para que lean el `go.mod`, cada persona, el
 contenedor y la integración continua tendrían que configurarlos, y eso es justo lo que queremos evitar.
 
-Esta opción también tiene su coste: hay que añadir `~/.local/go/bin` al `PATH` a mano, y cada versión que Go descarga ocupa unos 253 MB más. Aun así es menos que con `golang.org/dl` (350 MB por versión), y
-no hace falta instalar ninguna herramienta aparte.
+Esta opción también tiene su coste: hay que añadir `~/.local/go/bin` al `PATH` a mano. A cambio, no hace falta instalar ninguna herramienta aparte.
 
 La versión quedará escrita en el `go.mod` cuando se cree, en el #26.
 
@@ -197,8 +195,8 @@ generar.
 
 ![Make solo regenera cuando cambia el fichero de origen](../images/Captura_make3.png)
 
-**Task.** No viene instalado. Se puede instalar con `go install`, sin permisos de administrador, pero tardó casi 7 minutos en compilarse y el programa ocupa 73 MB. También se puede dejar fijado en el `go.
-mod` del proyecto con `go get -tool`, pero entonces mete todas sus dependencias: el `go.mod` pasa de 3 líneas a 130 y aparece un `go.sum` de 252 líneas, cuando el proyecto no tiene ninguna dependencia.
+**Task.** No viene instalado. Se puede instalar con `go install`, sin permisos de administrador, pero tardó casi 7 minutos en compilarse. También se puede dejar fijado en el `go.mod` del proyecto con 
+`go get -tool`, pero entonces mete todas sus dependencias: el `go.mod` pasa de 3 líneas a 130 y aparece un `go.sum` de 252 líneas, cuando el proyecto no tiene ninguna dependencia.
 
 Las tres tareas quedan en un `Taskfile.yml` y funcionan con el código en solo lectura.
 
@@ -209,8 +207,8 @@ una carpeta `.task` dentro del proyecto, que habría que añadir al `.gitignore`
 
 ![Task genera solo cuando cambia, pero crea .task](../images/Captura_task3.png)
 
-**Just.** No viene instalado y, como está escrito en Rust, no se puede instalar con Go ni fijar en el `go.mod`. Su script oficial descarga el programa ya compilado sin permisos de administrador: tardó 12 s y 
-ocupa 6,3 MB. Aun así, es una herramienta más que habría que instalar en cada máquina, en el contenedor y en la integración continua.
+**Just.** No viene instalado y, como está escrito en Rust, no se puede instalar con Go ni fijar en el `go.mod`. Su script oficial descarga el programa ya compilado sin permisos de administrador: tardó 12 s.
+Aun así, es una herramienta más que habría que instalar en cada máquina, en el contenedor y en la integración continua.
 
 Las tres tareas quedan en un `justfile` y funcionan con el código en solo lectura, sin crear ningún fichero.
 
@@ -220,7 +218,7 @@ No puede generar un fichero solo cuando cambia el de origen: al ejecutar la mism
 
 ![Just ejecuta la tarea siempre](../images/Captura_just3.png)
 
-**Mage.** No viene instalado. Se instala con `go install`, sin permisos de administrador: tardó 15 s y ocupa 6,5 MB.
+**Mage.** No viene instalado. Se instala con `go install`, sin permisos de administrador: tardó 15 s.
 
 Las tareas se escriben en Go, en un `magefile.go`, que para las mismas tres órdenes necesitó 18 líneas. Pero con el código en solo lectura no funciona: las tres tareas fallan porque, para ejecutarlas, Mage 
 intenta escribir un fichero (`mage_output_file.go`) dentro del proyecto.
@@ -257,9 +255,9 @@ continua, Mage tarda 4,7 s y Make 3,7 s.
 Elegimos **Make**.
 
 Es la única opción que cumple los cinco criterios. Usar solo `go` no da un fichero de tareas: son tres órdenes sueltas, una de ellas de otro programa (`gofmt`), y `go generate` regenera los ficheros siempre. 
-Task funciona, pero instalarlo tardó casi 7 minutos y ocupa 73 MB, o, si se fija en el `go.mod`, le añade 130 líneas y un `go.sum` de 252 a un proyecto sin dependencias; además, para saber qué regenerar crea 
-una carpeta `.task` dentro del proyecto. Just es otra herramienta que instalar aparte y no puede generar ficheros solo cuando cambian. Mage ni siquiera funciona con el código en solo lectura, y para generar 
-ficheros tiene que añadirse como dependencia.
+Task funciona, pero instalarlo tardó casi 7 minutos porque lo compila entero, o, si se fija en el `go.mod`, le añade 130 líneas y un `go.sum` de 252 a un proyecto sin dependencias; además, para saber qué 
+regenerar crea una carpeta `.task` dentro del proyecto. Just es otra herramienta que instalar aparte y no puede generar ficheros solo cuando cambian. Mage ni siquiera funciona con el código en solo lectura,
+y para generar ficheros tiene que añadirse como dependencia.
 
 Make está en la imagen oficial de Go, así que en el contenedor y en la integración continua no hay que instalar nada, funciona con el código en solo lectura y es el único que genera un fichero a partir de 
 otro solo cuando cambia sin escribir nada más en el proyecto. Su coste es que no viene en Ubuntu Desktop ni en un Ubuntu mínimo: en una máquina de desarrollo sin Make hay que instalarlo con apt, con permisos 
