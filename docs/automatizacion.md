@@ -96,15 +96,27 @@ Ahora mismo el código no es un módulo de Go y no hay forma de declarar ni inst
 - **No escribe en el código al compilar.** En el contenedor el código estará montado en solo lectura.
 - **Tiempo de instalación.** Se instalará cada vez que se construya el contenedor y en cada ejecución de la integración continua, así que cuanto menos tarde, mejor.
 
-### Opciones
+### Herramienta considerada
 
-- **[Go modules](https://go.dev/ref/mod):** el sistema de dependencias que trae Go, con el fichero `go.mod`.
-- **[dep](https://github.com/golang/dep):** el gestor experimental que se usaba antes de Go modules.
-- **[Glide](https://github.com/Masterminds/glide):** otro gestor externo anterior a Go modules.
-- **[Bazel](https://bazel.build/) con [rules_go](https://github.com/bazel-contrib/rules_go):** un sistema de construcción que también gestiona dependencias.
+Go tiene un estándar para gestionar las dependencias: [Go modules](https://go.dev/ref/mod), que viene con el propio lenguaje y usa el fichero `go.mod`. Como hay un estándar, es la herramienta que evaluamos 
+con los criterios.
 
-Hay más opciones, pero se parecen a alguna de estas: Buck2 es un sistema de construcción como Bazel, y godep, govendor o el modo GOPATH son anteriores a Go modules, como dep y Glide. Por eso probamos una de 
-cada tipo.
+Al buscar otras opciones aparecen estas, que no se consideran:
+
+- **[dep](https://github.com/golang/dep):** está archivado desde el 9 de septiembre de 2020.
+
+![Repositorio de dep archivado](../images/Captura_dep_repo.png)
+
+- **[Glide](https://github.com/Masterminds/glide):** su propio README dice que está prácticamente sin mantener y recomienda usar Go modules.
+
+![README de Glide](../images/Captura_glide_repo.png)
+
+- **[Bazel](https://bazel.build/) y Buck2:** son sistemas de construcción para monorepos, no gestores de dependencias. Según la documentación de rules_go, Bazel ignora el `go.mod` y sus reglas se generan a 
+partir de él con otra herramienta, Gazelle, así que sigue dependiendo de Go modules.
+
+![Bazel y el go.mod según rules_go](../images/Captura_bazel_doc.png)
+
+- **godep, govendor y el modo GOPATH:** son anteriores a Go modules y han quedado sustituidos por él.
 
 ### Pruebas
 
@@ -114,34 +126,10 @@ antes, sin ningún fichero nuevo. Al ser parte de Go, se mantiene junto con el l
 
 ![Go modules con el código en solo lectura](../images/Captura_gomod.png)
 
-**dep.** No está mantenido: su repositorio está archivado desde el 9 de septiembre de 2020 y ahora es de solo lectura.
-
-![Repositorio de dep archivado](../images/Captura_dep_repo.png)
-
-Además, ya no se puede instalar. Con `go install` descarga sus dependencias, pero no compila porque las versiones actuales de esas dependencias han cambiado (por ejemplo, la de `semver`) y termina con error. 
-Como el proyecto está archivado, nadie lo va a arreglar.
-
-**Glide.** Su propio README dice que la comunidad de Go usa ahora Go modules, recomienda usarlo en su lugar y avisa de que Glide "is now mostly unmaintained" (está prácticamente sin mantener).
-
-![README de Glide](../images/Captura_glide_repo.png)
-
-Tampoco se puede instalar: con `go install` falla porque una de sus dependencias, `codegangsta/cli`, ha cambiado de nombre a `urfave/cli`, y termina con error.
-
-**Bazel.** Está mantenido: la versión que descarga, la 9.3.1, es de octubre de 2026. Se instala sin permisos de administrador a través de bazelisk, un programa de 7,5 MB que descarga y lanza Bazel. La 
-primera vez que se ejecuta descarga Bazel, 73 MB más, y tardó casi 3 minutos. Además, arranca un servidor de Java para funcionar. Todo esto habría que instalarlo aparte de Go.
-
-Tampoco sustituye a Go modules. Según la documentación de rules_go, Bazel ignora el `go.mod`, y las dependencias hay que declararlas otra vez en sus propios ficheros (`deps` en cada `go_library`) o 
-generarlas a partir del `go.mod` con otra herramienta, Gazelle. Es decir, las dependencias quedarían en dos sitios.
-
-![Bazel y el go.mod según rules_go](../images/Captura_bazel_doc.png)
-
 ### Decisión
 
-Elegimos **Go modules**.
-
-Es la única opción que cumple los cuatro criterios. dep y Glide están abandonados y ni siquiera se pueden instalar con las versiones actuales de sus dependencias. Bazel está mantenido, pero hay que 
-instalarlo aparte de Go (unos 80 MB más), y además ignora el `go.mod`, así que las dependencias quedarían en dos sitios. Go modules viene con Go, no necesita instalar nada más y funciona con el código en 
-solo lectura.
+Elegimos **Go modules**, el estándar de Go. Cumple los cuatro criterios: forma parte de Go y se mantiene con él, no hay que instalar nada más, funciona con el código en solo lectura y tanto `go mod init` 
+como `go mod download` tardaron 0,01 s.
 
 Como todavía no hay dependencias, el `go.mod` solo tiene el nombre del módulo y la versión de Go. Ahí queda fijada la versión del proyecto, como se decidió en el #14.
 
