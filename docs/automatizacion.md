@@ -6,51 +6,7 @@ de la red, así que cuando una herramienta tarda porque tiene que compilarse lo 
 
 ## Gestión de las dependencias (#26)
 
-Ahora mismo el código no es un módulo de Go y no hay forma de declarar ni instalar dependencias. Todavía no tenemos ninguna, pero en este milestone pueden llegar (por ejemplo, para los tests).
-
-### Criterios
-
-- **Está mantenido.** Una herramienta abandonada habría que cambiarla más adelante.
-- **No hace falta instalar nada más que Go.** Cada herramienta extra hay que instalarla en cada máquina, en el contenedor y en la integración continua.
-- **No escribe en el código al compilar.** En el contenedor el código estará montado en solo lectura.
-- **Tiempo de instalación.** Se instalará cada vez que se construya el contenedor y en cada ejecución de la integración continua, así que cuanto menos tarde, mejor.
-
-### Herramienta considerada
-
-Go tiene un estándar para gestionar las dependencias: [Go modules](https://go.dev/ref/mod), que viene con el propio lenguaje y usa el fichero `go.mod`. Como hay un estándar, es la herramienta que evaluamos 
-con los criterios.
-
-Al buscar otras opciones aparecen estas, que no se consideran:
-
-- **[dep](https://github.com/golang/dep):** está archivado desde el 9 de septiembre de 2020.
-
-![Repositorio de dep archivado](../images/Captura_dep_repo.png)
-
-- **[Glide](https://github.com/Masterminds/glide):** su propio README dice que está prácticamente sin mantener y recomienda usar Go modules.
-
-![README de Glide](../images/Captura_glide_repo.png)
-
-- **[Bazel](https://bazel.build/) y Buck2:** son sistemas de construcción para monorepos, no gestores de dependencias. Según la documentación de rules_go, Bazel ignora el `go.mod` y sus reglas se generan a 
-partir de él con otra herramienta, Gazelle, así que sigue dependiendo de Go modules.
-
-![Bazel y el go.mod según rules_go](../images/Captura_bazel_doc.png)
-
-- **godep, govendor y el modo GOPATH:** son anteriores a Go modules y han quedado sustituidos por él.
-
-### Pruebas
-
-**Go modules.** No hace falta instalar nada más que Go. `go mod init` crea el `go.mod` con el nombre del módulo y la versión de Go, y no crea ningún otro fichero. Como todavía no hay dependencias, `go mod 
-download` no descarga nada. Para comprobar lo del solo lectura, quitamos los permisos de escritura del directorio con `chmod -R a-w .`: `go build ./...` termina sin errores y el directorio queda igual que 
-antes, sin ningún fichero nuevo. Al ser parte de Go, se mantiene junto con el lenguaje. Como viene con Go, no hay nada que instalar y no añade tiempo de instalación.
-
-![Go modules con el código en solo lectura](../images/Captura_gomod.png)
-
-### Decisión
-
-Elegimos **Go modules**, el estándar de Go. Cumple los cuatro criterios: forma parte de Go y se mantiene con él, no hay que instalar nada más, funciona con el código en solo lectura y no añade tiempo de 
-instalación, porque viene con Go.
-
-Como todavía no hay dependencias, el `go.mod` solo tiene el nombre del módulo y la versión de Go. Ahí queda fijada la versión del proyecto, como se decidió en el #14.
+Go tiene un gestor de dependencias estándar, [Go modules](https://go.dev/ref/mod), que viene con el propio lenguje y usa el fichero `go.mod`. No hay alternativas que valorar, ya que las que aparecen al buscar o están abandonadas, como [dep](https://github.com/golang/dep) y [Glide](https://github.com/Masterminds/glide), o son sistemas de construcción para monorepos, no son gestores de dependencias, que también usan el `go.mod`, como Bazel. Por eso usamos Go modules.
 
 ## Gestor de tareas (#27)
 
