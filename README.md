@@ -64,19 +64,6 @@ Es necesario tener acceso a las listas de las 3 convocatorias, ya que las person
 
 [Perfiles de Usuario](docs/perfiles-usuario.md)
 
-## Instalación de Go
-
-Descarga Go desde [go.dev/dl](https://go.dev/dl/) e instálalo en tu usuario, sin permisos de administrador:
-
-    wget https://go.dev/dl/go1.26.10.linux-amd64.tar.gz
-    mkdir -p ~/.local && tar -C ~/.local -xzf go1.26.10.linux-amd64.tar.gz
-    echo 'export PATH="$HOME/.local/go/bin:$PATH"' >> ~/.bashrc
-	source ~/.bashrc
-
-La versión que usa el proyecto está en el `go.mod`. Si tienes una más antigua, Go descarga la necesaria automáticamente.
-
-La justificación de esta elección está en [docs/automatizacion.md](docs/automatizacion.md).
-
 ## Tareas
 
 Las tareas del proyecto están en el `Makefile` y se ejecutan con `make` (si no lo tienes: `sudo apt install make`):
