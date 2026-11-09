@@ -14,10 +14,11 @@ Para trabajar con el código hacen falta tres tareas: instalar las dependencias,
 
 ### Criterios
 
-- **Puede generar un fichero a partir de otro, solo cuando este cambia.** No entra en este milestone, pero más adelante habrá que generar los datos a partir de los PDF de la UGR, y así no habría que cambiar
-de herramienta más adelante.
 - **Tiempo de instalación** La herramienta se instalará al preparar el entorno.
 - **Tiempo de ejecución**  Las tareas se ejecutarán en cada cambio, así que cuanto menos tarden, mejor.
+- **Puede generar un fichero a partir de otro, solo cuando este cambia.** No entra en este milestone, pero más adelante habrá que generar los datos a partir de los PDF de la UGR, y así no habría que cambiar
+de herramienta más adelante.
+
 
 ### Opciones
 
