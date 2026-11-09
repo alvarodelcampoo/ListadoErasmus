@@ -14,13 +14,10 @@ Para trabajar con el código hacen falta tres tareas: instalar las dependencias,
 
 ### Criterios
 
-- **Hace las tres tareas desde un fichero de tareas.** Así hay un único sitio con todas las órdenes del proyecto.
-- **No hace falta instalar nada aparte en el contenedor ni en la integración continua.** Es donde se ejecutarán las tareas en cada cambio, y allí usaremos la imagen oficial de Go.
-- **No escribe en el código.** En el contenedor el código estará montado en solo lectura.
 - **Puede generar un fichero a partir de otro, solo cuando este cambia.** No entra en este milestone, pero más adelante habrá que generar los datos a partir de los PDF de la UGR, y así no habría que cambiar
-de herramienta.
-- **Tiempo de instalación y de ejecución.** La herramienta se instalará cada vez que se construya el contenedor y las tareas se ejecutarán en cada ejecución de la integración continua, así que cuanto menos 
-tarden, mejor.
+de herramienta más adelante.
+- **Tiempo de instalación** La herramienta se instalará al preparar el entorno.
+- **Tiempo de ejecución**  Las tareas se ejecutarán en cada cambio, así que cuanto menos tarden, mejor.
 
 ### Opciones
 
