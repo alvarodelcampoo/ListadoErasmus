@@ -73,15 +73,3 @@ Las tareas del proyecto están en el `Makefile` y se ejecutan con `make` (si no 
 - `make test`: ejecuta los tests.
 
 La justificación de las herramientas elegidas está en [docs/automatizacion.md](docs/automatizacion.md).
-
-## Entidad: ListadoDestinos
-
-`ListadoDestinos` ([internal/erasmus/listado_destinos.go](internal/erasmus/listado_destinos.go)) es el listado de destinos Erasmus de la ETSIIT tal y como lo publica la UGR. Guarda cada destino identificado 
-por su número de orden en el listado.
-
-Cada destino (`Destino`) tiene la institución, el número de plazas, la duración (un cuatrimestre o el curso completo), los cursos desde los que se puede pedir, los idiomas que exigen un nivel mínimo, la nota 
-mínima si la pide y las notas totales de quienes lo consiguieron en las adjudicaciones.
-
-En el servicio web, el listado será la base para responder a un estudiante qué destinos son viables para él: los que cumplen sus idiomas y cuya nota de corte no supera su nota con la bonificación por idioma.
-
-Para comprobar la sintaxis de la entidad: `make check`.
