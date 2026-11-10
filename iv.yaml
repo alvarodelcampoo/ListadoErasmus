@@ -1,2 +1,5 @@
 lenguaje: go
 entidad: internal/erasmus/listado_destinos.go
+automatizar:
+  fichero: Makefile
+  orden: make

@@ -64,8 +64,12 @@ Es necesario tener acceso a las listas de las 3 convocatorias, ya que las person
 
 [Perfiles de Usuario](docs/perfiles-usuario.md)
 
+## Tareas
 
+Las tareas del proyecto están en el `Makefile` y se ejecutan con `make` (si no lo tienes: `sudo apt install make`):
 
+- `make installdeps`: instala las dependencias con Go modules.
+- `make check`: comprueba solo la sintaxis de los fuentes con `gofmt -e`, sin compilarlos.
+- `make test`: ejecuta los tests.
 
-
-
+La justificación de las herramientas elegidas está en [docs/automatizacion.md](docs/automatizacion.md).
