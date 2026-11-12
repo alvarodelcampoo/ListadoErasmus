@@ -4,15 +4,15 @@
 
 Las opciones se han buscado en la documentación oficial de Go ([testing](https://pkg.go.dev/testing)) y en el apartado de testing de [Awesome Go](https://github.com/avelino/awesome-go#testing).
 
+## Biblioteca de aserciones
+
+Go no trae aserciones en su paquete de tests, así que hay que decidir si los tests comprueban los resultados con la biblioteca estándar o una biblioteca externa.
+
 ## Criterios
 
 1. Tiene que poder comprobar el tipo de error devuelto, porque también hay que probar los casos en los que falla.
 2. Que añada las menos dependencias posibles, porque se instalarán en cada construcción del contenedor y en cada ejecución de la integración continua.
 3. Que el mensaje de fallo diga qué se esperaba y qué se obtuvo.
-
-## Biblioteca de aserciones
-
-Go no trae aserciones en su paquete de tests, así que hay que decidir si los tests comprueban los resultados con la biblioteca estándar o una biblioteca externa.
 
 ### Opciones
 
@@ -44,3 +44,8 @@ Las aserciones del paquete estándar no agrupan nada por sí mismas, así que ha
 ### Decisión
 
 Usamos el paquete estándar `testing`. Cumple los cuatro criterios: agrupa en subtests con `t.Run`, los objetos comunes se crean con funciones auxiliares, no añade dependencias y es el mismo paquete que usamos para las aserciones. Ginkgo y GoConvey traen su propia biblioteca de aserciones, lo que no cumple el cuarto criterio, y además añaden dependencias.
+
+## Ejecutor de tests (test runner)
+
+Los tests se ejecutan con `go test ./...`, la orden que trae Go para buscar, desde la raíz del repositorio, las funciones `TestXxx` de todos los paquetes, ejecutarlas e informar de cuáles pasan y cuáles fallan. Se lanza desde la tarea `test` del Makefile con `make test`, así que no hay que instalar nada más.
+
