@@ -3,8 +3,6 @@ package erasmus
 import (
 	"errors"
 	"fmt"
-	"maps"
-	"slices"
 	"strings"
 )
 
@@ -36,33 +34,31 @@ func (e *CursoNoPositivoError) Error() string {
 	return fmt.Sprintf("el curso es %d y tiene que ser mayor que 0", e.Curso)
 }
 
-func NewDestino(institucion string, plazas int, duracion Duracion, cursos []int, notaMinima float64, idiomas map[string]NivelIdioma, notasTotales []float64) (Destino, error) {
-	if strings.TrimSpace(institucion) == "" {
-		return Destino{}, ErrDestinoSinInstitucion
+func errorSi(incumple bool, err error) error {
+	if incumple {
+		return err
 	}
-	if plazas <= 0 {
-		return Destino{}, &PlazasNoPositivasError{Plazas: plazas}
+	return nil
+}
+
+func errorDeCada[T any](valores []T, comprobar func(int, T) error) error {
+	errores := make([]error, len(valores))
+	for i, valor := range valores {
+		errores[i] = comprobar(i, valor)
 	}
-	for _, curso := range cursos {
-		if curso <= 0 {
-			return Destino{}, &CursoNoPositivoError{Curso: curso}
-		}
-	}
-	if !notaEnRango(notaMinima, notaExpedienteMaxima) {
-		return Destino{}, &NotaMinimaFueraDeRangoError{Nota: notaMinima}
-	}
-	for i, nota := range notasTotales {
-		if !notaEnRango(nota, notaConBonificacionMaxima) {
-			return Destino{}, &NotaConBonificacionFueraDeRangoError{Nota: nota, Posicion: i + 1}
-		}
-	}
-	return Destino{
-		notasTotales: slices.Clone(notasTotales),
-		idiomas:      maps.Clone(idiomas),
-		duracion:     duracion,
-		institucion:  institucion,
-		plazas:       plazas,
-		cursos:       slices.Clone(cursos),
-		notaMinima:   notaMinima,
-	}, nil
+	return errors.Join(errores...)
+}
+
+func (d Destino) comprobar() error {
+	return errors.Join(
+		errorSi(strings.TrimSpace(d.institucion) == "", ErrDestinoSinInstitucion),
+		errorSi(d.plazas <= 0, &PlazasNoPositivasError{Plazas: d.plazas}),
+		errorSi(!notaEnRango(d.notaMinima, notaExpedienteMaxima), &NotaMinimaFueraDeRangoError{Nota: d.notaMinima}),
+		errorDeCada(d.cursos, func(_ int, curso int) error {
+			return errorSi(curso <= 0, &CursoNoPositivoError{Curso: curso})
+		}),
+		errorDeCada(d.notasTotales, func(i int, nota float64) error {
+			return errorSi(!notaEnRango(nota, notaConBonificacionMaxima), &NotaConBonificacionFueraDeRangoError{Nota: nota, Posicion: i + 1})
+		}),
+	)
 }
