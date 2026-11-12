@@ -1,6 +1,7 @@
 package erasmus
 
 import (
+	"errors"
 	"fmt"
 	"maps"
 )
@@ -18,10 +19,9 @@ func (e *NumeroOrdenNoPositivoError) Error() string {
 }
 
 func NewListadoDestinos(destinos map[int]Destino) (ListadoDestinos, error) {
-	for numeroOrden := range destinos {
-		if numeroOrden <= 0 {
-			return ListadoDestinos{}, &NumeroOrdenNoPositivoError{NumeroOrden: numeroOrden}
-		}
+	errores := make([]error, 0, 2*len(destinos))
+	for numeroOrden, destino := range destinos {
+		errores = append(errores, errorSi(numeroOrden <= 0, &NumeroOrdenNoPositivoError{NumeroOrden: numeroOrden}), destino.comprobar())
 	}
-	return ListadoDestinos{destinos: maps.Clone(destinos)}, nil
+	return ListadoDestinos{destinos: maps.Clone(destinos)}, errors.Join(errores...)
 }
