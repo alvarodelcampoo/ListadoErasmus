@@ -52,17 +52,20 @@ func TestDestinosViables(t *testing.T) {
 	casos := []struct {
 		nombre           string
 		notaMedia        float64
+		niveles          map[string]NivelIdioma
 		viablesEsperados map[int]Destino
 		erroresEsperados []error
 	}{
-		{"nota media válida", 8, map[int]Destino{6: destinoValido()}, nil},
-		{"nota media máxima", 10, map[int]Destino{6: destinoValido()}, nil},
-		{"nota media negativa", -1, map[int]Destino{}, []error{&NotaMediaFueraDeRangoError{Nota: -1}}},
-		{"nota media por encima de 10", 10.5, map[int]Destino{}, []error{&NotaMediaFueraDeRangoError{Nota: 10.5}}},
+		{"nota media válida", 8, nivelesQueCumplen, map[int]Destino{6: destinoValido()}, nil},
+		{"nota media máxima", 10, nivelesQueCumplen, map[int]Destino{6: destinoValido()}, nil},
+		{"nota media negativa", -1, nivelesQueCumplen, map[int]Destino{}, []error{&NotaMediaFueraDeRangoError{Nota: -1}}},
+		{"nota media por encima de 10", 10.5, nivelesQueCumplen, map[int]Destino{}, []error{&NotaMediaFueraDeRangoError{Nota: 10.5}}},
+		{"nivel superior al exigido", 8, map[string]NivelIdioma{"ALEMAN": NivelC1, "INGLES": NivelB2}, map[int]Destino{6: destinoValido()}, nil},
+		{"le falta uno de los idiomas exigidos", 8, map[string]NivelIdioma{"ALEMAN": NivelB1}, map[int]Destino{}, nil},
 	}
 	for _, caso := range casos {
 		t.Run(caso.nombre, func(t *testing.T) {
-			viables, err := listado.DestinosViables(caso.notaMedia, nivelesQueCumplen)
+			viables, err := listado.DestinosViables(caso.notaMedia, caso.niveles)
 			obtenido, esperado := fmt.Sprint(viables, err), fmt.Sprint(caso.viablesEsperados, errors.Join(caso.erroresEsperados...))
 			if obtenido != esperado {
 				t.Errorf("se esperaba %v, se obtuvo %v", esperado, obtenido)
