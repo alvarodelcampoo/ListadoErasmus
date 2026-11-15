@@ -74,3 +74,14 @@ func (d Destino) cumpleIdiomas(niveles map[string]NivelIdioma) bool {
 func (d Destino) alcanzaNotaMinima(notaMedia float64) bool {
 	return notaMedia >= d.notaMinima
 }
+
+func (d Destino) bonificaIdioma(idioma string, nivel NivelIdioma) bool {
+	_, exigido := d.idiomas[idioma]
+	return (exigido || len(d.idiomas) == 0) && nivel > d.idiomas[idioma]
+}
+
+func (d Destino) notaPonderada(notaMedia float64, niveles map[string]NivelIdioma) float64 {
+	bonificables := maps.Clone(niveles)
+	maps.DeleteFunc(bonificables, func(idioma string, nivel NivelIdioma) bool { return !d.bonificaIdioma(idioma, nivel) })
+	return notaMedia + slices.Max(append(slices.Collect(maps.Values(bonificables)), 0)).bonificacion()
+}
