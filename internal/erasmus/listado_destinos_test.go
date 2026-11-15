@@ -75,3 +75,26 @@ func TestDestinosViables(t *testing.T) {
 		})
 	}
 }
+
+func TestNotaPonderada(t *testing.T) {
+	casos := []struct {
+		nombre        string
+		destino       Destino
+		notaMedia     float64
+		niveles       map[string]NivelIdioma
+		notaPonderada float64
+	}{
+		{"mismo nivel que el exigido", destinoValido(), 7, map[string]NivelIdioma{"ALEMAN": NivelB1, "INGLES": NivelB1}, 7},
+		{"supera el nivel exigido en un idioma", destinoValido(), 8, map[string]NivelIdioma{"ALEMAN": NivelB1, "INGLES": NivelC1}, 9.5},
+		{"supera el nivel en los dos idiomas y cuenta la mayor", destinoValido(), 8, map[string]NivelIdioma{"ALEMAN": NivelB2, "INGLES": NivelC1}, 9.5},
+		{"un idioma que el destino no exige no bonifica", destinoValido(), 8, map[string]NivelIdioma{"ALEMAN": NivelB1, "INGLES": NivelB1, "FRANCES": NivelC2}, 8},
+		{"destino sin idiomas exigidos y cuenta su mejor idioma", destinoCon(func(destino *Destino) { destino.idiomas = nil }), 8, map[string]NivelIdioma{"ALEMAN": NivelB2, "INGLES": NivelC1}, 9.5},
+	}
+	for _, caso := range casos {
+		t.Run(caso.nombre, func(t *testing.T) {
+			if obtenida := caso.destino.notaPonderada(caso.notaMedia, caso.niveles); obtenida != caso.notaPonderada {
+				t.Errorf("se esperaba %v, se obtuvo %v", caso.notaPonderada, obtenida)
+			}
+		})
+	}
+}
