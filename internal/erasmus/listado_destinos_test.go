@@ -62,6 +62,8 @@ func TestDestinosViables(t *testing.T) {
 		{"nota media por encima de 10", 10.5, nivelesQueCumplen, map[int]Destino{}, []error{&NotaMediaFueraDeRangoError{Nota: 10.5}}},
 		{"nivel superior al exigido", 8, map[string]NivelIdioma{"ALEMAN": NivelC1, "INGLES": NivelB2}, map[int]Destino{6: destinoValido()}, nil},
 		{"le falta uno de los idiomas exigidos", 8, map[string]NivelIdioma{"ALEMAN": NivelB1}, map[int]Destino{}, nil},
+		{"nota media igual a la nota mínima", 7, nivelesQueCumplen, map[int]Destino{6: destinoValido()}, nil},
+		{"nota media por debajo de la nota mínima", 6.9, nivelesQueCumplen, map[int]Destino{}, nil},
 	}
 	for _, caso := range casos {
 		t.Run(caso.nombre, func(t *testing.T) {
