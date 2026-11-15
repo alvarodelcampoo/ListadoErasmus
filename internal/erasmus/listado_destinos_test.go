@@ -45,3 +45,28 @@ func TestNewListadoDestinos(t *testing.T) {
 		})
 	}
 }
+
+func TestDestinosViables(t *testing.T) {
+	listado := ListadoDestinos{destinos: map[int]Destino{6: destinoValido()}}
+	nivelesQueCumplen := map[string]NivelIdioma{"ALEMAN": NivelB1, "INGLES": NivelB1}
+	casos := []struct {
+		nombre           string
+		notaMedia        float64
+		viablesEsperados map[int]Destino
+		erroresEsperados []error
+	}{
+		{"nota media válida", 8, map[int]Destino{6: destinoValido()}, nil},
+		{"nota media máxima", 10, map[int]Destino{6: destinoValido()}, nil},
+		{"nota media negativa", -1, map[int]Destino{}, []error{&NotaMediaFueraDeRangoError{Nota: -1}}},
+		{"nota media por encima de 10", 10.5, map[int]Destino{}, []error{&NotaMediaFueraDeRangoError{Nota: 10.5}}},
+	}
+	for _, caso := range casos {
+		t.Run(caso.nombre, func(t *testing.T) {
+			viables, err := listado.DestinosViables(caso.notaMedia, nivelesQueCumplen)
+			obtenido, esperado := fmt.Sprint(viables, err), fmt.Sprint(caso.viablesEsperados, errors.Join(caso.erroresEsperados...))
+			if obtenido != esperado {
+				t.Errorf("se esperaba %v, se obtuvo %v", esperado, obtenido)
+			}
+		})
+	}
+}
