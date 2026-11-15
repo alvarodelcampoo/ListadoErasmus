@@ -70,3 +70,7 @@ func (d Destino) cumpleIdiomas(niveles map[string]NivelIdioma) bool {
 		return niveles[idioma] < d.idiomas[idioma]
 	})
 }
+
+func (d Destino) alcanzaNotaMinima(notaMedia float64) bool {
+	return notaMedia >= d.notaMinima
+}
