@@ -3,6 +3,8 @@ package erasmus
 import (
 	"errors"
 	"fmt"
+	"maps"
+	"slices"
 	"strings"
 )
 
@@ -61,4 +63,10 @@ func (d Destino) comprobar() error {
 			return errorSi(!notaEnRango(nota, notaConBonificacionMaxima), &NotaConBonificacionFueraDeRangoError{Nota: nota, Posicion: i + 1})
 		}),
 	)
+}
+
+func (d Destino) cumpleIdiomas(niveles map[string]NivelIdioma) bool {
+	return !slices.ContainsFunc(slices.Collect(maps.Keys(d.idiomas)), func(idioma string) bool {
+		return niveles[idioma] < d.idiomas[idioma]
+	})
 }
