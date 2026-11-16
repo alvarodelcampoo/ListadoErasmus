@@ -98,3 +98,27 @@ func TestNotaPonderada(t *testing.T) {
 		})
 	}
 }
+
+func TestNotaDeCorte(t *testing.T) {
+	conAdjudicados := destinoCon(func(destino *Destino) { destino.notasTotales = []float64{9.5, 8} })
+	casos := []struct {
+		nombre    string
+		destino   Destino
+		notaMedia float64
+		niveles   map[string]NivelIdioma
+		viable    bool
+		nuevo     bool
+	}{
+		{"nota ponderada igual a la nota de corte", conAdjudicados, 8, map[string]NivelIdioma{"ALEMAN": NivelB1, "INGLES": NivelB1}, true, false},
+		{"nota ponderada por debajo de la nota de corte", conAdjudicados, 7.9, map[string]NivelIdioma{"ALEMAN": NivelB1, "INGLES": NivelB1}, false, false},
+		{"solo llega a la nota de corte con la bonificación", conAdjudicados, 7, map[string]NivelIdioma{"ALEMAN": NivelB1, "INGLES": NivelC1}, true, false},
+		{"destino nuevo sin adjudicados del año anterior", destinoValido(), 7, map[string]NivelIdioma{"ALEMAN": NivelB1, "INGLES": NivelB1}, true, true},
+	}
+	for _, caso := range casos {
+		t.Run(caso.nombre, func(t *testing.T) {
+			if viable, nuevo := caso.destino.esViable(caso.notaMedia, caso.niveles), caso.destino.EsNuevo(); viable != caso.viable || nuevo != caso.nuevo {
+				t.Errorf("se esperaba viable %v y nuevo %v, se obtuvo viable %v y nuevo %v", caso.viable, caso.nuevo, viable, nuevo)
+			}
+		})
+	}
+}
