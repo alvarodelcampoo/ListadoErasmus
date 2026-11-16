@@ -85,3 +85,15 @@ func (d Destino) notaPonderada(notaMedia float64, niveles map[string]NivelIdioma
 	maps.DeleteFunc(bonificables, func(idioma string, nivel NivelIdioma) bool { return !d.bonificaIdioma(idioma, nivel) })
 	return notaMedia + slices.Max(append(slices.Collect(maps.Values(bonificables)), 0)).bonificacion()
 }
+
+func (d Destino) EsNuevo() bool {
+	return len(d.notasTotales) == 0
+}
+
+func (d Destino) superaNotaDeCorte(notaPonderada float64) bool {
+	return d.EsNuevo() || slices.ContainsFunc(d.notasTotales, func(nota float64) bool { return nota <= notaPonderada })
+}
+
+func (d Destino) esViable(notaMedia float64, niveles map[string]NivelIdioma) bool {
+	return d.cumpleIdiomas(niveles) && d.alcanzaNotaMinima(notaMedia) && d.superaNotaDeCorte(d.notaPonderada(notaMedia, niveles))
+}
