@@ -46,25 +46,20 @@ func TestNewListadoDestinos(t *testing.T) {
 	}
 }
 
-func TestDestinosViables(t *testing.T) {
+type casoDestinosViables struct {
+	nombre           string
+	notaMedia        float64
+	niveles          map[string]NivelIdioma
+	viablesEsperados map[int]Destino
+	erroresEsperados []error
+}
+
+func nivelesQueCumplen() map[string]NivelIdioma {
+	return map[string]NivelIdioma{"ALEMAN": NivelB1, "INGLES": NivelB1}
+}
+
+func probarDestinosViables(t *testing.T, casos []casoDestinosViables) {
 	listado := ListadoDestinos{destinos: map[int]Destino{6: destinoValido()}}
-	nivelesQueCumplen := map[string]NivelIdioma{"ALEMAN": NivelB1, "INGLES": NivelB1}
-	casos := []struct {
-		nombre           string
-		notaMedia        float64
-		niveles          map[string]NivelIdioma
-		viablesEsperados map[int]Destino
-		erroresEsperados []error
-	}{
-		{"nota media válida", 8, nivelesQueCumplen, map[int]Destino{6: destinoValido()}, nil},
-		{"nota media máxima", 10, nivelesQueCumplen, map[int]Destino{6: destinoValido()}, nil},
-		{"nota media negativa", -1, nivelesQueCumplen, map[int]Destino{}, []error{&NotaMediaFueraDeRangoError{Nota: -1}}},
-		{"nota media por encima de 10", 10.5, nivelesQueCumplen, map[int]Destino{}, []error{&NotaMediaFueraDeRangoError{Nota: 10.5}}},
-		{"nivel superior al exigido", 8, map[string]NivelIdioma{"ALEMAN": NivelC1, "INGLES": NivelB2}, map[int]Destino{6: destinoValido()}, nil},
-		{"le falta uno de los idiomas exigidos", 8, map[string]NivelIdioma{"ALEMAN": NivelB1}, map[int]Destino{}, nil},
-		{"nota media igual a la nota mínima", 7, nivelesQueCumplen, map[int]Destino{6: destinoValido()}, nil},
-		{"nota media por debajo de la nota mínima", 6.9, nivelesQueCumplen, map[int]Destino{}, nil},
-	}
 	for _, caso := range casos {
 		t.Run(caso.nombre, func(t *testing.T) {
 			viables, err := listado.DestinosViables(caso.notaMedia, caso.niveles)
@@ -74,6 +69,29 @@ func TestDestinosViables(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestNotaMediaDelEstudiante(t *testing.T) {
+	probarDestinosViables(t, []casoDestinosViables{
+		{"nota media válida", 8, nivelesQueCumplen(), map[int]Destino{6: destinoValido()}, nil},
+		{"nota media máxima", 10, nivelesQueCumplen(), map[int]Destino{6: destinoValido()}, nil},
+		{"nota media negativa", -1, nivelesQueCumplen(), map[int]Destino{}, []error{&NotaMediaFueraDeRangoError{Nota: -1}}},
+		{"nota media por encima de 10", 10.5, nivelesQueCumplen(), map[int]Destino{}, []error{&NotaMediaFueraDeRangoError{Nota: 10.5}}},
+	})
+}
+
+func TestRequisitoDeIdiomas(t *testing.T) {
+	probarDestinosViables(t, []casoDestinosViables{
+		{"nivel superior al exigido", 8, map[string]NivelIdioma{"ALEMAN": NivelC1, "INGLES": NivelB2}, map[int]Destino{6: destinoValido()}, nil},
+		{"le falta uno de los idiomas exigidos", 8, map[string]NivelIdioma{"ALEMAN": NivelB1}, map[int]Destino{}, nil},
+	})
+}
+
+func TestNotaMinimaDelDestino(t *testing.T) {
+	probarDestinosViables(t, []casoDestinosViables{
+		{"nota media igual a la nota mínima", 7, nivelesQueCumplen(), map[int]Destino{6: destinoValido()}, nil},
+		{"nota media por debajo de la nota mínima", 6.9, nivelesQueCumplen(), map[int]Destino{}, nil},
+	})
 }
 
 func TestNotaPonderada(t *testing.T) {
