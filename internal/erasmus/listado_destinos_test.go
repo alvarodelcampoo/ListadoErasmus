@@ -102,7 +102,7 @@ func TestNotaPonderada(t *testing.T) {
 		niveles       map[string]NivelIdioma
 		notaPonderada float64
 	}{
-		{"mismo nivel que el exigido", destinoValido(), 7, map[string]NivelIdioma{"ALEMAN": NivelB1, "INGLES": NivelB1}, 7},
+		{"mismo nivel que el exigido", destinoValido(), 7, nivelesQueCumplen(), 7},
 		{"supera el nivel exigido en un idioma", destinoValido(), 8, map[string]NivelIdioma{"ALEMAN": NivelB1, "INGLES": NivelC1}, 9.5},
 		{"supera el nivel en los dos idiomas y cuenta la mayor", destinoValido(), 8, map[string]NivelIdioma{"ALEMAN": NivelB2, "INGLES": NivelC1}, 9.5},
 		{"un idioma que el destino no exige no bonifica", destinoValido(), 8, map[string]NivelIdioma{"ALEMAN": NivelB1, "INGLES": NivelB1, "FRANCES": NivelC2}, 8},
@@ -127,10 +127,10 @@ func TestNotaDeCorte(t *testing.T) {
 		viable    bool
 		nuevo     bool
 	}{
-		{"nota ponderada igual a la nota de corte", conAdjudicados, 8, map[string]NivelIdioma{"ALEMAN": NivelB1, "INGLES": NivelB1}, true, false},
-		{"nota ponderada por debajo de la nota de corte", conAdjudicados, 7.9, map[string]NivelIdioma{"ALEMAN": NivelB1, "INGLES": NivelB1}, false, false},
+		{"nota ponderada igual a la nota de corte", conAdjudicados, 8, nivelesQueCumplen(), true, false},
+		{"nota ponderada por debajo de la nota de corte", conAdjudicados, 7.9, nivelesQueCumplen(), false, false},
 		{"solo llega a la nota de corte con la bonificación", conAdjudicados, 7, map[string]NivelIdioma{"ALEMAN": NivelB1, "INGLES": NivelC1}, true, false},
-		{"destino nuevo sin adjudicados del año anterior", destinoValido(), 7, map[string]NivelIdioma{"ALEMAN": NivelB1, "INGLES": NivelB1}, true, true},
+		{"destino nuevo sin adjudicados del año anterior", destinoValido(), 7, nivelesQueCumplen(), true, true},
 	}
 	for _, caso := range casos {
 		t.Run(caso.nombre, func(t *testing.T) {
