@@ -72,4 +72,4 @@ Las tareas del proyecto están en el `Makefile` y se ejecutan con `make` (si no 
 - `make check`: comprueba solo la sintaxis de los fuentes con `gofmt -e`, sin compilarlos.
 - `make test`: ejecuta los tests.
 
-La justificación de las herramientas elegidas está en [docs/automatizacion.md](docs/automatizacion.md).
+La justificación de las herramientas elegidas está en [docs/automatizacion.md](docs/automatizacion.md) y la de las herramientas de test en [docs/herramientas-tests.md](docs/herramientas-tests.md).
