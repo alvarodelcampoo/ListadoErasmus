@@ -2,7 +2,7 @@
 
 ## Criterios de búsqueda
 
-Las opciones se han buscado en la documentación oficial de Go ([testing](https://pkg.go.dev/testing)) y en el apartado de testing de [Awesome Go](https://github.com/avelino/awesome-go#testing).
+Se han buscado herramientas para Go que funcionen con `go test`, que es la orden que ya lanza la tarea `test` del Makefile. Para cada nivel, biblioteca de aserciones y framework de tests, se ha buscado por separado, partiendo de lo que trae el propio lenguaje en su documentación oficial ([testing](https://pkg.go.dev/testing)) y añadiendo las alternativas más conocidas del apartado de testing de [Awesome Go](https://github.com/avelino/awesome-go#testing), una lista revisada de herramientas de Go.
 
 ## Biblioteca de aserciones
 
