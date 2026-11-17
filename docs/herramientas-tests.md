@@ -49,3 +49,12 @@ Usamos el paquete estándar `testing`. Cumple los cuatro criterios: agrupa en su
 
 Los tests se ejecutan con `go test ./...`, la orden que trae Go para buscar, desde la raíz del repositorio, las funciones `TestXxx` de todos los paquetes, ejecutarlas e informar de cuáles pasan y cuáles fallan. Se lanza desde la tarea `test` del Makefile con `make test`, así que no hay que instalar nada más.
 
+## F.I.R.S.T.
+
+Los tests de `internal/erasmus/listado_destinos_test.go` siguen los principios F.I.R.S.T. de esta forma:
+
+- **Fast:** trabajan solo con datos en memoria, sin leer ficheros ni usar la red, así que `make test` termina en milésimas de segundo.
+- **Independent:** cada caso es un subtest con `t.Run` que construye sus propios datos: `destinoValido()` y `nivelesQueCumplen()` devuelven un destino y unos niveles nuevos en cada llamada, y `destinoCon()` cambia solo esa copia, así que ningún caso depende de otro ni del orden en que se ejecuten.
+- **Repeatable:** los datos son los de un destino real del listado (015-006, Aachen) fijados en el test, y las comparaciones pasan los resultados a texto con fmt, que escribe los mapas siempre ordenados, así que el resultado es el mismo en cualquier máquina y en cualquier ejecución.
+- **Self-validating:** cada caso indica lo que espera y la función `comprobar` lo compara con lo obtenido; si no coinciden, `t.Errorf` muestra lo esperado y lo obtenido junto al nombre del caso, y `go test` dice si pasan o fallan sin mirar nada a mano.
+- **Timely:** cada regla tiene su función de test (`TestNotaMediaDelEstudiante`, `TestRequisitoDeIdiomas`, `TestNotaMinimaDelDestino`, `TestNotaPonderada`, `TestNotaDeCorte`, `TestDestinoNuevo` y `TestNewListadoDestinos`), escrita junto al código que prueba y en el commit que cierra su issue.
