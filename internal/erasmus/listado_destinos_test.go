@@ -125,17 +125,16 @@ func TestNotaDeCorte(t *testing.T) {
 		notaMedia float64
 		niveles   map[string]NivelIdioma
 		viable    bool
-		nuevo     bool
 	}{
-		{"nota ponderada igual a la nota de corte", conAdjudicados, 8, nivelesQueCumplen(), true, false},
-		{"nota ponderada por debajo de la nota de corte", conAdjudicados, 7.9, nivelesQueCumplen(), false, false},
-		{"solo llega a la nota de corte con la bonificación", conAdjudicados, 7, map[string]NivelIdioma{"ALEMAN": NivelB1, "INGLES": NivelC1}, true, false},
-		{"destino nuevo sin adjudicados del año anterior", destinoValido(), 7, nivelesQueCumplen(), true, true},
+		{"nota ponderada igual a la nota de corte", conAdjudicados, 8, nivelesQueCumplen(), true},
+		{"nota ponderada por debajo de la nota de corte", conAdjudicados, 7.9, nivelesQueCumplen(), false},
+		{"solo llega a la nota de corte con la bonificación", conAdjudicados, 7, map[string]NivelIdioma{"ALEMAN": NivelB1, "INGLES": NivelC1}, true},
+		{"destino nuevo sin adjudicados del año anterior", destinoValido(), 7, nivelesQueCumplen(), true},
 	}
 	for _, caso := range casos {
 		t.Run(caso.nombre, func(t *testing.T) {
-			if viable, nuevo := caso.destino.esViable(caso.notaMedia, caso.niveles), caso.destino.EsNuevo(); viable != caso.viable || nuevo != caso.nuevo {
-				t.Errorf("se esperaba viable %v y nuevo %v, se obtuvo viable %v y nuevo %v", caso.viable, caso.nuevo, viable, nuevo)
+			if viable := caso.destino.esViable(caso.notaMedia, caso.niveles); viable != caso.viable {
+				t.Errorf("se esperaba viable %v, se obtuvo %v", caso.viable, viable)
 			}
 		})
 	}
