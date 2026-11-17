@@ -27,8 +27,10 @@ func NewListadoDestinos(destinos map[int]Destino) (ListadoDestinos, error) {
 }
 
 func (l ListadoDestinos) DestinosViables(notaMedia float64, niveles map[string]NivelIdioma) (map[int]Destino, error) {
-	notaMediaValida := notaEnRango(notaMedia, notaExpedienteMaxima)
+	if !notaEnRango(notaMedia, notaExpedienteMaxima) {
+		return nil, &NotaMediaFueraDeRangoError{Nota: notaMedia}
+	}
 	viables := maps.Clone(l.destinos)
-	maps.DeleteFunc(viables, func(_ int, destino Destino) bool { return !notaMediaValida || !destino.esViable(notaMedia, niveles) })
-	return viables, errorSi(!notaMediaValida, &NotaMediaFueraDeRangoError{Nota: notaMedia})
+	maps.DeleteFunc(viables, func(_ int, destino Destino) bool { return !destino.esViable(notaMedia, niveles) })
+	return viables, nil
 }
