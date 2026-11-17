@@ -6,7 +6,7 @@ Las opciones se han buscado en la documentación oficial de Go ([testing](https:
 
 ## Biblioteca de aserciones
 
-Go no trae aserciones en su paquete de tests, así que hay que decidir si los tests comprueban los resultados con la biblioteca estándar o una biblioteca externa.
+El paquete de tests de Go, `testing`, no trae aserciones, así que hay que decidir si los tests comprueban los resultados sin biblioteca de aserciones, con un `if` y `t.Errorf`, o con una biblioteca de aserciones externa.
 
 ## Criterios
 
@@ -16,24 +16,24 @@ Go no trae aserciones en su paquete de tests, así que hay que decidir si los te
 
 ### Opciones
 
-- **Paquete estándar [testing](https://pkg.go.dev/testing):** se comprueba el resultado con un `if` y se marca el fallo con `t.Errorf`, indicando qué se esperaba y qué se obtuvo. Para comparar valores y errores la biblioteca estándar ya trae `reflect.DeepEqual`, `errors.Is` y `errors.As`.
+- **Sin biblioteca de aserciones, con el paquete estándar [testing](https://pkg.go.dev/testing):** se comprueba el resultado con un `if` y se marca el fallo con `t.Errorf`, indicando qué se esperaba y qué se obtuvo. Para comparar valores y errores la biblioteca estándar ya trae `reflect.DeepEqual`, `errors.Is` y `errors.As`.
 - **[testify](https://github.com/stretchr/testify):** la biblioteca de aserciones más usada en Go. Funciones como `assert.Equal` o `assert.ErrorAs` dan mensajes de fallo más detallados y ahorran escribir los `if`, pero añaden varias dependencias externas al proyecto.
 - **[is](https://github.com/matryer/is):** biblioteca de aserciones mínima y sin dependencias, con `is.Equal`, `is.NoErr` e `is.True`. Tiene muy pocas funciones y, para que el mensaje de fallo explique qué se comprobaba, usa el comentario escrito en la línea de la aserción.
 
 ### Decisión
 
-Usamos el paquete estándar `testing` con `if` y `t.Errorf`. Viene con el lenguaje, así que no añade dependecias ni tiempo de instalación en el contenedor ni en la integración continua, y es la forma idiomática de testear en Go. testify aporta sobre todo comodidad en los mensajes, porque todo lo que comprueba se puede comprobar igual con la biblioteca estándar, y no compensa añadir sus dependencias por eso. is solo ahorra el `if` y obliga a escribir comentarios en los tests para que los fallos se entienda, con lo que se perdería el código limpio.
+No usamos ninguna biblioteca de aserciones: los resultados se comprueban con un `if` y `t.Errorf` del paquete estándar `testing`. Viene con el lenguaje, así que no añade dependencias ni tiempo de instalación en el contenedor ni en la integración continua, y es la forma idiomática de testear en Go. testify aporta sobre todo comodidad en los mensajes, porque todo lo que comprueba se puede comprobar igual con la biblioteca estándar, y no compensa añadir sus dependencias por eso. is solo ahorra el `if` y obliga a escribir comentarios en los tests para que los fallos se entienda, con lo que se perdería el código limpio.
 
 ## Framework de tests
 
-Las aserciones del paquete estándar no agrupan nada por sí mismas, así que hace falta un framework que organice los tests. No hace falta planificar de antemano cuántos tests se ejecutan ni funciones antes o después de cada test, porque los tests deben ser independientes entre sí.
+Las comprobaciones con `if` y `t.Errorf` no agrupan nada por sí mismas, así que hace falta un framework que organice los tests. No hace falta planificar de antemano cuántos tests se ejecutan ni funciones antes o después de cada test, porque los tests deben ser independientes entre sí.
 
 ### Criterios
 
 1. Tiene que poder agrupar las comprobaciones en subtests con un nombre descriptivo, para saber qué caso ha fallado.
 2. Tiene que poder crear los objetos que comparten varios tests.
 3. Que añada las menos dependencias posibles, por el mismo motivo que la biblioteca de aserciones.
-4. Que funcione con la biblioteca de aserciones elegida, el paquete estándar `testing`.
+4. Que funcione con la forma elegida de comprobar los resultados, `if` y `t.Errorf` del paquete estándar `testing`.
 
 ### Opciones
 
@@ -43,7 +43,7 @@ Las aserciones del paquete estándar no agrupan nada por sí mismas, así que ha
 
 ### Decisión
 
-Usamos el paquete estándar `testing`. Cumple los cuatro criterios: agrupa en subtests con `t.Run`, los objetos comunes se crean con funciones auxiliares, no añade dependencias y es el mismo paquete que usamos para las aserciones. Ginkgo y GoConvey traen su propia biblioteca de aserciones, lo que no cumple el cuarto criterio, y además añaden dependencias.
+Usamos el paquete estándar `testing`. Cumple los cuatro criterios: agrupa en subtests con `t.Run`, los objetos comunes se crean con funciones auxiliares, no añade dependencias y es el mismo paquete con el que comprobamos los resultados. Ginkgo y GoConvey traen su propia biblioteca de aserciones, lo que no cumple el cuarto criterio, y además añaden dependencias.
 
 ## Ejecutor de tests (test runner)
 
