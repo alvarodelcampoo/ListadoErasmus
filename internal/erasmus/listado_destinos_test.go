@@ -23,6 +23,13 @@ func destinoCon(cambio func(*Destino)) Destino {
 	return destino
 }
 
+func comprobar(t *testing.T, obtenido, esperado any) {
+	t.Helper()
+	if fmt.Sprint(obtenido) != fmt.Sprint(esperado) {
+		t.Errorf("se esperaba %v, se obtuvo %v", esperado, obtenido)
+	}
+}
+
 func TestNewListadoDestinos(t *testing.T) {
 	sinPlazas := destinoCon(func(destino *Destino) { destino.plazas = 0 })
 	casos := []struct {
@@ -39,10 +46,7 @@ func TestNewListadoDestinos(t *testing.T) {
 	for _, caso := range casos {
 		t.Run(caso.nombre, func(t *testing.T) {
 			_, err := NewListadoDestinos(caso.destinos)
-			obtenido, esperado := fmt.Sprint(err), fmt.Sprint(errors.Join(caso.erroresEsperados...))
-			if obtenido != esperado {
-				t.Errorf("se esperaba %v, se obtuvo %v", esperado, obtenido)
-			}
+			comprobar(t, err, errors.Join(caso.erroresEsperados...))
 		})
 	}
 }
@@ -64,10 +68,7 @@ func probarDestinosViables(t *testing.T, casos []casoDestinosViables) {
 	for _, caso := range casos {
 		t.Run(caso.nombre, func(t *testing.T) {
 			viables, err := listado.DestinosViables(caso.notaMedia, caso.niveles)
-			obtenido, esperado := fmt.Sprint(viables, err), fmt.Sprint(caso.viablesEsperados, errors.Join(caso.erroresEsperados...))
-			if obtenido != esperado {
-				t.Errorf("se esperaba %v, se obtuvo %v", esperado, obtenido)
-			}
+			comprobar(t, []any{viables, err}, []any{caso.viablesEsperados, errors.Join(caso.erroresEsperados...)})
 		})
 	}
 }
@@ -111,9 +112,7 @@ func TestNotaPonderada(t *testing.T) {
 	}
 	for _, caso := range casos {
 		t.Run(caso.nombre, func(t *testing.T) {
-			if obtenida := caso.destino.notaPonderada(caso.notaMedia, caso.niveles); obtenida != caso.notaPonderada {
-				t.Errorf("se esperaba %v, se obtuvo %v", caso.notaPonderada, obtenida)
-			}
+			comprobar(t, caso.destino.notaPonderada(caso.notaMedia, caso.niveles), caso.notaPonderada)
 		})
 	}
 }
@@ -134,9 +133,7 @@ func TestNotaDeCorte(t *testing.T) {
 	}
 	for _, caso := range casos {
 		t.Run(caso.nombre, func(t *testing.T) {
-			if viable := caso.destino.esViable(caso.notaMedia, caso.niveles); viable != caso.viable {
-				t.Errorf("se esperaba viable %v, se obtuvo %v", caso.viable, viable)
-			}
+			comprobar(t, caso.destino.esViable(caso.notaMedia, caso.niveles), caso.viable)
 		})
 	}
 }
@@ -153,9 +150,7 @@ func TestDestinoNuevo(t *testing.T) {
 	for _, caso := range casos {
 		t.Run(caso.nombre, func(t *testing.T) {
 			viables, _ := ListadoDestinos{destinos: map[int]Destino{6: caso.destino}}.DestinosViables(8, nivelesQueCumplen())
-			if nuevo := viables[6].EsNuevo(); nuevo != caso.nuevo {
-				t.Errorf("se esperaba nuevo %v, se obtuvo %v", caso.nuevo, nuevo)
-			}
+			comprobar(t, viables[6].EsNuevo(), caso.nuevo)
 		})
 	}
 }
