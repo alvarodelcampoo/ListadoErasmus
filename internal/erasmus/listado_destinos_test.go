@@ -139,3 +139,22 @@ func TestNotaDeCorte(t *testing.T) {
 		})
 	}
 }
+
+func TestDestinoNuevo(t *testing.T) {
+	casos := []struct {
+		nombre  string
+		destino Destino
+		nuevo   bool
+	}{
+		{"sin adjudicados del año anterior es nuevo", destinoValido(), true},
+		{"con adjudicados del año anterior no es nuevo", destinoCon(func(destino *Destino) { destino.notasTotales = []float64{8} }), false},
+	}
+	for _, caso := range casos {
+		t.Run(caso.nombre, func(t *testing.T) {
+			viables, _ := ListadoDestinos{destinos: map[int]Destino{6: caso.destino}}.DestinosViables(8, nivelesQueCumplen())
+			if nuevo := viables[6].EsNuevo(); nuevo != caso.nuevo {
+				t.Errorf("se esperaba nuevo %v, se obtuvo %v", caso.nuevo, nuevo)
+			}
+		})
+	}
+}
