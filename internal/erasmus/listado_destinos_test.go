@@ -24,6 +24,7 @@ func destinoCon(cambio func(*Destino)) Destino {
 }
 
 func TestNewListadoDestinos(t *testing.T) {
+	sinPlazas := destinoCon(func(destino *Destino) { destino.plazas = 0 })
 	casos := []struct {
 		nombre           string
 		destinos         map[int]Destino
@@ -32,8 +33,8 @@ func TestNewListadoDestinos(t *testing.T) {
 		{"destino real con su nº de orden", map[int]Destino{6: destinoValido()}, nil},
 		{"nº de orden mínimo permitido", map[int]Destino{1: destinoValido()}, nil},
 		{"nº de orden no positivo", map[int]Destino{0: destinoValido()}, []error{&NumeroOrdenNoPositivoError{NumeroOrden: 0}}},
-		{"destino con datos imposibles", map[int]Destino{6: destinoCon(func(destino *Destino) { destino.plazas = 0 })}, []error{&PlazasNoPositivasError{Plazas: 0}}},
-		{"un destino imposible entre varios válidos", map[int]Destino{1: destinoValido(), 2: destinoValido(), 6: destinoCon(func(destino *Destino) { destino.plazas = 0 })}, []error{&PlazasNoPositivasError{Plazas: 0}}},
+		{"destino con datos imposibles", map[int]Destino{6: sinPlazas}, []error{&PlazasNoPositivasError{Plazas: 0}}},
+		{"un destino imposible entre varios válidos", map[int]Destino{1: destinoValido(), 2: destinoValido(), 6: sinPlazas}, []error{&PlazasNoPositivasError{Plazas: 0}}},
 	}
 	for _, caso := range casos {
 		t.Run(caso.nombre, func(t *testing.T) {
