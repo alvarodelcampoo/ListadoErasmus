@@ -45,9 +45,24 @@ Las comprobaciones con `if` y `t.Errorf` no agrupan nada por sí mismas, así qu
 
 Usamos el paquete estándar `testing`. Cumple los cuatro criterios: agrupa en subtests con `t.Run`, los objetos comunes se crean con funciones auxiliares, no añade dependencias y es el mismo paquete con el que comprobamos los resultados. Ginkgo y GoConvey traen su propia biblioteca de aserciones, lo que no cumple el cuarto criterio, y además añaden dependencias.
 
-## Ejecutor de tests (test runner)
+## Ejecutor de tests
 
-Los tests se ejecutan con `go test ./...`, la orden que trae Go para buscar, desde la raíz del repositorio, las funciones `TestXxx` de todos los paquetes, ejecutarlas e informar de cuáles pasan y cuáles fallan. Se lanza desde la tarea `test` del Makefile con `make test`, así que no hay que instalar nada más.
+El ejecutor es la orden que busca los tests del repositorio, los lanza e informa de cuáles pasan y cuáles fallan.
+
+### Criterios 
+
+1. Tiene que encontrar y ejecutar todos los tests desde la raíz del repositorio con una sola orden, para lanzarla desde la tarea `test` del Makefile.
+2. Que funcione con el framework elegido, el paquete estándar `testing`.
+
+### Opciones
+
+- **[go test](https://pkg.go.dev/cmd/go#hdr-Test_packages):** la orden que trae Go. Con `go test ./...` busca las funciones `TestXxx` de todos los paquetes, las compila y las ejecuta.
+- **[gotestsum](https://github.com/gotestyourself/gotestsum):** lanza `go test` por debajo y cambia el formato de la salida, con resúmenes y ficheros JUnit para la integración continua. Hay que instalarlo aparte.
+- **[ginkgo](https://github.com/onsi/ginkgo):** la orden del framework Ginkgo, que también lanza tests de `testing`, pero está pensada para las suites de Ginkgo y hay que instalarla aparte.
+
+### Decisión
+
+Usamos `go test ./...`, lanzado con `make test`. Cumple los dos criterios: ejecuta todos los tests desde la raíz y es la orden del propio paquete `testing`. gotestsum y ginkgo acaban llamanado a `go test` y solo cambian la salida, así que no aportan nada que haga falta y habría que instalarlos.
 
 ## F.I.R.S.T.
 
