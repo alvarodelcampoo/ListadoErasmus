@@ -63,14 +63,5 @@ El ejecutor es la orden que busca los tests del repositorio, los lanza e informa
 
 ### Decisión
 
-Usamos `go test ./...`, lanzado con `make test`. Cumple los dos criterios: ejecuta todos los tests desde la raíz y es la orden del propio paquete `testing`. gotestsum y ginkgo acaban llamanado a `go test` y solo cambian la salida, así que no aportan nada que haga falta y habría que instalarlos.
+Usamos `go test ./...`, lanzado con `make test`. Cumple los tres criterios: ejecuta todos los tests desde la raíz, solo escribe en la caché de Go, fuera de los fuentes y configurable con `GOCACHE`, y es la orden del propio paquete `testing`. gotestsum y ginkgo acaban llamanado a `go test` y solo cambian la salida, así que no aportan nada que haga falta y habría que instalarlos.
 
-## F.I.R.S.T.
-
-Los tests de `internal/erasmus/listado_destinos_test.go` siguen los principios F.I.R.S.T. de esta forma:
-
-- **Fast:** trabajan solo con datos en memoria, sin leer ficheros ni usar la red, así que `make test` termina en milésimas de segundo.
-- **Independent:** cada caso es un subtest con `t.Run` que construye sus propios datos: `destinoValido()` y `nivelesQueCumplen()` devuelven un destino y unos niveles nuevos en cada llamada, y `destinoCon()` cambia solo esa copia, así que ningún caso depende de otro ni del orden en que se ejecuten.
-- **Repeatable:** los datos son los de un destino real del listado (015-006, Aachen) fijados en el test, y las comparaciones pasan los resultados a texto con fmt, que escribe los mapas siempre ordenados, así que el resultado es el mismo en cualquier máquina y en cualquier ejecución.
-- **Self-validating:** cada caso indica lo que espera y la función `comprobar` lo compara con lo obtenido; si no coinciden, `t.Errorf` muestra lo esperado y lo obtenido junto al nombre del caso, y `go test` dice si pasan o fallan sin mirar nada a mano.
-- **Timely:** cada regla tiene su función de test (`TestNotaMediaDelEstudiante`, `TestRequisitoDeIdiomas`, `TestNotaMinimaDelDestino`, `TestNotaPonderada`, `TestNotaDeCorte`, `TestDestinoNuevo` y `TestNewListadoDestinos`), escrita junto al código que prueba y en el commit que cierra su issue.
