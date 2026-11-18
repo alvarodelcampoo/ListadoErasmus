@@ -8,7 +8,7 @@ Se han buscado herramientas para Go que funcionen con `go test`, que es la orden
 
 El paquete de tests de Go, `testing`, no trae aserciones, así que hay que decidir si los tests comprueban los resultados sin biblioteca de aserciones, con un `if` y `t.Errorf`, o con una biblioteca de aserciones externa.
 
-## Criterios
+### Criterios
 
 1. Tiene que poder comprobar qué error se devuelve, porque también hay que probar los casos en los que falla.
 2. Que añada las menos dependencias posibles, porque se instalarán en cada construcción del contenedor y en cada ejecución de la integración continua.
@@ -49,14 +49,15 @@ Usamos el paquete estándar `testing`. Cumple los cuatro criterios: agrupa en su
 
 El ejecutor es la orden que busca los tests del repositorio, los lanza e informa de cuáles pasan y cuáles fallan.
 
-### Criterios 
+### Criterios
 
 1. Tiene que encontrar y ejecutar todos los tests desde la raíz del repositorio con una sola orden, para lanzarla desde la tarea `test` del Makefile.
-2. Que funcione con el framework elegido, el paquete estándar `testing`.
+2. No puede escribir en el directorio de los fuentes, o tiene que poder configurarse para escribir en otro sitio, porque en el contenedor del siguiente objetivo ese directorio no tendrá permiso de escritura.
+3. Que funcione con el framework elegido, el paquete estándar `testing`.
 
 ### Opciones
 
-- **[go test](https://pkg.go.dev/cmd/go#hdr-Test_packages):** la orden que trae Go. Con `go test ./...` busca las funciones `TestXxx` de todos los paquetes, las compila y las ejecuta.
+- **[go test](https://pkg.go.dev/cmd/go#hdr-Test_packages):** la orden que trae Go. Con `go test ./...` busca las funciones `TestXxx` de todos los paquetes, las compila y las ejecuta. Lo que compila lo guarda en la caché de Go, que está fuera del repositorio y se cambia de sitio con la variable `GOCACHE`.
 - **[gotestsum](https://github.com/gotestyourself/gotestsum):** lanza `go test` por debajo y cambia el formato de la salida, con resúmenes y ficheros JUnit para la integración continua. Hay que instalarlo aparte.
 - **[ginkgo](https://github.com/onsi/ginkgo):** la orden del framework Ginkgo, que también lanza tests de `testing`, pero está pensada para las suites de Ginkgo y hay que instalarla aparte.
 
