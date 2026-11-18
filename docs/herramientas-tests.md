@@ -10,7 +10,7 @@ El paquete de tests de Go, `testing`, no trae aserciones, así que hay que decid
 
 ## Criterios
 
-1. Tiene que poder comprobar el tipo de error devuelto, porque también hay que probar los casos en los que falla.
+1. Tiene que poder comprobar qué error se devuelve, porque también hay que probar los casos en los que falla.
 2. Que añada las menos dependencias posibles, porque se instalarán en cada construcción del contenedor y en cada ejecución de la integración continua.
 3. Que el mensaje de fallo diga qué se esperaba y qué se obtuvo.
 
