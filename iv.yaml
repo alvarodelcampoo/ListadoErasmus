@@ -3,3 +3,4 @@ entidad: internal/erasmus/listado_destinos.go
 automatizar:
   fichero: Makefile
   orden: make
+test: internal/erasmus/listado_destinos_test.go
