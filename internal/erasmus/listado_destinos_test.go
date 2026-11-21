@@ -67,7 +67,7 @@ func probarDestinosViables(t *testing.T, casos []casoDestinosViables) {
 	listado := ListadoDestinos{destinos: map[int]Destino{6: destinoValido()}}
 	for _, caso := range casos {
 		t.Run(caso.nombre, func(t *testing.T) {
-			viables, err := listado.DestinosViables(caso.notaMedia, caso.niveles)
+			viables, err := listado.DestinosViables(Estudiante{NotaMedia: caso.notaMedia, Niveles: caso.niveles})
 			comprobar(t, []any{viables, err}, []any{caso.viablesEsperados, errors.Join(caso.erroresEsperados...)})
 		})
 	}
@@ -149,7 +149,7 @@ func TestDestinoNuevo(t *testing.T) {
 	}
 	for _, caso := range casos {
 		t.Run(caso.nombre, func(t *testing.T) {
-			viables, _ := ListadoDestinos{destinos: map[int]Destino{6: caso.destino}}.DestinosViables(8, nivelesQueCumplen())
+			viables, _ := ListadoDestinos{destinos: map[int]Destino{6: caso.destino}}.DestinosViables(Estudiante{NotaMedia: 8, Niveles: nivelesQueCumplen()})
 			comprobar(t, viables[6].EsNuevo(), caso.nuevo)
 		})
 	}
