@@ -2,5 +2,5 @@ package erasmus
 
 type Estudiante struct {
 	NotaMedia float64
-	Niveles map[string]NivelIdioma
+	Niveles   map[string]NivelIdioma
 }
