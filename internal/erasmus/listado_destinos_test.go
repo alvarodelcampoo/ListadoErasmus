@@ -45,7 +45,7 @@ func TestNewListadoDestinos(t *testing.T) {
 	}
 	for _, caso := range casos {
 		t.Run(caso.nombre, func(t *testing.T) {
-			_, err := NewListadoDestinos(caso.destinos)
+			_, err := NewListadoDestinos(caso.destinos, nil)
 			comprobar(t, err, errors.Join(caso.erroresEsperados...))
 		})
 	}
