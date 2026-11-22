@@ -35,17 +35,21 @@ func TestNewListadoDestinos(t *testing.T) {
 	casos := []struct {
 		nombre           string
 		destinos         map[int]Destino
+		notas            map[int][]float64
 		erroresEsperados []error
 	}{
-		{"destino real con su nº de orden", map[int]Destino{6: destinoValido()}, nil},
-		{"nº de orden mínimo permitido", map[int]Destino{1: destinoValido()}, nil},
-		{"nº de orden no positivo", map[int]Destino{0: destinoValido()}, []error{&NumeroOrdenNoPositivoError{NumeroOrden: 0}}},
-		{"destino con datos imposibles", map[int]Destino{6: sinPlazas}, []error{&PlazasNoPositivasError{Plazas: 0}}},
-		{"un destino imposible entre varios válidos", map[int]Destino{1: destinoValido(), 2: destinoValido(), 6: sinPlazas}, []error{&PlazasNoPositivasError{Plazas: 0}}},
+		{"destino real con su nº de orden", map[int]Destino{6: destinoValido()}, nil, nil},
+		{"nº de orden mínimo permitido", map[int]Destino{1: destinoValido()}, nil, nil},
+		{"nº de orden no positivo", map[int]Destino{0: destinoValido()}, nil, []error{&NumeroOrdenNoPositivoError{NumeroOrden: 0}}},
+		{"destino con datos imposibles", map[int]Destino{6: sinPlazas}, nil, []error{&PlazasNoPositivasError{Plazas: 0}}},
+		{"un destino imposible entre varios válidos", map[int]Destino{1: destinoValido(), 2: destinoValido(), 6: sinPlazas}, nil, []error{&PlazasNoPositivasError{Plazas: 0}}},
+		{"notas de un destino del listado", map[int]Destino{6: destinoValido()}, map[int][]float64{6: {9.5, 8}}, nil},
+		{"notas de un destino que no está en el listado", map[int]Destino{6: destinoValido()}, map[int][]float64{7: {8}}, []error{&NotasSinDestinoError{NumeroOrden: 7}}},
+		{"nota imposible de un destino", map[int]Destino{6: destinoValido()}, map[int][]float64{6: {15}}, []error{&NotaConBonificacionFueraDeRangoError{Nota: 15, Posicion: 1}}},
 	}
 	for _, caso := range casos {
 		t.Run(caso.nombre, func(t *testing.T) {
-			_, err := NewListadoDestinos(caso.destinos, nil)
+			_, err := NewListadoDestinos(caso.destinos, caso.notas)
 			comprobar(t, err, errors.Join(caso.erroresEsperados...))
 		})
 	}
