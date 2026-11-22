@@ -3,6 +3,8 @@ package erasmus
 import (
 	"errors"
 	"fmt"
+	"maps"
+	"slices"
 	"testing"
 )
 
@@ -170,4 +172,14 @@ func TestNotaPonderadaEnDestinosReales(t *testing.T) {
 	ingles := map[string]NivelIdioma{"INGLES": NivelB2}
 	comprobar(t, destinos[23].notaPonderada(7, ingles), 8)
 	comprobar(t, destinos[1].notaPonderada(7, ingles), 7)
+}
+
+func TestDestinosViablesConDatosReales(t *testing.T) {
+	notas := notasPorDestino(ultimaAdjudicacion(leerAdjudicacionReal(t, 1), leerAdjudicacionReal(t, 2), leerAdjudicacionReal(t, 3)))
+	listado, err := NewListadoDestinos(leerListadoReal(t), notas)
+	comprobar(t, err, nil)
+	viables, err := listado.DestinosViables(Estudiante{NotaMedia: 5, Niveles: map[string]NivelIdioma{"PORTUGUES": NivelB2}})
+	comprobar(t, err, nil)
+	comprobar(t, slices.Sorted(maps.Keys(viables)), []int{27, 82, 120, 151})
+	comprobar(t, []bool{viables[27].EsNuevo(), viables[82].EsNuevo(), viables[120].EsNuevo(), viables[151].EsNuevo()}, []bool{false, true, false, true})
 }
