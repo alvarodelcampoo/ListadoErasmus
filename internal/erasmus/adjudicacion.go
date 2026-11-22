@@ -2,6 +2,7 @@ package erasmus
 
 import (
 	"io"
+	"maps"
 	"regexp"
 )
 
@@ -19,4 +20,12 @@ func LeerAdjudicacion(texto io.Reader) (map[string]PlazaAdjudicada, error) {
 		plazas[fila[1]] = PlazaAdjudicada{numeroOrden: entero(fila[3]), notaTotal: decimal(fila[2])}
 	}
 	return plazas, err
+}
+
+func ultimaAdjudicacion(adjudicaciones ...map[string]PlazaAdjudicada) map[string]PlazaAdjudicada {
+	plazas := map[string]PlazaAdjudicada{}
+	for _, adjudicacion := range adjudicaciones {
+		maps.Copy(plazas, adjudicacion)
+	}
+	return plazas
 }
