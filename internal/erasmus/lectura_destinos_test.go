@@ -31,3 +31,10 @@ func TestLeerDestinos(t *testing.T) {
 		idiomas:     map[string]NivelIdioma{"INGLES": NivelB1, "PORTUGUES": NivelB1},
 	})
 }
+
+func TestLeerTodoElListado(t *testing.T) {
+	destinos := leerListadoReal(t)
+	_, err := NewListadoDestinos(destinos)
+	comprobar(t, len(destinos), 133)
+	comprobar(t, err, nil)
+}
