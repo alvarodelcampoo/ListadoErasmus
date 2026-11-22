@@ -25,3 +25,9 @@ func TestLeerTodasLasAdjudicaciones(t *testing.T) {
 	comprobar(t, len(leerAdjudicacionReal(t, 2)), 69)
 	comprobar(t, len(leerAdjudicacionReal(t, 3)), 9)
 }
+
+func TestUltimaAdjudicacion(t *testing.T) {
+	plazas := ultimaAdjudicacion(leerAdjudicacionReal(t, 1), leerAdjudicacionReal(t, 2), leerAdjudicacionReal(t, 3))
+	comprobar(t, len(plazas), 172)
+	comprobar(t, plazas["ESTUDIANTE 020"], PlazaAdjudicada{numeroOrden: 49, notaTotal: 8.13})
+}
