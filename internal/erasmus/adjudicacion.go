@@ -29,3 +29,11 @@ func ultimaAdjudicacion(adjudicaciones ...map[string]PlazaAdjudicada) map[string
 	}
 	return plazas
 }
+
+func notasPorDestino(plazas map[string]PlazaAdjudicada) map[int][]float64 {
+	notas := map[int][]float64{}
+	for _, plaza := range plazas {
+		notas[plaza.numeroOrden] = append(notas[plaza.numeroOrden], plaza.notaTotal)
+	}
+	return notas
+}
