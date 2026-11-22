@@ -19,3 +19,9 @@ func TestLeerAdjudicacion(t *testing.T) {
 	comprobar(t, plazas["ESTUDIANTE 166"], PlazaAdjudicada{numeroOrden: 61, notaTotal: 8.221})
 	comprobar(t, plazas["ESTUDIANTE 021"], PlazaAdjudicada{numeroOrden: 97, notaTotal: 5.992})
 }
+
+func TestLeerTodasLasAdjudicaciones(t *testing.T) {
+	comprobar(t, len(leerAdjudicacionReal(t, 1)), 156)
+	comprobar(t, len(leerAdjudicacionReal(t, 2)), 69)
+	comprobar(t, len(leerAdjudicacionReal(t, 3)), 9)
+}
