@@ -58,7 +58,7 @@ func leerDestino(bloque string) (int, Destino) {
 	return entero(campos[1]), Destino{
 		institucion: campos[2],
 		plazas:      entero(campos[3]),
-		duracion:    Duracion(entero(campos[4])),
+		duracion:    entero(campos[4]),
 		notaMinima:  decimal(campos[5]),
 		cursos:      leerCursos(bloque),
 		idiomas:     leerIdiomas(bloque),

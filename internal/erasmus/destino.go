@@ -11,7 +11,7 @@ import (
 type Destino struct {
 	notasTotales []float64
 	idiomas      map[string]NivelIdioma
-	duracion     Duracion
+	duracion     int
 	institucion  string
 	plazas       int
 	cursos       []int
