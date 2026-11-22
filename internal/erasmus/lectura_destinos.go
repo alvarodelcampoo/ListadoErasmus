@@ -7,6 +7,7 @@ import (
 )
 
 var (
+	lineaDestino   = regexp.MustCompile(`^(\d{3}) +\S+ +\S+ +(.+?) {2,}(\d+) +(\d+)\b.*?(?: {3,}(\d+(?:[.,]\d+)?))? *\n`)
 	lineaCursos    = regexp.MustCompile(`Cursos .*\n *(.+?) {2,}`)
 	digito         = regexp.MustCompile(`\d`)
 	lineaIdiomas   = regexp.MustCompile(`Idiomas *\n(.*)`)
@@ -39,4 +40,16 @@ func leerIdiomas(bloque string) map[string]NivelIdioma {
 		idiomas[sinTildes.Replace(idioma[1])] = nivelPorNombre[idioma[2]]
 	}
 	return idiomas
+}
+
+func leerDestino(bloque string) (int, Destino) {
+	campos := lineaDestino.FindStringSubmatch(bloque)
+	return entero(campos[1]), Destino{
+		institucion: campos[2],
+		plazas:      entero(campos[3]),
+		duracion:    Duracion(entero(campos[4])),
+		notaMinima:  decimal(campos[5]),
+		cursos:      leerCursos(bloque),
+		idiomas:     leerIdiomas(bloque),
+	}
 }
