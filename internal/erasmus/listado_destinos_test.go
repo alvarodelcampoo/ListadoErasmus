@@ -10,7 +10,7 @@ func destinoValido() Destino {
 	return Destino{
 		institucion: "RHEINISCH-WESTFÄLISCHE TECHNISCHE HOCHSCHULE AACHEN",
 		plazas:      2,
-		duracion:    CursoCompleto,
+		duracion:    9,
 		cursos:      []int{3, 4},
 		notaMinima:  7,
 		idiomas:     map[string]NivelIdioma{"ALEMAN": NivelB1, "INGLES": NivelB1},
