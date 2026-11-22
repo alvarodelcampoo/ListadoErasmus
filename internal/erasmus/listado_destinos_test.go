@@ -55,6 +55,12 @@ func TestNewListadoDestinos(t *testing.T) {
 	}
 }
 
+func TestListadoGuardaLasNotasDeCadaDestino(t *testing.T) {
+	listado, _ := NewListadoDestinos(map[int]Destino{6: destinoValido(), 7: destinoValido()}, map[int][]float64{6: {9.5, 8}})
+	comprobar(t, listado.destinos[6].notasTotales, []float64{9.5, 8})
+	comprobar(t, listado.destinos[7].EsNuevo(), true)
+}
+
 type casoDestinosViables struct {
 	nombre           string
 	notaMedia        float64
