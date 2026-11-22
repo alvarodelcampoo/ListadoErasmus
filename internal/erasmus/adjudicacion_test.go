@@ -3,6 +3,7 @@ package erasmus
 import (
 	"fmt"
 	"os"
+	"slices"
 	"testing"
 )
 
@@ -30,4 +31,10 @@ func TestUltimaAdjudicacion(t *testing.T) {
 	plazas := ultimaAdjudicacion(leerAdjudicacionReal(t, 1), leerAdjudicacionReal(t, 2), leerAdjudicacionReal(t, 3))
 	comprobar(t, len(plazas), 172)
 	comprobar(t, plazas["ESTUDIANTE 020"], PlazaAdjudicada{numeroOrden: 49, notaTotal: 8.13})
+}
+
+func TestNotasPorDestino(t *testing.T) {
+	notas := notasPorDestino(ultimaAdjudicacion(leerAdjudicacionReal(t, 1), leerAdjudicacionReal(t, 2), leerAdjudicacionReal(t, 3)))
+	comprobar(t, len(notas), 84)
+	comprobar(t, slices.Sorted(slices.Values(notas[49])), []float64{8.13, 8.978, 9.019})
 }
