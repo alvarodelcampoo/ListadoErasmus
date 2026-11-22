@@ -1,6 +1,7 @@
 package erasmus
 
 import (
+	"io"
 	"regexp"
 	"strconv"
 	"strings"
@@ -15,6 +16,16 @@ var (
 	sinTildes      = strings.NewReplacer("Á", "A", "É", "E", "Í", "I", "Ó", "O", "Ú", "U")
 	nivelPorNombre = map[string]NivelIdioma{"B1": NivelB1, "B2": NivelB2, "C1": NivelC1, "C2": NivelC2}
 )
+
+func LeerDestinos(texto io.Reader) (map[int]Destino, error) {
+	contenido, err := io.ReadAll(texto)
+	destinos := map[int]Destino{}
+	for _, bloque := range strings.Split(string(contenido), "\n 015-")[1:] {
+		numeroOrden, destino := leerDestino(bloque)
+		destinos[numeroOrden] = destino
+	}
+	return destinos, err
+}
 
 func entero(texto string) int {
 	numero, _ := strconv.Atoi(texto)
