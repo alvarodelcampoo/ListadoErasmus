@@ -164,3 +164,10 @@ func TestDestinoNuevo(t *testing.T) {
 		})
 	}
 }
+
+func TestNotaPonderadaEnDestinosReales(t *testing.T) {
+	destinos := leerListadoReal(t)
+	ingles := map[string]NivelIdioma{"INGLES": NivelB2}
+	comprobar(t, destinos[23].notaPonderada(7, ingles), 8)
+	comprobar(t, destinos[1].notaPonderada(7, ingles), 7)
+}
