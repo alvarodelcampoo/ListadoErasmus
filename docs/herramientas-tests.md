@@ -11,20 +11,23 @@ Con el paquete de tests de Go, `testing`, ya se puede testear: el resultado se c
 ### Criterios
 
 1. Tiene que poder comparar un objeto del dominio entero con el esperado, aunque guarde sus datos en campos privados, listas y mapas.
-2. No puede añadir otra forma de comparar valores a la que ya trae el lenguaje, para que haya una sola forma de comprobar un resultado.
+2. Cuando una comparación falla, tiene que decir cuál es el valor obtenido y cuál el esperado, para saber qué se ha leído mal.
+3. Lo que añade al tiempo de cada ejecución de `make test`, que se paga cada vez que se lanzan los tests.
 
 ### Opciones
 
-Cada opción se ha probado con un test que compara un destino leído de `datos/destinos.txt` con el esperado y comprobando los errores de un listado con varios destinos mal formados.
+Cada opción se ha probado comparando el destino 2 leído de `datos/destinos.txt` con el esperado, cambiando un campo para ver qué muestra al fallar, y comprobando los errores de un listado con varios destinos mal formados. El tiempo se ha medido con `time`, lanzando 30 veces seguidas `go test -count=1` con esa misma comparación y dividiendo entre 30.
 
-- **Sin biblioteca de aserciones, con el paquete estándar [testing](https://pkg.go.dev/testing):** se comprueba el resultado con un `if` y se marca el fallo con `t.Errorf`. El objeto se puede comparar con `reflect.DeepEqual` o comparando lo que imprimen los dos valores con `fmt.Sprint`. Con los errores juntados por `errors.Join`, `reflect.DeepEqual` compara también cómo están agrupados por dentro, mientras que `fmt.Sprint` muestra todos los que han fallado, y `errors.As` encuentra uno concreto.
+![Tiempo de 30 ejecuciones de go test con cada opción](../images/Captura_aserciones.png)
+
+- **Sin biblioteca de aserciones, con el paquete estándar [testing](https://pkg.go.dev/testing):** se comprueba el resultado con un `if` y se marca el fallo con `t.Errorf`. El objeto se puede comparar con `reflect.DeepEqual` o comparando lo que imprimen los dos valores con `fmt.Sprint`. Con los errores juntados por `errors.Join`, `reflect.DeepEqual` compara también cómo están agrupados por dentro, mientras que `fmt.Sprint` muestra todos los que han fallado, y `errors.As` encuentra uno concreto. Al fallar muestra el mensaje que se le pasa a `t.Errorf`, con el valor obtenido y el esperado. Tarda 189 ms.
 - **[go-cmp](https://github.com/google/go-cmp):** biblioteca para comparar valores, pensada como alternativa a `reflect.DeepEqual`. Al comparar el Destino con `cmp.Equal` da un panic por sus campos privados, salvo que se le pase `cmp.AllowUnexported` con cada tipo. Para buscar el error no tiene nada propio y hay que usar `errors.As`.
-- **[testify](https://github.com/stretchr/testify):** la biblioteca de aserciones más usada en Go. Compara el Destino con `assert.Equal` y encuentra el error con `assert.ErrorAs`.
-- **[is](https://github.com/matryer/is):** biblioteca de aserciones mínima, con `is.Equal`, `is.NoErr` e `is.True`. Compara el Destino con `is.Equal`, pero para buscar el error hay que usar `errors.As` dentro de `is.True`.
+- **[testify](https://github.com/stretchr/testify):** la biblioteca de aserciones más usada en Go. Compara el Destino con `assert.Equal` y encuentra el error con `assert.ErrorAs`. Al fallar indica cuál es el valor esperado y cuál el obtenido, y marca el campo distinto. Tarda 288 ms.
+- **[is](https://github.com/matryer/is):** biblioteca de aserciones mínima, con `is.Equal`, `is.NoErr` e `is.True`. Compara el Destino con `is.Equal`, pero para buscar el error hay que usar `errors.As` dentro de `is.True`. Al fallar muestra los dos valores separados por `!=`, sin decir cuál es el obtenido y cuál el esperado. Tarda 183 ms.
 
 ### Decisión
 
-No usamos ninguna biblioteca de aserciones: los resultados se comprueban con un `if` y `t.Errorf` del paquete estándar `testing`, comparando lo que imprimen los dos valores con `fmt.Sprint`, que compara un objeto entero con sus campos privados. go-cmp no cumple el primero sin configurarlo para cada tipo con campos privados. testify e is no cumplen el segundo, porque añaden sus propias funciones de comparación, `assert.Equal` e `is.Equal`, a las que ya trae el lenguaje.
+No usamos ninguna biblioteca de aserciones: los resultados se comprueban con un `if` y `t.Errorf` del paquete estándar `testing`, comparando lo que imprimen los dos valores con `fmt.Sprint`, que compara un objeto entero con sus campos privados. go-cmp no cumple el primer criterio sin configurarlo para cada tipo con campos privados e is no cumple el segundo, porque no dice cuál es el valor obtenido y cuál el esperado. testify cumple los dos, igual que `testing`, pero cada ejecución de los tests pasa de 189 ms a 288 ms, un 52 % más, sin que compruebe nada que no se pueda comprobar ya con `testing`.
 
 ## Framework de tests
 
