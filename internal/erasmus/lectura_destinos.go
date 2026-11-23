@@ -1,6 +1,8 @@
 package erasmus
 
 import (
+	"errors"
+	"fmt"
 	"io"
 	"regexp"
 	"strconv"
@@ -16,14 +18,25 @@ var (
 	nivelPorNombre = map[string]NivelIdioma{"B1": NivelB1, "B2": NivelB2, "C1": NivelC1, "C2": NivelC2}
 )
 
+type LineaNoEncontradaError struct {
+	Bloque int
+	Linea  string
+}
+
+func (e *LineaNoEncontradaError) Error() string {
+	return fmt.Sprintf("el bloque %d del listado no tiene la línea de %s", e.Bloque, e.Linea)
+}
+
 func LeerDestinos(texto io.Reader) (map[int]Destino, error) {
 	contenido, err := io.ReadAll(texto)
+	errores := []error{err}
 	destinos := map[int]Destino{}
-	for _, bloque := range strings.Split(string(contenido), "\n 015-")[1:] {
-		numeroOrden, destino := leerDestino(bloque)
+	for posicion, bloque := range strings.Split(string(contenido), "\n 015-")[1:] {
+		numeroOrden, destino, errBloque := leerDestino(posicion+1, bloque)
 		destinos[numeroOrden] = destino
+		errores = append(errores, errBloque)
 	}
-	return destinos, err
+	return destinos, errors.Join(errores...)
 }
 
 func entero(texto string) int {
@@ -52,7 +65,7 @@ func leerIdiomas(bloque string) map[string]NivelIdioma {
 	return idiomas
 }
 
-func leerDestino(bloque string) (int, Destino) {
+func leerDestino(posicion int, bloque string) (int, Destino, error) {
 	campos := buscar(lineaDestino, bloque)
 	return entero(campos[1]), Destino{
 		institucion: campos[2],
@@ -61,7 +74,11 @@ func leerDestino(bloque string) (int, Destino) {
 		notaMinima:  decimal(campos[5]),
 		cursos:      leerCursos(bloque),
 		idiomas:     leerIdiomas(bloque),
-	}
+	}, errors.Join(
+		errorSi(!lineaDestino.MatchString(bloque), &LineaNoEncontradaError{Bloque: posicion, Linea: "destino"}),
+		errorSi(!lineaCursos.MatchString(bloque), &LineaNoEncontradaError{Bloque: posicion, Linea: "cursos"}),
+		errorSi(!lineaIdiomas.MatchString(bloque), &LineaNoEncontradaError{Bloque: posicion, Linea: "idiomas"}),
+	)
 }
 
 func buscar(expresion *regexp.Regexp, bloque string) []string {
