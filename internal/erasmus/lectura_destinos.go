@@ -92,7 +92,7 @@ func leerDestino(posicion int, bloque string) (int, Destino, error) {
 	)
 }
 
-func buscar(expresion *regexp.Regexp, bloque string) []string {
-	campos := expresion.FindStringSubmatch(bloque)
-	return append(campos, make([]string, expresion.NumSubexp()+1-len(campos))...)
+func buscar(linea *regexp.Regexp, bloque string) []string {
+	campos := linea.FindStringSubmatch(bloque)
+	return append(campos, make([]string, linea.NumSubexp()+1-len(campos))...)
 }
