@@ -38,7 +38,7 @@ func decimal(texto string) float64 {
 
 func leerCursos(bloque string) []int {
 	cursos := []int{}
-	for _, curso := range digito.FindAllString(lineaCursos.FindStringSubmatch(bloque)[1], -1) {
+	for _, curso := range digito.FindAllString(buscar(lineaCursos, bloque)[1], -1) {
 		cursos = append(cursos, entero(curso))
 	}
 	return cursos
@@ -46,14 +46,14 @@ func leerCursos(bloque string) []int {
 
 func leerIdiomas(bloque string) map[string]NivelIdioma {
 	idiomas := map[string]NivelIdioma{}
-	for _, idioma := range idiomaConNivel.FindAllStringSubmatch(lineaIdiomas.FindStringSubmatch(bloque)[1], -1) {
+	for _, idioma := range idiomaConNivel.FindAllStringSubmatch(buscar(lineaIdiomas, bloque)[1], -1) {
 		idiomas[idioma[1]] = nivelPorNombre[idioma[2]]
 	}
 	return idiomas
 }
 
 func leerDestino(bloque string) (int, Destino) {
-	campos := lineaDestino.FindStringSubmatch(bloque)
+	campos := buscar(lineaDestino, bloque)
 	return entero(campos[1]), Destino{
 		institucion: campos[2],
 		plazas:      entero(campos[3]),
@@ -62,4 +62,9 @@ func leerDestino(bloque string) (int, Destino) {
 		cursos:      leerCursos(bloque),
 		idiomas:     leerIdiomas(bloque),
 	}
+}
+
+func buscar(expresion *regexp.Regexp, bloque string) []string {
+	campos := expresion.FindStringSubmatch(bloque)
+	return append(campos, make([]string, expresion.NumSubexp()+1-len(campos))...)
 }
