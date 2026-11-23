@@ -10,7 +10,7 @@ Con el paquete de tests de Go, `testing`, ya se puede testear: el resultado se c
 
 ### Criterios
 
-1. Tiene que poder comprobar qué error se devuelve, porque también hay que probar los casos en los que falla.
+1. Tiene que poder comparar lo que devuelve el código del proyecto: un Destino completo, con sus campos privados, listas y mapas, y los errores que devuelve NewListadoDestinos juntos con errors.Join.
 2. Que añada las menos dependencias posibles, porque se instalarán en cada construcción del contenedor y en cada ejecución de la integración continua.
 3. Que el mensaje de fallo diga qué se esperaba y qué se obtuvo.
 
