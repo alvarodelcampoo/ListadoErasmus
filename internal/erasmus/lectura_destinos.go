@@ -55,8 +55,8 @@ func entero(texto string) int {
 }
 
 func decimal(texto string) float64 {
-	numero, _ := strconv.ParseFloat(strings.Replace(texto, ",", ".", 1), 64)
-	return numero
+	valor, _ := strconv.ParseFloat(strings.Replace(texto, ",", ".", 1), 64)
+	return valor
 }
 
 func leerCursos(bloque string) []int {
