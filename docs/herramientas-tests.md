@@ -17,14 +17,14 @@ Con el paquete de tests de Go, `testing`, ya se puede testear: el resultado se c
 
 Cada opción se ha probado con un test que compara un destino leído de `datos/destinos.txt` con el esperado y comprobando los errores de un listado con varios destinos mal formados.
 
-- **Sin biblioteca de aserciones, con el paquete estándar [testing](https://pkg.go.dev/testing):** se comprueba el resultado con un `if` y se marca el fallo con `t.Errorf`. El Destino se compara con `reflect.DeepEqual` y el error se encuentra con `errors.As`, los dos de la biblioteca estándar. En los tests del proyecto se hace con la función `comprobar`, que compara lo que imprimen los dos valores con `fmt.Sprint`, y así sirve igual para un `Destino` que para los errores juntados.
+- **Sin biblioteca de aserciones, con el paquete estándar [testing](https://pkg.go.dev/testing):** se comprueba el resultado con un `if` y se marca el fallo con `t.Errorf`. El objeto se puede comparar con `reflect.DeepEqual` o comparando lo que imprimen los dos valores con `fmt.Sprint`. Con los errores juntados por `errors.Join`, `reflect.DeepEqual` compara también cómo están agrupados por dentro, mientras que `fmt.Sprint` muestra todos los que han fallado, y `errors.As` encuentra uno concreto.
 - **[go-cmp](https://github.com/google/go-cmp):** biblioteca para comparar valores, pensada como alternativa a `reflect.DeepEqual`. Al comparar el Destino con `cmp.Equal` da un panic por sus campos privados, salvo que se le pase `cmp.AllowUnexported` con cada tipo. Para buscar el error no tiene nada propio y hay que usar `errors.As`.
 - **[testify](https://github.com/stretchr/testify):** la biblioteca de aserciones más usada en Go. Compara el Destino con `assert.Equal` y encuentra el error con `assert.ErrorAs`.
 - **[is](https://github.com/matryer/is):** biblioteca de aserciones mínima, con `is.Equal`, `is.NoErr` e `is.True`. Compara el Destino con `is.Equal`, pero para buscar el error hay que usar `errors.As` dentro de `is.True`.
 
 ### Decisión
 
-No usamos ninguna biblioteca de aserciones: los resultados se comprueban con un `if` y `t.Errorf` del paquete estándar `testing`, que cumple los dos criterios con `reflect.DeepEqual` y `errors.As`. go-cmp no cumple el primero sin configurarlo para cada tipo con campos privados. Para el segundo, is y go-cmp acaban usando `errors.As`, así que no aportan nada sobre la biblioteca estándar. testify cumple los dos, pero `assert.Equal` y `assert.ErrorAs` hacen lo mismo que `reflect.DeepEqual` y `errors.As`, así que no da nada que no tengamos ya.
+No usamos ninguna biblioteca de aserciones: los resultados se comprueban con un `if` y `t.Errorf` del paquete estándar `testing`,  comparando lo que imprimen los dos valores con `fmt.Sprint`. Así se cumplen los dos criterios de la misma forma: compara un objeto entero con sus campos privados y, con los errores juntados, muestra cuáles han fallado sin depender de cómo están agrupados. go-cmp no cumple el primero sin configurarlo para cada tipo con campos privados. testify e is comparan con `reflect.DeepEqual` por debajo y buscan errores con `errors.As`, así que no dan nada que no tenga ya la biblioteca estándar.
 
 ## Framework de tests
 
