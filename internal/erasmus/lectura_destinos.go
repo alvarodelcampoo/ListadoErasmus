@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	lineaDestino   = regexp.MustCompile(`^(\d{3}) +\S+ +\S+ +(.+?) {2,}(\d+) +(\d+)\b.*?(?: {3,}(\S+))? *\n`)
+	lineaDestino   = regexp.MustCompile(`^(\d{3}) +\S+ +\S+ +(.+?) {2,}(\d+) +(\d+)\b.*?(?: {3,}(\S+(?: \S+)?))? *\n`)
 	lineaCursos    = regexp.MustCompile(`Cursos .*\n *(.+?) {2,}`)
 	numeroDecimal  = regexp.MustCompile(`^(\d+([.,]\d+)?)?$`)
 	digito         = regexp.MustCompile(`\d`)
