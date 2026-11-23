@@ -24,7 +24,7 @@ Cada opción se ha probado con un test que compara un destino leído de `datos/d
 
 ### Decisión
 
-No usamos ninguna biblioteca de aserciones: los resultados se comprueban con un `if` y `t.Errorf` del paquete estándar `testing`. Viene con el lenguaje, así que no añade dependencias ni tiempo de instalación en el contenedor ni en la integración continua, y es la forma idiomática de testear en Go. testify aporta sobre todo comodidad en los mensajes, porque todo lo que comprueba se puede comprobar igual con la biblioteca estándar, y no compensa añadir sus dependencias por eso. is solo ahorra el `if` y obliga a escribir comentarios en los tests para que los fallos se entienda, con lo que se perdería el código limpio.
+No usamos ninguna biblioteca de aserciones: los resultados se comprueban con un `if` y `t.Errorf` del paquete estándar `testing`, que cumple los dos criterios con `reflect.DeepEqual` y `errors.As`. go-cmp no cumple el primero sin configurarlo para cada tipo con campos privados. Para el segundo, is y go-cmp acaban usando `errors.As`, así que no aportan nada sobre la biblioteca estándar. testify cumple los dos, pero `assert.Equal` y `assert.ErrorAs` hacen lo mismo que `reflect.DeepEqual` y `errors.As`, así que no da nada que no tengamos ya.
 
 ## Framework de tests
 
