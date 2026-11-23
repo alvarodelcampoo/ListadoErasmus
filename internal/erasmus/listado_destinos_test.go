@@ -50,6 +50,7 @@ func TestNewListadoDestinos(t *testing.T) {
 		{"nota imposible de un destino", map[int]Destino{6: destinoValido()}, map[string]PlazaAdjudicada{"ESTUDIANTE 1": {6, 15}}, []error{&NotaConBonificacionFueraDeRangoError{Nota: 15, Posicion: 1}}},
 		{"destino sin institución", map[int]Destino{6: destinoCon(func(destino *Destino) { destino.institucion = " " })}, nil, []error{ErrDestinoSinInstitucion}},
 		{"curso no positivo", map[int]Destino{6: destinoCon(func(destino *Destino) { destino.cursos = []int{0} })}, nil, []error{&CursoNoPositivoError{Curso: 0}}},
+		{"nota mínima imposible", map[int]Destino{6: destinoCon(func(destino *Destino) { destino.notaMinima = 11 })}, nil, []error{&NotaMinimaFueraDeRangoError{Nota: 11}}},
 	}
 	for _, caso := range casos {
 		t.Run(caso.nombre, func(t *testing.T) {
