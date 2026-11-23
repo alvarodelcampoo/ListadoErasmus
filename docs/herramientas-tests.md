@@ -46,7 +46,7 @@ Las comprobaciones con `if` y `t.Errorf` no agrupan nada por sí mismas, así qu
 
 Usamos el paquete estándar `testing`. Cumple los tres criterios: agrupa en subtests con `t.Run`, los objetos comunes se crean con funciones auxiliares y es el mismo paquete con el que comprobamos los resultados. Ginkgo y GoConvey traen su propia biblioteca de aserciones, lo que no cumple el tercero.
 
-## Ejecutor de tests
+## Test runner
 
 El ejecutor es la orden que busca los tests del repositorio, los lanza e informa de cuáles pasan y cuáles fallan.
 
@@ -64,5 +64,5 @@ El ejecutor es la orden que busca los tests del repositorio, los lanza e informa
 
 ### Decisión
 
-Usamos `go test ./...`, lanzado con `make test`. Cumple los tres criterios: ejecuta todos los tests desde la raíz, solo escribe en la caché de Go, fuera de los fuentes y configurable con `GOCACHE`, y es la orden del propio paquete `testing`. gotestsum y ginkgo acaban llamanado a `go test` y solo cambian la salida, así que no aportan nada que haga falta y habría que instalarlos.
+Usamos `go test ./...`, lanzado con `make test`. Cumple los tres criterios: ejecuta todos los tests desde la raíz, solo escribe en la caché de Go, fuera de los fuentes y configurable con `GOCACHE`, y es la orden del propio paquete `testing`. gotestsum y ginkgo acaban llamando a `go test` y solo cambian la salida, así que no aportan nada que haga falta.
 
