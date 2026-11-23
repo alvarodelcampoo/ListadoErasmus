@@ -51,6 +51,8 @@ func TestLeerDestinoSinLineas(t *testing.T) {
 }
 
 func TestLeerNotaMinimaQueNoEsNumero(t *testing.T) {
-	_, err := LeerDestinos(strings.NewReader("cabecera\n 015-001   B LOUVAIN01    Uclouvain    2   9   OBSERVACIONES   7,5x\nCursos  Titulación\n 3,4  2TC\nIdiomas\n FRANCES (B2)\n"))
-	comprobar(t, err, errors.Join(errors.Join(&NotaMinimaIlegibleError{Bloque: 1, Texto: "7,5x"})))
+	for _, nota := range []string{"7,5x", "7,5 x"} {
+		_, err := LeerDestinos(strings.NewReader("cabecera\n 015-001   B LOUVAIN01    Uclouvain    2   9   OBSERVACIONES   " + nota + "\nCursos  Titulación\n 3,4  2TC\nIdiomas\n FRANCES (B2)\n"))
+		comprobar(t, err, errors.Join(errors.Join(&NotaMinimaIlegibleError{Bloque: 1, Texto: nota})))
+	}
 }
