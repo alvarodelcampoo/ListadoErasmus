@@ -37,7 +37,7 @@ func TestNewListadoDestinos(t *testing.T) {
 	casos := []struct {
 		nombre           string
 		destinos         map[int]Destino
-		notas            map[int][]float64
+		adjudicacion     map[string]PlazaAdjudicada
 		erroresEsperados []error
 	}{
 		{"destino real con su nº de orden", map[int]Destino{6: destinoValido()}, nil, nil},
@@ -45,21 +45,21 @@ func TestNewListadoDestinos(t *testing.T) {
 		{"nº de orden no positivo", map[int]Destino{0: destinoValido()}, nil, []error{&NumeroOrdenNoPositivoError{NumeroOrden: 0}}},
 		{"destino con datos imposibles", map[int]Destino{6: sinPlazas}, nil, []error{&PlazasNoPositivasError{Plazas: 0}}},
 		{"un destino imposible entre varios válidos", map[int]Destino{1: destinoValido(), 2: destinoValido(), 6: sinPlazas}, nil, []error{&PlazasNoPositivasError{Plazas: 0}}},
-		{"notas de un destino del listado", map[int]Destino{6: destinoValido()}, map[int][]float64{6: {9.5, 8}}, nil},
-		{"notas de un destino que no está en el listado", map[int]Destino{6: destinoValido()}, map[int][]float64{7: {8}}, []error{&NotasSinDestinoError{NumeroOrden: 7}}},
-		{"nota imposible de un destino", map[int]Destino{6: destinoValido()}, map[int][]float64{6: {15}}, []error{&NotaConBonificacionFueraDeRangoError{Nota: 15, Posicion: 1}}},
+		{"notas de un destino del listado", map[int]Destino{6: destinoValido()}, map[string]PlazaAdjudicada{"ESTUDIANTE 1": {6, 9.5}, "ESTUDIANTE 2": {6, 8}}, nil},
+		{"notas de un destino que no está en el listado", map[int]Destino{6: destinoValido()}, map[string]PlazaAdjudicada{"ESTUDIANTE 1": {7, 8}}, []error{&NotasSinDestinoError{NumeroOrden: 7}}},
+		{"nota imposible de un destino", map[int]Destino{6: destinoValido()}, map[string]PlazaAdjudicada{"ESTUDIANTE 1": {6, 15}}, []error{&NotaConBonificacionFueraDeRangoError{Nota: 15, Posicion: 1}}},
 	}
 	for _, caso := range casos {
 		t.Run(caso.nombre, func(t *testing.T) {
-			_, err := NewListadoDestinos(caso.destinos, caso.notas)
+			_, err := NewListadoDestinos(caso.destinos, caso.adjudicacion)
 			comprobar(t, err, errors.Join(caso.erroresEsperados...))
 		})
 	}
 }
 
 func TestListadoGuardaLasNotasDeCadaDestino(t *testing.T) {
-	listado, _ := NewListadoDestinos(map[int]Destino{6: destinoValido(), 7: destinoValido()}, map[int][]float64{6: {9.5, 8}})
-	comprobar(t, listado.destinos[6].notasTotales, []float64{9.5, 8})
+	listado, _ := NewListadoDestinos(map[int]Destino{6: destinoValido(), 7: destinoValido()}, map[string]PlazaAdjudicada{"ESTUDIANTE 1": {6, 9.5}, "ESTUDIANTE 2": {6, 8}})
+	comprobar(t, slices.Sorted(slices.Values(listado.destinos[6].notasTotales)), []float64{8, 9.5})
 	comprobar(t, listado.destinos[7].EsNuevo(), true)
 }
 
@@ -175,8 +175,7 @@ func TestNotaPonderadaEnDestinosReales(t *testing.T) {
 }
 
 func TestDestinosViablesConDatosReales(t *testing.T) {
-	notas := notasPorDestino(ultimaAdjudicacion(leerAdjudicacionReal(t, 1), leerAdjudicacionReal(t, 2), leerAdjudicacionReal(t, 3)))
-	listado, err := NewListadoDestinos(leerListadoReal(t), notas)
+	listado, err := NewListadoDestinos(leerListadoReal(t), leerAdjudicacionReal(t, 1), leerAdjudicacionReal(t, 2), leerAdjudicacionReal(t, 3))
 	comprobar(t, err, nil)
 	viables, err := listado.DestinosViables(Estudiante{NotaMedia: 5, Niveles: map[string]NivelIdioma{"PORTUGUES": NivelB2}})
 	comprobar(t, err, nil)

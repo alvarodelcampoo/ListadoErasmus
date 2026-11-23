@@ -26,7 +26,8 @@ func (e *NotasSinDestinoError) Error() string {
 	return fmt.Sprintf("hay notas del nº de orden %d, que no está en el listado", e.NumeroOrden)
 }
 
-func NewListadoDestinos(destinos map[int]Destino, notas map[int][]float64) (ListadoDestinos, error) {
+func NewListadoDestinos(destinos map[int]Destino, adjudicaciones ...map[string]PlazaAdjudicada) (ListadoDestinos, error) {
+	notas := notasPorDestino(ultimaAdjudicacion(adjudicaciones...))
 	listado := ListadoDestinos{destinos: map[int]Destino{}}
 	errores := make([]error, 0, 2*len(destinos)+len(notas))
 	for numeroOrden, destino := range destinos {
