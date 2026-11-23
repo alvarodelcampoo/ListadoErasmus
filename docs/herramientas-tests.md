@@ -10,8 +10,8 @@ Con el paquete de tests de Go, `testing`, ya se puede testear: el resultado se c
 
 ### Criterios
 
-1. Tiene que poder comparar un Destino completo, con sus campos privados, listas y mapas, como en TestLeerDestinos.
-2. Tiene que poder comprobar que entre los errores juntados con errors.Join está uno concreto, como en TestNewListadoDestinos.
+1. Tiene que poder comparar un objeto del dominio entero con el esperado, aunque guarde sus datos en campos privados, listas y mapas.
+2. Tiene que poder comprobar que errores se devuelven cuando una operación falla por varias razones a la vez.
 
 ### Opciones
 
