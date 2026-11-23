@@ -15,9 +15,12 @@ Con el paquete de tests de Go, `testing`, ya se puede testear: el resultado se c
 
 ### Opciones
 
-- **Sin biblioteca de aserciones, con el paquete estándar [testing](https://pkg.go.dev/testing):** se comprueba el resultado con un `if` y se marca el fallo con `t.Errorf`, indicando qué se esperaba y qué se obtuvo. Para comparar valores y errores la biblioteca estándar ya trae `reflect.DeepEqual`, `errors.Is` y `errors.As`.
-- **[testify](https://github.com/stretchr/testify):** la biblioteca de aserciones más usada en Go. Funciones como `assert.Equal` o `assert.ErrorAs` dan mensajes de fallo más detallados y ahorran escribir los `if`, pero añaden varias dependencias externas al proyecto.
-- **[is](https://github.com/matryer/is):** biblioteca de aserciones mínima y sin dependencias, con `is.Equal`, `is.NoErr` e `is.True`. Tiene muy pocas funciones y, para que el mensaje de fallo explique qué se comprobaba, usa el comentario escrito en la línea de la aserción.
+Cada opción se ha probado con un test que compara un destino leído de `datos/destinos.txt` y busca un error entre los que devuelve `NewListadoDestinos`.
+
+- **Sin biblioteca de aserciones, con el paquete estándar [testing](https://pkg.go.dev/testing):** se comprueba el resultado con un `if` y se marca el fallo con `t.Errorf`. El Destino se compara con `reflect.DeepEqual` y el error se encuentra con `errors.As`, los dos de la biblioteca estándar.
+- **[go-cmp](https://github.com/google/go-cmp):** biblioteca para comparar valores, pensada como alternativa a `reflect.DeepEqual`. Al comparar el Destino con `cmp.Equal` da un panic por sus campos privados, salvo que se le pase `cmp.AllowUnexported` con cada tipo. Para buscar el error no tiene nada propio y hay que usar `errors.As`.
+- **[testify](https://github.com/stretchr/testify):** la biblioteca de aserciones más usada en Go. Compara el Destino con `assert.Equal` y encuentra el error con `assert.ErrorAs`.
+- **[is](https://github.com/matryer/is):** biblioteca de aserciones mínima, con `is.Equal`, `is.NoErr` e `is.True`. Compara el Destino con `is.Equal`, pero para buscar el error hay que usar `errors.As` dentro de `is.True`.
 
 ### Decisión
 
