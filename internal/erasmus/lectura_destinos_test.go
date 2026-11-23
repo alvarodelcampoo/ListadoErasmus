@@ -1,7 +1,9 @@
 package erasmus
 
 import (
+	"errors"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -37,4 +39,13 @@ func TestLeerTodoElListado(t *testing.T) {
 	_, err := NewListadoDestinos(destinos)
 	comprobar(t, len(destinos), 133)
 	comprobar(t, err, nil)
+}
+
+func TestLeerDestinoSinLineas(t *testing.T) {
+	_, err := LeerDestinos(strings.NewReader("cabecera\n 015-texto que no es un destino\n"))
+	comprobar(t, err, errors.Join(errors.Join(
+		&LineaNoEncontradaError{Bloque: 1, Linea: "destino"},
+		&LineaNoEncontradaError{Bloque: 1, Linea: "cursos"},
+		&LineaNoEncontradaError{Bloque: 1, Linea: "idiomas"},
+	)))
 }
