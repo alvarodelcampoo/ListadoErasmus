@@ -6,7 +6,7 @@ Se han buscado herramientas para Go que funcionen con `go test`, que es la orden
 
 ## Biblioteca de aserciones
 
-El paquete de tests de Go, `testing`, no trae aserciones, así que hay que decidir si los tests comprueban los resultados sin biblioteca de aserciones, con un `if` y `t.Errorf`, o con una biblioteca de aserciones externa.
+Con el paquete de tests de Go, `testing`, ya se puede testear: el resultado se comprueba con un `if` y el fallo se marca con `t.Errorf`. Lo que hay que decidir es si se compara así o con una biblioteca de aserciones externa.
 
 ### Criterios
 
