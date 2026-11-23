@@ -10,8 +10,8 @@ Con el paquete de tests de Go, `testing`, ya se puede testear: el resultado se c
 
 ### Criterios
 
-1. Tiene que poder comparar lo que devuelve el código del proyecto: un Destino completo, con sus campos privados, listas y mapas, y los errores que devuelve NewListadoDestinos juntos con errors.Join.
-2. Que el mensaje de fallo diga qué se esperaba y qué se obtuvo.
+1. Tiene que poder comparar un Destino completo, con sus campos privados, listas y mapas, como en TestLeerDestinos.
+2. Tiene que poder comprobar que entre los errores juntados con errors.Join está uno concreto, como en TestNewListadoDestinos.
 
 ### Opciones
 
