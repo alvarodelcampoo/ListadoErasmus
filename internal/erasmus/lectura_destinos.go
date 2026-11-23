@@ -10,8 +10,9 @@ import (
 )
 
 var (
-	lineaDestino   = regexp.MustCompile(`^(\d{3}) +\S+ +\S+ +(.+?) {2,}(\d+) +(\d+)\b.*?(?: {3,}(\d+(?:[.,]\d+)?))? *\n`)
+	lineaDestino   = regexp.MustCompile(`^(\d{3}) +\S+ +\S+ +(.+?) {2,}(\d+) +(\d+)\b.*?(?: {3,}(\S+))? *\n`)
 	lineaCursos    = regexp.MustCompile(`Cursos .*\n *(.+?) {2,}`)
+	numeroDecimal  = regexp.MustCompile(`^(\d+([.,]\d+)?)?$`)
 	digito         = regexp.MustCompile(`\d`)
 	lineaIdiomas   = regexp.MustCompile(`Idiomas *\n(.*)`)
 	idiomaConNivel = regexp.MustCompile(`(\p{Lu}+) \((B1|B2|C1|C2)\)`)
@@ -25,6 +26,15 @@ type LineaNoEncontradaError struct {
 
 func (e *LineaNoEncontradaError) Error() string {
 	return fmt.Sprintf("el bloque %d del listado no tiene la línea de %s", e.Bloque, e.Linea)
+}
+
+type NotaMinimaIlegibleError struct {
+	Bloque int
+	Texto  string
+}
+
+func (e *NotaMinimaIlegibleError) Error() string {
+	return fmt.Sprintf("el bloque %d del listado tiene una nota mínima que no es un número: %q", e.Bloque, e.Texto)
 }
 
 func LeerDestinos(texto io.Reader) (map[int]Destino, error) {
@@ -75,6 +85,7 @@ func leerDestino(posicion int, bloque string) (int, Destino, error) {
 		cursos:      leerCursos(bloque),
 		idiomas:     leerIdiomas(bloque),
 	}, errors.Join(
+		errorSi(!numeroDecimal.MatchString(campos[5]), &NotaMinimaIlegibleError{Bloque: posicion, Texto: campos[5]}),
 		errorSi(!lineaDestino.MatchString(bloque), &LineaNoEncontradaError{Bloque: posicion, Linea: "destino"}),
 		errorSi(!lineaCursos.MatchString(bloque), &LineaNoEncontradaError{Bloque: posicion, Linea: "cursos"}),
 		errorSi(!lineaIdiomas.MatchString(bloque), &LineaNoEncontradaError{Bloque: posicion, Linea: "idiomas"}),
