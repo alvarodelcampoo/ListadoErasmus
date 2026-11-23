@@ -34,8 +34,7 @@ Las comprobaciones con `if` y `t.Errorf` no agrupan nada por sí mismas, así qu
 
 1. Tiene que poder agrupar las comprobaciones en subtests con un nombre descriptivo, para saber qué caso ha fallado.
 2. Tiene que poder crear los objetos que comparten varios tests.
-3. Que añada las menos dependencias posibles, por el mismo motivo que la biblioteca de aserciones.
-4. Que funcione con la forma elegida de comprobar los resultados, `if` y `t.Errorf` del paquete estándar `testing`.
+3. Que funcione con la forma elegida de comprobar los resultados, `if` y `t.Errorf` del paquete estándar `testing`.
 
 ### Opciones
 
@@ -45,7 +44,7 @@ Las comprobaciones con `if` y `t.Errorf` no agrupan nada por sí mismas, así qu
 
 ### Decisión
 
-Usamos el paquete estándar `testing`. Cumple los cuatro criterios: agrupa en subtests con `t.Run`, los objetos comunes se crean con funciones auxiliares, no añade dependencias y es el mismo paquete con el que comprobamos los resultados. Ginkgo y GoConvey traen su propia biblioteca de aserciones, lo que no cumple el cuarto criterio, y además añaden dependencias.
+Usamos el paquete estándar `testing`. Cumple los tres criterios: agrupa en subtests con `t.Run`, los objetos comunes se crean con funciones auxiliares y es el mismo paquete con el que comprobamos los resultados. Ginkgo y GoConvey traen su propia biblioteca de aserciones, lo que no cumple el tercero.
 
 ## Ejecutor de tests
 
