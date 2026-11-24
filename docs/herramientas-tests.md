@@ -6,7 +6,7 @@ Se han buscado herramientas para Go. Para cada nivel, biblioteca de aserciones, 
 
 ## Biblioteca de aserciones
 
-Con el paquete de tests de Go, `testing`, ya se puede testear: el resultado se comprueba con un `if` y el fallo se marca con `t.Errorf`. Todas las opciones pueden comprobar qué errores devuelve una operación que falla por varias razones a la vez. Lo que hay que decidir es si se compara así o con una biblioteca de aserciones externa.
+La biblioteca de aserciones es la que compara el resultado obtenido con el esperado y marca el test como fallido si no coinciden.
 
 ### Criterios
 
