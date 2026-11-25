@@ -10,7 +10,7 @@ La biblioteca de aserciones es la que compara el resultado obtenido con el esper
 
 ### Criterios
 
-1. Tiene que poder comparar un objeto del dominio entero con el esperado, aunque guarde sus datos en campos privados, listas y mapas.
+1. Lo fácil que es entender qué comprueba el test, siguiendo la S de [FIRST](https://medium.com/@tasdikrahman/f-i-r-s-t-principles-of-testing-1a497acda8d6): las líneas que ocupa la misma comprobación y las funciones propias de la herramienta que hay que conocer para leerla.
 2. Cuando una comparación falla, tiene que decir cuál es el valor obtenido y cuál el esperado, para saber qué se ha leído mal.
 3. Lo que añade al tiempo de cada ejecución de `make test`, que se paga cada vez que se lanzan los tests.
 
