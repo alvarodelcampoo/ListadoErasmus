@@ -30,11 +30,12 @@ Usamos testify. Es la más fácil de entender según el primer criterio: la comp
 
 ## Framework de tests
 
-Las comprobaciones con `if` y `t.Errorf` no agrupan nada por sí mismas, así que hace falta un framework que organice los tests. Todos los que se han mirado agrupan los casos en subtests con un nombre, para saber cuál ha fallado, y permiten crear los objetos que comparten varios tests. No hace falta planificar de antemano cuántos tests se ejecutan ni funciones antes o después de cada test, porque los tests deben ser independientes entre sí.
+El framework de tests es el que organiza los tests: los agrupa con un nombre, para saber cuál ha fallado, y permite preparar lo que comparten varios de ellos.
 
 ### Criterios
 
-1. Que funcione con la forma elegida de comprobar los resultados, `if` y `t.Errorf` del paquete estándar `testing`.
+1. Lo fácil que es entender el test, siguiendo la S de [FIRST](https://medium.com/@tasdikrahman/f-i-r-s-t-principles-of-testing-1a497acda8d6): las líneas que ocupa el mismo test y las funciones propias del framework que hay que conocer para leerlo.
+2. Lo que añade al tiempo de cada ejecución de `make test`, siguiendo la F de FIRST, que se paga cada vez que se lanzan los tests.
 
 ### Opciones
 
