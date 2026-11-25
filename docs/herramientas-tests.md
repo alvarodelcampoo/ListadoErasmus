@@ -65,10 +65,9 @@ El test runner es la orden que busca los tests del repositorio, los compila, los
 ### Opciones
 
 - **[go test](https://pkg.go.dev/cmd/go#hdr-Test_packages):** la orden que trae Go. Con `go test ./...` busca las funciones `TestXxx` de todos los paquetes, las compila y las ejecuta. Lo que compila lo guarda en la caché de Go, que está fuera del repositorio y se cambia de sitio con la variable `GOCACHE`.
-- **[gotestsum](https://github.com/gotestyourself/gotestsum):** lanza `go test -json`, que es quien busca, compila y ejecuta los tests, y cambia el formato de la salida, con resúmenes y ficheros JUnit para la integración continua.
 - **[ginkgo](https://github.com/onsi/ginkgo):** la orden del framework Ginkgo, pensada para sus suites. Busca los paquetes y ejecuta él mismo los tests, pero para compilarlos llama a `go test -c`, que deja el binario en el directorio del paquete salvo que se cambie con `-o`.
 
 ### Decisión
 
-Usamos `go test ./...`, lanzado con `make test`. Busca, compila y ejecuta él mismo todos los tests desde la raíz, y solo escribe en la caché de Go, fuera de los fuentes y configurable con `GOCACHE`. gotestsum no cumple el primero, porque todo lo hace `go test -json`, y ginkgo tampoco, porque compila llamando a `go test -c`.
+Usamos `go test ./...`, lanzado con `make test`. Busca, compila y ejecuta él mismo todos los tests desde la raíz, y solo escribe en la caché de Go, fuera de los fuentes y configurable con `GOCACHE`. ginkgo no cumple el primero, porque compila llamando a `go test -c`.
 
