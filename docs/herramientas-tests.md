@@ -39,13 +39,19 @@ El framework de tests es el que organiza los tests: los agrupa con un nombre, pa
 
 ### Opciones
 
-- **Paquete estándar [testing](https://pkg.go.dev/testing):** cada test es una función `TestXxx(t *testing.T)`. Los casos se agrupan en subtests con `t.Run("nombre", ...)`, los objetos comunes se crean con funciones auxiliares o con `TestMain`, y si hay que limpiar algo está `t.Cleanup`.
-- **[Ginkgo](https://github.com/onsi/ginkgo):** framework de estilo BDD (Behavior-Driven Development), en el que los tests se escriben como frases anidadas con bloques `Describe`, `Context` e `It`, y funciones como `BeforeEach` para preparar los objetos antes de cada caso. Está pensado para usarse con la biblioteca de aserciones Gomega y tiene su propia orden, `ginkgo`, para ejecutarlos.
-- **[GoConvey](https://github.com/smartystreets/goconvey):** framework de estilo BDD (Behavior-Driven Development) con bloques `Convey` anidados y sus propias aserciones (`So`), con una interfaz web que relanza los tests al guardar.
+Cada opción se ha probado con el mismo test, escrito como indica la documentación de cada framework: comprobar la nota ponderada de dos destinos reales, uno que pide inglés y otro que pide otro idioma. Para el primer criterio se cuentan las líneas del test y las funciones propias del framework que hay que conocer para leerlo. Para el segundo, el tiempo se ha medido con `time`, lanzando 30 veces seguidas `go test -count=1` con ese test y dividiendo entre 30.
+
+![Tiempo de 30 ejecuciones de go test con cada framework](../images/Captura_frameworks.png)
+
+- **Paquete estándar [testing](https://pkg.go.dev/testing):** cada caso se agrupa con `t.Run("nombre", ...)` dentro de una función `TestXxx`. El test ocupa 15 líneas y la función propia para agrupar es `t.Run`. Tarda 280 ms.
+- **[Ginkgo](https://github.com/onsi/ginkgo):** framework de estilo BDD (Behavior-Driven Development), con bloques `Describe` e `It` y `BeforeEach` para preparar los datos, y una función de arranque con `RegisterFailHandler` y `RunSpecs`. El test ocupa 18 líneas y hay que conocer esas cinco funciones propias. Tarda 544 ms.
+- **[GoConvey](https://github.com/smartystreets/goconvey):** framework de estilo BDD (Behavior-Driven Development) con bloques `Convey` anidados, que comprueba con su propia función (`So`). El test ocupa 13 líneas y la función propia para agrupar es `Convey`. Tarda 281 ms.
 
 ### Decisión
 
-Usamos el paquete estándar `testing`, que es el mismo paquete con el que comprobamos los resultados. Ginkgo y GoConvey no cumplen el criterio, porque traen su propia forma de comprobarlos: Ginkgo con Gomega y GoConvey con `So`.
+Usamos el paquete estándar `testing`. Ginkgo queda fuera en los dos criterios: su test es el más largo, pide conocer cinco funciones propias y tarda 544 ms, casi el doble que los otros dos. `testing` y GoConvey empatan: los dos agrupan cada caso con una sola función, `t.Run` y `Convey`, y tardan 280 y 281 ms. El test de GoConvey ocupa dos líneas menos por su forma de comprobar con `So`, no por cómo agrupa los casos. Como GoConvey no mejora ninguno de los dos criterios, nos quedamos con `testing`.
+
+Dentro de cada `t.Run`, las comprobaciones se hacen con testify, la biblioteca de aserciones elegida, pasándole el `t` del subtest: `assert.Equal(t, esperado, obtenido)`.
 
 ## Test runner
 
