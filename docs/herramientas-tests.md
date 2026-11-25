@@ -15,14 +15,14 @@ La biblioteca de aserciones es la que compara el resultado obtenido con el esper
 
 ### Opciones
 
-Cada opción se ha probado comparando el destino 2 leído de `datos/destinos.txt` con el esperado, cambiando un campo para ver qué muestra al fallar, y comprobando los errores de un listado con varios destinos mal formados. El tiempo se ha medido con `time`, lanzando 30 veces seguidas `go test -count=1` con esa misma comparación y dividiendo entre 30.
+Cada opción se ha probado comparando el destino 2 leído de `datos/destinos.txt` con el esperado. Para el primer criterio se cuentan las líneas de comprobación y las funciones de la herramienta que hay que conocer para leerla. Para el segundo, el tiempo se ha medido con `time`, lanzando 30 veces seguidas `go test -count=1` con esa misma comparación y dividiendo entre 30.
 
 ![Tiempo de 30 ejecuciones de go test con cada opción](../images/Captura_aserciones.png)
 
-- **Sin biblioteca de aserciones, con el paquete estándar [testing](https://pkg.go.dev/testing):** se comprueba el resultado con un `if` y se marca el fallo con `t.Errorf`. El objeto se puede comparar con `reflect.DeepEqual` o comparando lo que imprimen los dos valores con `fmt.Sprint`. Con los errores juntados por `errors.Join`, `reflect.DeepEqual` compara también cómo están agrupados por dentro, mientras que `fmt.Sprint` muestra todos los que han fallado, y `errors.As` encuentra uno concreto. Al fallar muestra el mensaje que se le pasa a `t.Errorf`, con el valor obtenido y el esperado. Tarda 189 ms.
-- **[go-cmp](https://github.com/google/go-cmp):** biblioteca para comparar valores, pensada como alternativa a `reflect.DeepEqual`. Al comparar el Destino con `cmp.Equal` da un panic por sus campos privados, salvo que se le pase `cmp.AllowUnexported` con cada tipo. Para buscar el error no tiene nada propio y hay que usar `errors.As`.
-- **[testify](https://github.com/stretchr/testify):** la biblioteca de aserciones más usada en Go. Compara el Destino con `assert.Equal` y encuentra el error con `assert.ErrorAs`. Al fallar indica cuál es el valor esperado y cuál el obtenido, y marca el campo distinto. Tarda 288 ms.
-- **[is](https://github.com/matryer/is):** biblioteca de aserciones mínima, con `is.Equal`, `is.NoErr` e `is.True`. Compara el Destino con `is.Equal`, pero para buscar el error hay que usar `errors.As` dentro de `is.True`. Al fallar muestra los dos valores separados por `!=`, sin decir cuál es el obtenido y cuál el esperado. Tarda 183 ms.
+- **Sin biblioteca de aserciones, con el paquete estándar [testing](https://pkg.go.dev/testing):** se compara con `reflect.DeepEqual` y el fallo se marca con `t.Errorf`, escribiendo el mensaje a mano. La comprobación ocupa 3 líneas y usa 2 funciones, `reflect.DeepEqual` y `t.Errorf`. Tarda 265 ms.
+- **[go-cmp](https://github.com/google/go-cmp):** biblioteca para comparar valores. Hay que pasarle `cmp.AllowUnexported` con cada tipo que tenga campos privados, y el fallo se marca con `t.Errorf`. La comprobación ocupa 3 líneas y usa 3 funciones, `cmp.Diff`, `cmp.AllowUnexported` y `t.Errorf`. Tarda 289 ms.
+- **[testify](https://github.com/stretchr/testify):** la comprobación es `assert.Equal(t, esperado, obtenido)`, que ocupa 1 línea y usa 1 función. Tarda 413 ms.
+- **[is](https://github.com/matryer/is):** la comprobación es `is.New(t).Equal(obtenido, esperado)`, que ocupa 1 línea y usa 2 funciones, `is.New` y `Equal`. Tarda 255 ms.
 
 ### Decisión
 
