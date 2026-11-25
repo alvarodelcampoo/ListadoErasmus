@@ -26,7 +26,7 @@ Cada opción se ha probado comparando el destino 2 leído de `datos/destinos.txt
 
 ### Decisión
 
-No usamos ninguna biblioteca de aserciones: los resultados se comprueban con un `if` y `t.Errorf` del paquete estándar `testing`, comparando lo que imprimen los dos valores con `fmt.Sprint`, que compara un objeto entero con sus campos privados. go-cmp no cumple el primer criterio sin configurarlo para cada tipo con campos privados e is no cumple el segundo, porque no dice cuál es el valor obtenido y cuál el esperado. testify cumple los dos, igual que `testing`, pero cada ejecución de los tests pasa de 189 ms a 288 ms, un 52 % más, sin que compruebe nada que no se pueda comprobar ya con `testing`.
+Usamos testify. Es la más fácil de entender según el primer criterio: la comprobación ocupa una línea y solo hay que conocer `assert.Equal`, mientras que is necesita dos funciones, y testing y go-cmp, tres líneas. En el segundo criterio es la más lenta, 413 ms frente a los 255 ms de is, pero son unos 160 ms más por ejecución de los tests, una diferencia que no compensa tener que leer más para entender cada comprobación.
 
 ## Framework de tests
 
