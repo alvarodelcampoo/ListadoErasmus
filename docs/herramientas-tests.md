@@ -4,6 +4,8 @@
 
 Se han buscado herramientas para Go. Para cada nivel, biblioteca de aserciones, framework de tests y test runner, se ha buscado por separado, partiendo de lo que trae el propio lenguaje en su documentación oficial ([testing](https://pkg.go.dev/testing)) y añadiendo las alternativas más conocidas del apartado de testing de [Awesome Go](https://github.com/avelino/awesome-go#testing), una lista revisada de herramientas de Go.
 
+En cada nivel, los criterios están ordenados por importancia: se aplica el primero y, solo entre las opciones que empaten en él, el siguiente. Lo fácil que es entender el test va antes que la velocidad porque cada vez que un test falla hay que leerlo para saber qué se ha roto.
+
 ## Biblioteca de aserciones
 
 La biblioteca de aserciones es la que compara el resultado obtenido con el esperado y marca el test como fallido si no coinciden.
@@ -26,7 +28,7 @@ Cada opción se ha probado comparando el destino 2 leído de `datos/destinos.txt
 
 ### Decisión
 
-Usamos testify. Es la más fácil de entender según el primer criterio: la comprobación ocupa una línea y solo hay que conocer `assert.Equal`, mientras que is necesita dos funciones, y testing y go-cmp, tres líneas. En el segundo criterio es la más lenta, 413 ms frente a los 255 ms de is, pero son unos 160 ms más por ejecución de los tests, una diferencia que no compensa tener que leer más para entender cada comprobación.
+Usamos testify porque gana el primer criterio: la comprobación ocupa una línea y solo hay que conocer `assert.Equal`, mientras que is necesita dos funciones, y testing y go-cmp, tres líneas. Como no hay empate en el primero, el tiempo no llega a decidir, aunque testify sea la más lenta, con 413 ms frente a los 255 ms de is.
 
 ## Framework de tests
 
