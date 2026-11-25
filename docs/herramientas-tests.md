@@ -19,7 +19,7 @@ Cada opción se ha probado comparando el destino 2 leído de `datos/destinos.txt
 
 ![Tiempo de 30 ejecuciones de go test con cada opción](../images/Captura_aserciones.png)
 
-- **Sin biblioteca de aserciones, con el paquete estándar [testing](https://pkg.go.dev/testing):** se compara con `reflect.DeepEqual` y el fallo se marca con `t.Errorf`, escribiendo el mensaje a mano. La comprobación ocupa 3 líneas y usa 2 funciones, `reflect.DeepEqual` y `t.Errorf`. Tarda 265 ms.
+- **Paquete estándar [testing](https://pkg.go.dev/testing):** se compara con `reflect.DeepEqual` y el fallo se marca con `t.Errorf`, escribiendo el mensaje a mano. La comprobación ocupa 3 líneas y usa 2 funciones, `reflect.DeepEqual` y `t.Errorf`. Tarda 265 ms.
 - **[go-cmp](https://github.com/google/go-cmp):** biblioteca para comparar valores. Hay que pasarle `cmp.AllowUnexported` con cada tipo que tenga campos privados, y el fallo se marca con `t.Errorf`. La comprobación ocupa 3 líneas y usa 3 funciones, `cmp.Diff`, `cmp.AllowUnexported` y `t.Errorf`. Tarda 289 ms.
 - **[testify](https://github.com/stretchr/testify):** la comprobación es `assert.Equal(t, esperado, obtenido)`, que ocupa 1 línea y usa 1 función. Tarda 413 ms.
 - **[is](https://github.com/matryer/is):** la comprobación es `is.New(t).Equal(obtenido, esperado)`, que ocupa 1 línea y usa 2 funciones, `is.New` y `Equal`. Tarda 255 ms.
@@ -59,15 +59,21 @@ El test runner es la orden que busca los tests del repositorio, los compila, los
 
 ### Criterios
 
-1. Tiene que ser él quien busque los tests desde la raíz del repositorio, los compile y los ejecute, y no una orden que llame a otra para alguna de esas tareas.
-2. No puede escribir en el directorio de los fuentes, o tiene que poder configurarse para escribir en otro sitio, porque en el contenedor del siguiente objetivo ese directorio no tendrá permiso de escritura.
+1. No puede escribir en el directorio de los fuentes, o tiene que poder configurarse para escribir en otro sitio, porque en el contenedor del siguiente objetivo ese directorio no tendrá permiso de escritura.
+2. Tiene que poder lanzarse desde la tarea `test` del Makefile y terminar solo, para que `make test` acabe e informe de si los tests pasan.
+3. Lo que añade al tiempo de cada ejecución de `make test`, siguiendo la F de FIRST, que se paga cada vez que se lanzan los tests.
 
 ### Opciones
 
-- **[go test](https://pkg.go.dev/cmd/go#hdr-Test_packages):** la orden que trae Go. Con `go test ./...` busca las funciones `TestXxx` de todos los paquetes, las compila y las ejecuta. Lo que compila lo guarda en la caché de Go, que está fuera del repositorio y se cambia de sitio con la variable `GOCACHE`.
-- **[ginkgo](https://github.com/onsi/ginkgo):** la orden del framework Ginkgo, pensada para sus suites. Busca los paquetes y ejecuta él mismo los tests, pero para compilarlos llama a `go test -c`, que deja el binario en el directorio del paquete salvo que se cambie con `-o`.
+Cada opción se ha probado lanzando los tests del proyecto con los fuentes sin permiso de escritura (`chmod -R a-w`). El tiempo se ha medido con `time`, lanzando 30 veces seguidas cada orden y dividiendo entre 30.
+
+![Tiempo de 30 ejecuciones de los tests con cada test runner](../images/Captura_runners.png)
+
+- **[go test](https://pkg.go.dev/cmd/go#hdr-Test_packages):** la orden que trae Go. Con `go test ./...` busca los tests de todos los paquetes, los compila y los ejecuta. Lo que compila lo guarda en la caché de Go, fuera del repositorio. Con los fuentes sin permiso de escritura funciona y termina solo. Tarda 288 ms.
+- **[ginkgo](https://github.com/onsi/ginkgo):** la orden de Ginkgo, que también lanza los tests escritos con `testing`. Sin opciones falla con los fuentes sin permiso de escritura, porque deja el binario de los tests en el directorio del paquete, pero con `-o` se le puede decir que lo deje en otro sitio. Termina solo. Tarda 418 ms.
+- **[goconvey](https://github.com/smartystreets/goconvey):** la orden de GoConvey, que lanza los tests y muestra los resultados en el navegador. Arranca un servidor web y se queda esperando, así que no termina solo.
 
 ### Decisión
 
-Usamos `go test ./...`, lanzado con `make test`. Busca, compila y ejecuta él mismo todos los tests desde la raíz, y solo escribe en la caché de Go, fuera de los fuentes y configurable con `GOCACHE`. ginkgo no cumple el primero, porque compila llamando a `go test -c`.
+Usamos `go test ./...`, lanzado con `make test`. goconvey queda fuera porque no termina solo y no se puede lanzar desde `make test`. go test y ginkgo cumplen los dos primeros criterios, ginkgo configurándolo con `-o`, y en el tercero go test tarda 288 ms frente a los 418 ms de ginkgo.
 
