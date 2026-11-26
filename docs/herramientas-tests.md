@@ -17,18 +17,18 @@ La biblioteca de aserciones es la que compara el resultado obtenido con el esper
 
 ### Opciones
 
-Cada opción se ha probado comparando el destino 2 leído de `datos/destinos.txt` con el esperado. Para el primer criterio se cuentan las líneas de comprobación y las funciones de la herramienta que hay que conocer para leerla. Para el segundo, el tiempo se ha medido con `time`, lanzando 30 veces seguidas `go test -count=1` con esa misma comparación y dividiendo entre 30.
+Cada opción se ha probado comparando el destino 2 leído de `datos/destinos.txt` con el esperado. Para el primer criterio se cuentan las líneas de comprobación y las funciones de la herramienta que hay que conocer para leerla. Para el segundo, el tiempo se ha medido con [hyperfine](https://github.com/sharkdp/hyperfine), que lanza `go test -count=1` con esa misma comparación 3 veces para calentar y después 30 veces, y da la media.
 
 ![Tiempo de 30 ejecuciones de go test con cada opción](../images/Captura_aserciones.png)
 
-- **Paquete estándar [testing](https://pkg.go.dev/testing):** se compara con `reflect.DeepEqual` y el fallo se marca con `t.Errorf`, escribiendo el mensaje a mano. La comprobación ocupa 3 líneas y usa 2 funciones, `reflect.DeepEqual` y `t.Errorf`. Tarda 265 ms.
-- **[go-cmp](https://github.com/google/go-cmp):** biblioteca para comparar valores. Hay que pasarle `cmp.AllowUnexported` con cada tipo que tenga campos privados, y el fallo se marca con `t.Errorf`. La comprobación ocupa 3 líneas y usa 3 funciones, `cmp.Diff`, `cmp.AllowUnexported` y `t.Errorf`. Tarda 289 ms.
-- **[testify](https://github.com/stretchr/testify):** la comprobación es `assert.Equal(t, esperado, obtenido)`, que ocupa 1 línea y usa 1 función. Tarda 413 ms.
-- **[is](https://github.com/matryer/is):** la comprobación es `is.New(t).Equal(obtenido, esperado)`, que ocupa 1 línea y usa 2 funciones, `is.New` y `Equal`. Tarda 255 ms.
+- **Paquete estándar [testing](https://pkg.go.dev/testing):** se compara con `reflect.DeepEqual` y el fallo se marca con `t.Errorf`, escribiendo el mensaje a mano. La comprobación ocupa 3 líneas y usa 2 funciones, `reflect.DeepEqual` y `t.Errorf`. Tarda 309 ms.
+- **[go-cmp](https://github.com/google/go-cmp):** biblioteca para comparar valores. Hay que pasarle `cmp.AllowUnexported` con cada tipo que tenga campos privados, y el fallo se marca con `t.Errorf`. La comprobación ocupa 3 líneas y usa 3 funciones, `cmp.Diff`, `cmp.AllowUnexported` y `t.Errorf`. Tarda 328 ms.
+- **[testify](https://github.com/stretchr/testify):** la comprobación es `assert.Equal(t, esperado, obtenido)`, que ocupa 1 línea y usa 1 función. Tarda 472 ms.
+- **[is](https://github.com/matryer/is):** la comprobación es `is.New(t).Equal(obtenido, esperado)`, que ocupa 1 línea y usa 2 funciones, `is.New` y `Equal`. Tarda 292 ms.
 
 ### Decisión
 
-Usamos testify porque gana el primer criterio: la comprobación ocupa una línea y solo hay que conocer `assert.Equal`, mientras que is necesita dos funciones, y testing y go-cmp, tres líneas. Como no hay empate en el primero, el tiempo no llega a decidir, aunque testify sea la más lenta, con 413 ms frente a los 255 ms de is.
+Usamos testify porque gana el primer criterio: la comprobación ocupa una línea y solo hay que conocer `assert.Equal`, mientras que is necesita dos funciones, y testing y go-cmp, tres líneas. Como no hay empate en el primero, el tiempo no llega a decidir, aunque testify sea la más lenta, con 472 ms frente a los 292 ms de is.
 
 ## Framework de tests
 
@@ -41,17 +41,17 @@ El framework de tests es el que organiza los tests: los agrupa con un nombre, pa
 
 ### Opciones
 
-Cada opción se ha probado con el mismo test, comprobar la nota ponderada de dos destinos reales, uno que pide inglés y otro que pide otro idioma. Para comparar solo el framework, las comprobaciones se hacen en los tres con la misma biblioteca de aserciones, testify. Para el primer criterio se cuentan las líneas del test y las funciones propias del framework que hay que conocer para leerlo. Para el segundo, el tiempo se ha medido con `time`, lanzando 30 veces seguidas `go test -count=1` con ese test y dividiendo entre 30.
+Cada opción se ha probado con el mismo test, comprobar la nota ponderada de dos destinos reales, uno que pide inglés y otro que pide otro idioma. Para comparar solo el framework, las comprobaciones se hacen en los tres con la misma biblioteca de aserciones, testify. Para el primer criterio se cuentan las líneas del test y las funciones propias del framework que hay que conocer para leerlo. Para el segundo, el tiempo se ha medido con [hyperfine](https://github.com/sharkdp/hyperfine), que lanza `go test -count=1` con ese test 3 veces para calentar y después 30 veces, y da la media.
 
 ![Tiempo de 30 ejecuciones de go test con cada framework](../images/Captura_frameworks.png)
 
-- **Paquete estándar [testing](https://pkg.go.dev/testing):** cada caso se agrupa con `t.Run("nombre", ...)` dentro de una función `TestXxx`. El test ocupa 11 líneas y la función propia para agrupar es `t.Run`. Tarda 354 ms.
-- **[Ginkgo](https://github.com/onsi/ginkgo):** framework de estilo BDD (Behavior-Driven Development), con bloques `Describe` e `It`, `BeforeEach` para preparar los datos, `RunSpecs` para arrancar la suite y `GinkgoT` para pasarle el test a testify. El test ocupa 17 líneas y hay que conocer esas cinco funciones propias. Tarda 403 ms.
-- **[GoConvey](https://github.com/smartystreets/goconvey):** framework de estilo BDD (Behavior-Driven Development) con bloques `Convey` anidados. El test ocupa 13 líneas y la única función propia es `Convey`. Tarda 344 ms.
+- **Paquete estándar [testing](https://pkg.go.dev/testing):** cada caso se agrupa con `t.Run("nombre", ...)` dentro de una función `TestXxx`. El test ocupa 11 líneas y la función propia para agrupar es `t.Run`. Tarda 478 ms.
+- **[Ginkgo](https://github.com/onsi/ginkgo):** framework de estilo BDD (Behavior-Driven Development), con bloques `Describe` e `It`, `BeforeEach` para preparar los datos, `RunSpecs` para arrancar la suite y `GinkgoT` para pasarle el test a testify. El test ocupa 17 líneas y hay que conocer esas cinco funciones propias. Tarda 597 ms.
+- **[GoConvey](https://github.com/smartystreets/goconvey):** framework de estilo BDD (Behavior-Driven Development) con bloques `Convey` anidados. El test ocupa 13 líneas y la única función propia es `Convey`. Tarda 504 ms.
 
 ### Decisión
 
-Usamos el paquete estándar `testing`, porque gana el primer criterio: su test ocupa 11 líneas y solo hay que conocer `t.Run`, mientras que GoConvey necesita 13 líneas y Ginkgo 17 líneas y cinco funciones propias. Como no hay empate en el primero, el tiempo no llega a decidir, aunque los tres tardan parecido: 344 ms GoConvey, 354 ms `testing` y 403 ms Ginkgo.
+Usamos el paquete estándar `testing`, porque gana el primer criterio: su test ocupa 11 líneas y solo hay que conocer `t.Run`, mientras que GoConvey necesita 13 líneas y Ginkgo 17 líneas y cinco funciones propias. Como no hay empate en el primero, el tiempo no llega a decidir, aunque `testing` también es el más rápido: 478 ms, frente a 504 ms GoConvey y 597 ms Ginkgo.
 
 Dentro de cada `t.Run`, las comprobaciones se hacen con testify, la biblioteca de aserciones elegida, pasándole el `t` del subtest: `assert.Equal(t, esperado, obtenido)`.
 
@@ -66,14 +66,14 @@ El test runner es la orden que busca los tests del repositorio, los compila, los
 
 ### Opciones
 
-Cada opción se ha probado lanzando los tests del proyecto con los fuentes sin permiso de escritura (`chmod -R a-w`). El tiempo se ha medido con `time`, lanzando 30 veces seguidas cada orden y dividiendo entre 30.
+Cada opción se ha probado lanzando los tests del proyecto con los fuentes sin permiso de escritura (`chmod -R a-w`). El tiempo se ha medido con [hyperfine](https://github.com/sharkdp/hyperfine), que lanza cada orden 3 veces para calentar y después 30 veces, y da la media.
 
 ![Tiempo de 30 ejecuciones de los tests con cada test runner](../images/Captura_runners.png)
 
-- **[go test](https://pkg.go.dev/cmd/go#hdr-Test_packages):** la orden que trae Go. Con `go test ./...` busca los tests de todos los paquetes, los compila y los ejecuta. Lo que compila lo guarda en la caché de Go, fuera del repositorio. Con los fuentes sin permiso de escritura funciona y termina solo. Tarda 288 ms.
-- **[ginkgo](https://github.com/onsi/ginkgo):** la orden de Ginkgo, que también lanza los tests escritos con `testing`. Sin opciones falla con los fuentes sin permiso de escritura, porque deja el binario de los tests en el directorio del paquete, pero con `-o` se le puede decir que lo deje en otro sitio. Termina solo. Tarda 418 ms.
+- **[go test](https://pkg.go.dev/cmd/go#hdr-Test_packages):** la orden que trae Go. Con `go test ./...` busca los tests de todos los paquetes, los compila y los ejecuta. Lo que compila lo guarda en la caché de Go, fuera del repositorio. Con los fuentes sin permiso de escritura funciona y termina solo. Tarda 342 ms.
+- **[ginkgo](https://github.com/onsi/ginkgo):** la orden de Ginkgo, que también lanza los tests escritos con `testing`. Sin opciones falla con los fuentes sin permiso de escritura, porque deja el binario de los tests en el directorio del paquete, pero con `-o` se le puede decir que lo deje en otro sitio. Termina solo. Tarda 465 ms.
 - **[goconvey](https://github.com/smartystreets/goconvey):** la orden de GoConvey, que lanza los tests y muestra los resultados en el navegador. Arranca un servidor web y se queda esperando, así que no termina solo.
 
 ### Decisión
 
-Usamos `go test ./...`, lanzado con `make test`. goconvey queda fuera porque no termina solo y no se puede lanzar desde `make test`. Entre go test y ginkgo decide el segundo criterio: go test tarda 288 ms frente a los 418 ms de ginkgo.
+Usamos `go test ./...`, lanzado con `make test`. goconvey queda fuera porque no termina solo y no se puede lanzar desde `make test`. Entre go test y ginkgo decide el segundo criterio: go test tarda 342 ms frente a los 465 ms de ginkgo.
