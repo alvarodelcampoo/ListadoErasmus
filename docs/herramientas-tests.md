@@ -61,9 +61,8 @@ El test runner es la orden que busca los tests del repositorio, los compila, los
 
 ### Criterios
 
-1. No puede escribir en el directorio de los fuentes, o tiene que poder configurarse para escribir en otro sitio, porque en el contenedor del siguiente objetivo ese directorio no tendrá permiso de escritura.
-2. Tiene que poder lanzarse desde la tarea `test` del Makefile y terminar solo, para que `make test` acabe e informe de si los tests pasan.
-3. Lo que añade al tiempo de cada ejecución de `make test`, siguiendo la F de FIRST, que se paga cada vez que se lanzan los tests.
+1. Tiene que poder lanzarse desde la tarea `test` del Makefile y terminar solo, para que `make test` acabe e informe de si los tests pasan.
+2. Lo que añade al tiempo de cada ejecución de `make test`, siguiendo la F de FIRST, que se paga cada vez que se lanzan los tests.
 
 ### Opciones
 
@@ -77,5 +76,6 @@ Cada opción se ha probado lanzando los tests del proyecto con los fuentes sin p
 
 ### Decisión
 
-Usamos `go test ./...`, lanzado con `make test`. goconvey queda fuera porque no termina solo y no se puede lanzar desde `make test`. go test y ginkgo cumplen los dos primeros criterios, ginkgo configurándolo con `-o`, y en el tercero go test tarda 288 ms frente a los 418 ms de ginkgo.
+Usamos `go test ./...`, lanzado con `make test`. goconvey queda fuera porque no termina solo y no se puede lanzar desde `make test`. go test y ginkgo decide el segundo criterio: go test tarda 288 ms frente a los 418 ms de ginkgo.
 
+Además, go test no escribe nada en el directorio de los fuentes: lo que compila lo guarda en la caché de Go, que se puede llevar a otro sitio con `GOCACHE`. Así funcionará igual en el contenedor del siguiente objetivo, donde ese directorio no tendrá permiso de escritura.
