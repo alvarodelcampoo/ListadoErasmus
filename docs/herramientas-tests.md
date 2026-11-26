@@ -77,5 +77,3 @@ Cada opción se ha probado lanzando los tests del proyecto con los fuentes sin p
 ### Decisión
 
 Usamos `go test ./...`, lanzado con `make test`. goconvey queda fuera porque no termina solo y no se puede lanzar desde `make test`. Entre go test y ginkgo decide el segundo criterio: go test tarda 288 ms frente a los 418 ms de ginkgo.
-
-Además, go test no escribe nada en el directorio de los fuentes: lo que compila lo guarda en la caché de Go, que se puede llevar a otro sitio con `GOCACHE`. Así funcionará igual en el contenedor del siguiente objetivo, donde ese directorio no tendrá permiso de escritura.
