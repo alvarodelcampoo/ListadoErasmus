@@ -17,26 +17,35 @@ func leerAdjudicacionesReales(t *testing.T) Adjudicaciones {
 
 func TestLeerAdjudicacion(t *testing.T) {
 	tercera := leerAdjudicacionesReales(t)[2]
-	assert.Equal(t, PlazaAdjudicada{numeroOrden: 61, notaTotal: 8.221}, tercera["ESTUDIANTE 166"])
-	assert.Equal(t, PlazaAdjudicada{numeroOrden: 97, notaTotal: 5.992}, tercera["ESTUDIANTE 021"])
+	munich, _ := destinoDelListado(t, "TECHNISCHE UNIVERSITÄT MÜNCHEN", IngenieriaInformatica)
+	stip, _ := destinoDelListado(t, "REPUBLIC OF MACEDONIA GOCE DELCEV STATE UNIVERSITY STIP", IngenieriaInformatica)
+	assert.Equal(t, PlazaAdjudicada{numeroOrden: munich, notaTotal: 8.221}, tercera["ESTUDIANTE 166"])
+	assert.Equal(t, PlazaAdjudicada{numeroOrden: stip, notaTotal: 5.992}, tercera["ESTUDIANTE 021"])
 }
 
 func TestLeerTodasLasAdjudicaciones(t *testing.T) {
 	adjudicaciones := leerAdjudicacionesReales(t)
-	assert.Equal(t, 3, len(adjudicaciones))
-	assert.Equal(t, 156, len(adjudicaciones[0]))
-	assert.Equal(t, 69, len(adjudicaciones[1]))
-	assert.Equal(t, 9, len(adjudicaciones[2]))
+	adjudicacionesPublicadas := 3
+	assert.Equal(t, adjudicacionesPublicadas, len(adjudicaciones))
+	primera, segunda, tercera := adjudicaciones[0], adjudicaciones[1], adjudicaciones[2]
+	estudiantesEnLaPrimera, estudiantesEnLaSegunda, estudiantesEnLaTercera := 156, 69, 9
+	assert.Equal(t, estudiantesEnLaPrimera, len(primera))
+	assert.Equal(t, estudiantesEnLaSegunda, len(segunda))
+	assert.Equal(t, estudiantesEnLaTercera, len(tercera))
 }
 
 func TestUltimaPlazaDeCadaEstudiante(t *testing.T) {
 	plazas := leerAdjudicacionesReales(t).ultimaPlazaDeCadaEstudiante()
-	assert.Equal(t, 172, len(plazas))
-	assert.Equal(t, PlazaAdjudicada{numeroOrden: 49, notaTotal: 8.13}, plazas["ESTUDIANTE 020"])
+	aachenInformatica, _ := destinoDelListado(t, institucionAachen, IngenieriaInformatica)
+	estudiantesDistintos := 172
+	assert.Equal(t, estudiantesDistintos, len(plazas))
+	assert.Equal(t, PlazaAdjudicada{numeroOrden: aachenInformatica, notaTotal: 8.13}, plazas["ESTUDIANTE 020"])
 }
 
 func TestNotasPorDestino(t *testing.T) {
 	notas := leerAdjudicacionesReales(t).notasPorDestino()
-	assert.Equal(t, 84, len(notas))
-	assert.Equal(t, []float64{8.13, 8.978, 9.019}, slices.Sorted(slices.Values(notas[49])))
+	aachenInformatica, _ := destinoDelListado(t, institucionAachen, IngenieriaInformatica)
+	destinosConAdjudicados := 84
+	assert.Equal(t, destinosConAdjudicados, len(notas))
+	assert.Equal(t, []float64{8.13, 8.978, 9.019}, slices.Sorted(slices.Values(notas[aachenInformatica])))
 }
