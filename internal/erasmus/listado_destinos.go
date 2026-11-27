@@ -27,7 +27,7 @@ func (e *NotasSinDestinoError) Error() string {
 }
 
 func NewListadoDestinos(destinos map[int]Destino, adjudicaciones ...map[string]PlazaAdjudicada) (ListadoDestinos, error) {
-	notas := notasPorDestino(ultimaAdjudicacion(adjudicaciones...))
+	notas := Adjudicaciones(adjudicaciones).notasPorDestino()
 	listado := ListadoDestinos{destinos: map[int]Destino{}}
 	errores := make([]error, 0, 2*len(destinos)+len(notas))
 	for numeroOrden, destino := range destinos {

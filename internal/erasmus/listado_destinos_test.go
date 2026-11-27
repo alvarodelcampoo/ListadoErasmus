@@ -173,7 +173,7 @@ func TestNotaPonderadaEnDestinosReales(t *testing.T) {
 }
 
 func TestDestinosViablesConDatosReales(t *testing.T) {
-	listado, err := NewListadoDestinos(leerListadoReal(t), leerAdjudicacionReal(t, 1), leerAdjudicacionReal(t, 2), leerAdjudicacionReal(t, 3))
+	listado, err := NewListadoDestinos(leerListadoReal(t), leerAdjudicacionesReales(t)...)
 	assert.Equal(t, nil, err)
 	viables, err := listado.DestinosViables(Estudiante{NotaMedia: 5, Niveles: map[string]NivelIdioma{"PORTUGUES": NivelB2}})
 	assert.Equal(t, nil, err)
