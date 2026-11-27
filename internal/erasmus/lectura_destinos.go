@@ -45,14 +45,23 @@ func (e *NotaMinimaIlegibleError) Error() string {
 	return fmt.Sprintf("el bloque %d del listado tiene una nota mínima que no es un número: %q", e.Bloque, e.Texto)
 }
 
+type NumeroOrdenRepetidoError struct {
+	NumeroOrden int
+}
+
+func (e *NumeroOrdenRepetidoError) Error() string {
+	return fmt.Sprintf("el nº de orden %d aparece más de una vez en el listado", e.NumeroOrden)
+}
+
 func LeerDestinos(texto io.Reader) (map[int]Destino, error) {
 	contenido, err := io.ReadAll(texto)
 	errores := []error{err}
 	destinos := map[int]Destino{}
 	for posicion, bloque := range strings.Split(string(contenido), "\n 015-")[1:] {
 		numeroOrden, destino, errBloque := leerDestino(posicion+1, bloque)
+		_, repetido := destinos[numeroOrden]
 		destinos[numeroOrden] = destino
-		errores = append(errores, errBloque)
+		errores = append(errores, errBloque, errorSi(repetido, &NumeroOrdenRepetidoError{NumeroOrden: numeroOrden}))
 	}
 	return destinos, errors.Join(errores...)
 }

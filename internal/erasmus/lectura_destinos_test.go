@@ -84,3 +84,10 @@ func TestLeerNotaMinimaQueNoEsNumero(t *testing.T) {
 		assert.Equal(t, errors.Join(errors.Join(&NotaMinimaIlegibleError{Bloque: primerBloque, Texto: nota})), err)
 	}
 }
+
+func TestLeerNumeroOrdenRepetido(t *testing.T) {
+	bloque := "\n 015-001   B LOUVAIN01    Uclouvain    2   9\nCursos  Titulación\n 3,4  296/00\nIdiomas\n FRANCES (B2)\n"
+	numeroOrdenDelBloque := 1
+	_, err := LeerDestinos(strings.NewReader("cabecera" + bloque + bloque))
+	assert.Equal(t, errors.Join(&NumeroOrdenRepetidoError{NumeroOrden: numeroOrdenDelBloque}), err)
+}
