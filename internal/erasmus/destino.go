@@ -14,7 +14,7 @@ type Destino struct {
 	duracion     int
 	institucion  string
 	plazas       int
-	cursos       []int
+	cursos       map[Titulacion][]int
 	notaMinima   float64
 }
 
@@ -56,7 +56,7 @@ func (d Destino) comprobar() error {
 		errorSi(strings.TrimSpace(d.institucion) == "", ErrDestinoSinInstitucion),
 		errorSi(d.plazas <= 0, &PlazasNoPositivasError{Plazas: d.plazas}),
 		errorSi(!notaEnRango(d.notaMinima, notaExpedienteMaxima), &NotaMinimaFueraDeRangoError{Nota: d.notaMinima}),
-		errorDeCada(d.cursos, func(_ int, curso int) error {
+		errorDeCada(slices.Concat(slices.Collect(maps.Values(d.cursos))...), func(_ int, curso int) error {
 			return errorSi(curso <= 0, &CursoNoPositivoError{Curso: curso})
 		}),
 		errorDeCada(d.notasTotales, func(i int, nota float64) error {

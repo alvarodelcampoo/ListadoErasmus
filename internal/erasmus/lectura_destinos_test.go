@@ -23,7 +23,7 @@ func TestLeerDestinos(t *testing.T) {
 		institucion: "HES-SO HAUTE ÉCOLE SPÉCIALISÉE DE SUISSE OCCIDENTALE",
 		plazas:      2,
 		duracion:    9,
-		cursos:      []int{3, 4},
+		cursos:      map[Titulacion][]int{Telecomunicaciones: {3, 4}},
 		notaMinima:  7,
 		idiomas:     map[string]NivelIdioma{"FRANCES": NivelB1},
 	}, destinos[2])
@@ -31,7 +31,7 @@ func TestLeerDestinos(t *testing.T) {
 		institucion: "UNIVERSIDADE DO PORTO",
 		plazas:      2,
 		duracion:    9,
-		cursos:      []int{3, 4},
+		cursos:      map[Titulacion][]int{InformaticaYADE: {3, 4}, IngenieriaInformatica: {3, 4}, InformaticaYMatematicas: {3, 4}},
 		idiomas:     map[string]NivelIdioma{"INGLES": NivelB1, "PORTUGUES": NivelB1},
 	}, destinos[106])
 }

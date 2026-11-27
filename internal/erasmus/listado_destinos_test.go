@@ -14,7 +14,7 @@ func destinoValido() Destino {
 		institucion: "RHEINISCH-WESTFÄLISCHE TECHNISCHE HOCHSCHULE AACHEN",
 		plazas:      2,
 		duracion:    9,
-		cursos:      []int{3, 4},
+		cursos:      map[Titulacion][]int{Telecomunicaciones: {3, 4}},
 		notaMinima:  7,
 		idiomas:     map[string]NivelIdioma{"ALEMAN": NivelB1, "INGLES": NivelB1},
 	}
@@ -43,7 +43,7 @@ func TestNewListadoDestinos(t *testing.T) {
 		{"notas de un destino que no está en el listado", map[int]Destino{6: destinoValido()}, Adjudicaciones{{"ESTUDIANTE 1": {7, 8}}}, errors.Join(&NotasSinDestinoError{NumeroOrden: 7})},
 		{"nota imposible de un destino", map[int]Destino{6: destinoValido()}, Adjudicaciones{{"ESTUDIANTE 1": {6, 15}}}, errors.Join(errors.Join(errors.Join(&NotaConBonificacionFueraDeRangoError{Nota: 15, Posicion: 1})))},
 		{"destino sin institución", map[int]Destino{6: destinoCon(func(destino *Destino) { destino.institucion = " " })}, nil, errors.Join(errors.Join(ErrDestinoSinInstitucion))},
-		{"curso no positivo", map[int]Destino{6: destinoCon(func(destino *Destino) { destino.cursos = []int{0} })}, nil, errors.Join(errors.Join(errors.Join(&CursoNoPositivoError{Curso: 0})))},
+		{"curso no positivo", map[int]Destino{6: destinoCon(func(destino *Destino) { destino.cursos = map[Titulacion][]int{Telecomunicaciones: {0}} })}, nil, errors.Join(errors.Join(errors.Join(&CursoNoPositivoError{Curso: 0})))},
 		{"nota mínima imposible", map[int]Destino{6: destinoCon(func(destino *Destino) { destino.notaMinima = 11 })}, nil, errors.Join(errors.Join(&NotaMinimaFueraDeRangoError{Nota: 11}))},
 	}
 	for _, caso := range casos {

@@ -10,13 +10,21 @@ import (
 )
 
 var (
-	lineaDestino   = regexp.MustCompile(`^(\d{3}) +\S+ +\S+ +(.+?) {2,}(\d+) +(\d+)\b.*?(?: {3,}(\S+(?: \S+)?))? *\n`)
-	lineaCursos    = regexp.MustCompile(`Cursos .*\n *(.+?) {2,}`)
-	numeroDecimal  = regexp.MustCompile(`^(\d+([.,]\d+)?)?$`)
-	digito         = regexp.MustCompile(`\d`)
-	lineaIdiomas   = regexp.MustCompile(`Idiomas *\n(.*)`)
-	idiomaConNivel = regexp.MustCompile(`(\p{Lu}+) \((B1|B2|C1|C2)\)`)
-	nivelPorNombre = map[string]NivelIdioma{"B1": NivelB1, "B2": NivelB2, "C1": NivelC1, "C2": NivelC2}
+	lineaDestino        = regexp.MustCompile(`^(\d{3}) +\S+ +\S+ +(.+?) {2,}(\d+) +(\d+)\b.*?(?: {3,}(\S+(?: \S+)?))? *\n`)
+	tablaCursos         = regexp.MustCompile(`Cursos .*\n((?: *\d.*\n)+)`)
+	filaCursos          = regexp.MustCompile(`(?m)^ *(.+?) {2,}(.+)$`)
+	codigoTitulacion    = regexp.MustCompile(`(\w+)/\d{2}`)
+	numeroDecimal       = regexp.MustCompile(`^(\d+([.,]\d+)?)?$`)
+	digito              = regexp.MustCompile(`\d`)
+	lineaIdiomas        = regexp.MustCompile(`Idiomas *\n(.*)`)
+	idiomaConNivel      = regexp.MustCompile(`(\p{Lu}+) \((B1|B2|C1|C2)\)`)
+	nivelPorNombre      = map[string]NivelIdioma{"B1": NivelB1, "B2": NivelB2, "C1": NivelC1, "C2": NivelC2}
+	titulacionPorCodigo = map[string]Titulacion{
+		"296": IngenieriaInformatica,
+		"216": InformaticaYADE,
+		"297": InformaticaYMatematicas,
+		"221": Telecomunicaciones,
+	}
 )
 
 type LineaNoEncontradaError struct {
@@ -59,12 +67,33 @@ func decimal(texto string) float64 {
 	return valor
 }
 
-func leerCursos(bloque string) []int {
-	cursos := []int{}
-	for _, curso := range digito.FindAllString(buscar(lineaCursos, bloque)[1], -1) {
-		cursos = append(cursos, entero(curso))
+func leerCursos(bloque string) map[Titulacion][]int {
+	cursos := map[Titulacion][]int{}
+	for _, fila := range filaCursos.FindAllStringSubmatch(buscar(tablaCursos, bloque)[1], -1) {
+		for _, titulacion := range leerTitulaciones(fila[2]) {
+			cursos[titulacion] = leerNumeros(fila[1])
+		}
 	}
 	return cursos
+}
+
+func leerTitulaciones(texto string) []Titulacion {
+	titulaciones := []Titulacion{}
+	for _, codigo := range codigoTitulacion.FindAllStringSubmatch(texto, -1) {
+		titulacion, deGrado := titulacionPorCodigo[codigo[1]]
+		if deGrado {
+			titulaciones = append(titulaciones, titulacion)
+		}
+	}
+	return titulaciones
+}
+
+func leerNumeros(texto string) []int {
+	numeros := []int{}
+	for _, numero := range digito.FindAllString(texto, -1) {
+		numeros = append(numeros, entero(numero))
+	}
+	return numeros
 }
 
 func leerIdiomas(bloque string) map[string]NivelIdioma {
@@ -87,7 +116,7 @@ func leerDestino(posicion int, bloque string) (int, Destino, error) {
 	}, errors.Join(
 		errorSi(!numeroDecimal.MatchString(campos[5]), &NotaMinimaIlegibleError{Bloque: posicion, Texto: campos[5]}),
 		errorSi(!lineaDestino.MatchString(bloque), &LineaNoEncontradaError{Bloque: posicion, Linea: "destino"}),
-		errorSi(!lineaCursos.MatchString(bloque), &LineaNoEncontradaError{Bloque: posicion, Linea: "cursos"}),
+		errorSi(!tablaCursos.MatchString(bloque), &LineaNoEncontradaError{Bloque: posicion, Linea: "cursos"}),
 		errorSi(!lineaIdiomas.MatchString(bloque), &LineaNoEncontradaError{Bloque: posicion, Linea: "idiomas"}),
 	)
 }
