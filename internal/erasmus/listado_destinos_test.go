@@ -9,42 +9,39 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func destinoValido() Destino {
-	return Destino{
-		institucion: "RHEINISCH-WESTFÄLISCHE TECHNISCHE HOCHSCHULE AACHEN",
-		plazas:      2,
-		duracion:    9,
-		cursos:      map[Titulacion][]int{Telecomunicaciones: {3, 4}},
-		notaMinima:  7,
-		idiomas:     map[string]NivelIdioma{"ALEMAN": NivelB1, "INGLES": NivelB1},
-	}
-}
+const institucionAachen = "RHEINISCH-WESTFÄLISCHE TECHNISCHE HOCHSCHULE AACHEN"
 
-func destinoCon(cambio func(*Destino)) Destino {
-	destino := destinoValido()
+func destinoCon(destino Destino, cambio func(*Destino)) Destino {
 	cambio(&destino)
 	return destino
 }
 
+func soloAachenTeleco(t *testing.T) map[int]Destino {
+	numeroAachenTeleco, aachenTeleco := destinoDelListado(t, institucionAachen, Telecomunicaciones)
+	return map[int]Destino{numeroAachenTeleco: aachenTeleco}
+}
+
 func TestNewListadoDestinos(t *testing.T) {
-	sinPlazas := destinoCon(func(destino *Destino) { destino.plazas = 0 })
+	numeroAachenTeleco, aachenTeleco := destinoDelListado(t, institucionAachen, Telecomunicaciones)
+	numeroAachenInformatica, aachenInformatica := destinoDelListado(t, institucionAachen, IngenieriaInformatica)
+	sinPlazas := destinoCon(aachenTeleco, func(destino *Destino) { destino.plazas = 0 })
 	casos := []struct {
 		nombre         string
 		destinos       map[int]Destino
 		adjudicaciones Adjudicaciones
 		errorEsperado  error
 	}{
-		{"destino real con su nº de orden", map[int]Destino{6: destinoValido()}, nil, nil},
-		{"nº de orden mínimo permitido", map[int]Destino{1: destinoValido()}, nil, nil},
-		{"nº de orden no positivo", map[int]Destino{0: destinoValido()}, nil, errors.Join(&NumeroOrdenNoPositivoError{NumeroOrden: 0})},
-		{"destino con datos imposibles", map[int]Destino{6: sinPlazas}, nil, errors.Join(errors.Join(&PlazasNoPositivasError{Plazas: 0}))},
-		{"un destino imposible entre varios válidos", map[int]Destino{1: destinoValido(), 2: destinoValido(), 6: sinPlazas}, nil, errors.Join(errors.Join(&PlazasNoPositivasError{Plazas: 0}))},
-		{"notas de un destino del listado", map[int]Destino{6: destinoValido()}, Adjudicaciones{{"ESTUDIANTE 1": {6, 9.5}, "ESTUDIANTE 2": {6, 8}}}, nil},
-		{"notas de un destino que no está en el listado", map[int]Destino{6: destinoValido()}, Adjudicaciones{{"ESTUDIANTE 1": {7, 8}}}, errors.Join(&NotasSinDestinoError{NumeroOrden: 7})},
-		{"nota imposible de un destino", map[int]Destino{6: destinoValido()}, Adjudicaciones{{"ESTUDIANTE 1": {6, 15}}}, errors.Join(errors.Join(errors.Join(&NotaConBonificacionFueraDeRangoError{Nota: 15, Posicion: 1})))},
-		{"destino sin institución", map[int]Destino{6: destinoCon(func(destino *Destino) { destino.institucion = " " })}, nil, errors.Join(errors.Join(ErrDestinoSinInstitucion))},
-		{"curso no positivo", map[int]Destino{6: destinoCon(func(destino *Destino) { destino.cursos = map[Titulacion][]int{Telecomunicaciones: {0}} })}, nil, errors.Join(errors.Join(errors.Join(&CursoNoPositivoError{Curso: 0})))},
-		{"nota mínima imposible", map[int]Destino{6: destinoCon(func(destino *Destino) { destino.notaMinima = 11 })}, nil, errors.Join(errors.Join(&NotaMinimaFueraDeRangoError{Nota: 11}))},
+		{"destino real con su nº de orden", map[int]Destino{numeroAachenTeleco: aachenTeleco}, nil, nil},
+		{"nº de orden mínimo permitido", map[int]Destino{1: aachenTeleco}, nil, nil},
+		{"nº de orden no positivo", map[int]Destino{0: aachenTeleco}, nil, errors.Join(&NumeroOrdenNoPositivoError{NumeroOrden: 0})},
+		{"destino con datos imposibles", map[int]Destino{numeroAachenTeleco: sinPlazas}, nil, errors.Join(errors.Join(&PlazasNoPositivasError{Plazas: 0}))},
+		{"un destino imposible junto a otro válido", map[int]Destino{numeroAachenTeleco: sinPlazas, numeroAachenInformatica: aachenInformatica}, nil, errors.Join(errors.Join(&PlazasNoPositivasError{Plazas: 0}))},
+		{"notas de un destino del listado", map[int]Destino{numeroAachenTeleco: aachenTeleco}, Adjudicaciones{{"ESTUDIANTE 1": {numeroOrden: numeroAachenTeleco, notaTotal: 9.5}, "ESTUDIANTE 2": {numeroOrden: numeroAachenTeleco, notaTotal: 8}}}, nil},
+		{"notas de un destino que no está en el listado", map[int]Destino{numeroAachenTeleco: aachenTeleco}, Adjudicaciones{{"ESTUDIANTE 1": {numeroOrden: numeroAachenInformatica, notaTotal: 8}}}, errors.Join(&NotasSinDestinoError{NumeroOrden: numeroAachenInformatica})},
+		{"nota imposible de un destino", map[int]Destino{numeroAachenTeleco: aachenTeleco}, Adjudicaciones{{"ESTUDIANTE 1": {numeroOrden: numeroAachenTeleco, notaTotal: 15}}}, errors.Join(errors.Join(errors.Join(&NotaConBonificacionFueraDeRangoError{Nota: 15, Posicion: 1})))},
+		{"destino sin institución", map[int]Destino{numeroAachenTeleco: destinoCon(aachenTeleco, func(destino *Destino) { destino.institucion = " " })}, nil, errors.Join(errors.Join(ErrDestinoSinInstitucion))},
+		{"curso no positivo", map[int]Destino{numeroAachenTeleco: destinoCon(aachenTeleco, func(destino *Destino) { destino.cursos = map[Titulacion][]int{Telecomunicaciones: {0}} })}, nil, errors.Join(errors.Join(errors.Join(&CursoNoPositivoError{Curso: 0})))},
+		{"nota mínima imposible", map[int]Destino{numeroAachenTeleco: destinoCon(aachenTeleco, func(destino *Destino) { destino.notaMinima = 11 })}, nil, errors.Join(errors.Join(&NotaMinimaFueraDeRangoError{Nota: 11}))},
 	}
 	for _, caso := range casos {
 		t.Run(caso.nombre, func(t *testing.T) {
@@ -55,9 +52,13 @@ func TestNewListadoDestinos(t *testing.T) {
 }
 
 func TestListadoGuardaLasNotasDeCadaDestino(t *testing.T) {
-	listado, _ := NewListadoDestinos(map[int]Destino{6: destinoValido(), 7: destinoValido()}, Adjudicaciones{{"ESTUDIANTE 1": {6, 9.5}, "ESTUDIANTE 2": {6, 8}}})
-	assert.Equal(t, []float64{8, 9.5}, slices.Sorted(slices.Values(listado.destinos[6].notasTotales)))
-	assert.Equal(t, true, listado.destinos[7].EsNuevo())
+	numeroAachenTeleco, aachenTeleco := destinoDelListado(t, institucionAachen, Telecomunicaciones)
+	numeroAachenInformatica, aachenInformatica := destinoDelListado(t, institucionAachen, IngenieriaInformatica)
+	destinos := map[int]Destino{numeroAachenTeleco: aachenTeleco, numeroAachenInformatica: aachenInformatica}
+	adjudicaciones := Adjudicaciones{{"ESTUDIANTE 1": {numeroOrden: numeroAachenTeleco, notaTotal: 9.5}, "ESTUDIANTE 2": {numeroOrden: numeroAachenTeleco, notaTotal: 8}}}
+	listado, _ := NewListadoDestinos(destinos, adjudicaciones)
+	assert.Equal(t, []float64{8, 9.5}, slices.Sorted(slices.Values(listado.destinos[numeroAachenTeleco].notasTotales)))
+	assert.Equal(t, true, listado.destinos[numeroAachenInformatica].EsNuevo())
 }
 
 type casoDestinosViables struct {
@@ -72,8 +73,8 @@ func nivelesQueCumplen() map[string]NivelIdioma {
 	return map[string]NivelIdioma{"ALEMAN": NivelB1, "INGLES": NivelB1}
 }
 
-func probarDestinosViables(t *testing.T, casos []casoDestinosViables) {
-	listado := ListadoDestinos{destinos: map[int]Destino{6: destinoValido()}}
+func probarDestinosViables(t *testing.T, destinos map[int]Destino, casos []casoDestinosViables) {
+	listado := ListadoDestinos{destinos: destinos}
 	for _, caso := range casos {
 		t.Run(caso.nombre, func(t *testing.T) {
 			viables, err := listado.DestinosViables(Estudiante{NotaMedia: caso.notaMedia, Niveles: caso.niveles})
@@ -84,29 +85,33 @@ func probarDestinosViables(t *testing.T, casos []casoDestinosViables) {
 }
 
 func TestNotaMediaDelEstudiante(t *testing.T) {
-	probarDestinosViables(t, []casoDestinosViables{
-		{"nota media válida", 8, nivelesQueCumplen(), map[int]Destino{6: destinoValido()}, nil},
-		{"nota media máxima", 10, nivelesQueCumplen(), map[int]Destino{6: destinoValido()}, nil},
+	soloAachen := soloAachenTeleco(t)
+	probarDestinosViables(t, soloAachen, []casoDestinosViables{
+		{"nota media válida", 8, nivelesQueCumplen(), soloAachen, nil},
+		{"nota media máxima", 10, nivelesQueCumplen(), soloAachen, nil},
 		{"nota media negativa", -1, nivelesQueCumplen(), nil, &NotaMediaFueraDeRangoError{Nota: -1}},
 		{"nota media por encima de 10", 10.5, nivelesQueCumplen(), nil, &NotaMediaFueraDeRangoError{Nota: 10.5}},
 	})
 }
 
 func TestRequisitoDeIdiomas(t *testing.T) {
-	probarDestinosViables(t, []casoDestinosViables{
-		{"nivel superior al exigido", 8, map[string]NivelIdioma{"ALEMAN": NivelC1, "INGLES": NivelB2}, map[int]Destino{6: destinoValido()}, nil},
+	soloAachen := soloAachenTeleco(t)
+	probarDestinosViables(t, soloAachen, []casoDestinosViables{
+		{"nivel superior al exigido", 8, map[string]NivelIdioma{"ALEMAN": NivelC1, "INGLES": NivelB2}, soloAachen, nil},
 		{"le falta uno de los idiomas exigidos", 8, map[string]NivelIdioma{"ALEMAN": NivelB1}, map[int]Destino{}, nil},
 	})
 }
 
 func TestNotaMinimaDelDestino(t *testing.T) {
-	probarDestinosViables(t, []casoDestinosViables{
-		{"nota media igual a la nota mínima", 7, nivelesQueCumplen(), map[int]Destino{6: destinoValido()}, nil},
+	soloAachen := soloAachenTeleco(t)
+	probarDestinosViables(t, soloAachen, []casoDestinosViables{
+		{"nota media igual a la nota mínima", 7, nivelesQueCumplen(), soloAachen, nil},
 		{"nota media por debajo de la nota mínima", 6.9, nivelesQueCumplen(), map[int]Destino{}, nil},
 	})
 }
 
 func TestNotaPonderada(t *testing.T) {
+	_, aachenTeleco := destinoDelListado(t, institucionAachen, Telecomunicaciones)
 	casos := []struct {
 		nombre        string
 		destino       Destino
@@ -114,11 +119,11 @@ func TestNotaPonderada(t *testing.T) {
 		niveles       map[string]NivelIdioma
 		notaPonderada float64
 	}{
-		{"mismo nivel que el exigido", destinoValido(), 7, nivelesQueCumplen(), 7},
-		{"supera el nivel exigido en un idioma", destinoValido(), 8, map[string]NivelIdioma{"ALEMAN": NivelB1, "INGLES": NivelC1}, 9.5},
-		{"supera el nivel en los dos idiomas y cuenta la mayor", destinoValido(), 8, map[string]NivelIdioma{"ALEMAN": NivelB2, "INGLES": NivelC1}, 9.5},
-		{"un idioma que el destino no exige no bonifica", destinoValido(), 8, map[string]NivelIdioma{"ALEMAN": NivelB1, "INGLES": NivelB1, "FRANCES": NivelC2}, 8},
-		{"destino sin idiomas exigidos y cuenta su mejor idioma", destinoCon(func(destino *Destino) { destino.idiomas = nil }), 8, map[string]NivelIdioma{"ALEMAN": NivelB2, "INGLES": NivelC1}, 9.5},
+		{"mismo nivel que el exigido", aachenTeleco, 7, nivelesQueCumplen(), 7},
+		{"supera el nivel exigido en un idioma", aachenTeleco, 8, map[string]NivelIdioma{"ALEMAN": NivelB1, "INGLES": NivelC1}, 9.5},
+		{"supera el nivel en los dos idiomas y cuenta la mayor", aachenTeleco, 8, map[string]NivelIdioma{"ALEMAN": NivelB2, "INGLES": NivelC1}, 9.5},
+		{"un idioma que el destino no exige no bonifica", aachenTeleco, 8, map[string]NivelIdioma{"ALEMAN": NivelB1, "INGLES": NivelB1, "FRANCES": NivelC2}, 8},
+		{"destino sin idiomas exigidos y cuenta su mejor idioma", destinoCon(aachenTeleco, func(destino *Destino) { destino.idiomas = nil }), 8, map[string]NivelIdioma{"ALEMAN": NivelB2, "INGLES": NivelC1}, 9.5},
 	}
 	for _, caso := range casos {
 		t.Run(caso.nombre, func(t *testing.T) {
@@ -128,7 +133,8 @@ func TestNotaPonderada(t *testing.T) {
 }
 
 func TestNotaDeCorte(t *testing.T) {
-	conAdjudicados := destinoCon(func(destino *Destino) { destino.notasTotales = []float64{9.5, 8} })
+	_, aachenTeleco := destinoDelListado(t, institucionAachen, Telecomunicaciones)
+	conAdjudicados := destinoCon(aachenTeleco, func(destino *Destino) { destino.notasTotales = []float64{9.5, 8} })
 	casos := []struct {
 		nombre    string
 		destino   Destino
@@ -139,7 +145,7 @@ func TestNotaDeCorte(t *testing.T) {
 		{"nota ponderada igual a la nota de corte", conAdjudicados, 8, nivelesQueCumplen(), true},
 		{"nota ponderada por debajo de la nota de corte", conAdjudicados, 7.9, nivelesQueCumplen(), false},
 		{"solo llega a la nota de corte con la bonificación", conAdjudicados, 7, map[string]NivelIdioma{"ALEMAN": NivelB1, "INGLES": NivelC1}, true},
-		{"destino nuevo sin adjudicados del año anterior", destinoValido(), 7, nivelesQueCumplen(), true},
+		{"destino nuevo sin adjudicados del año anterior", aachenTeleco, 7, nivelesQueCumplen(), true},
 	}
 	for _, caso := range casos {
 		t.Run(caso.nombre, func(t *testing.T) {
@@ -149,27 +155,31 @@ func TestNotaDeCorte(t *testing.T) {
 }
 
 func TestDestinoNuevo(t *testing.T) {
+	numeroAachenTeleco, aachenTeleco := destinoDelListado(t, institucionAachen, Telecomunicaciones)
 	casos := []struct {
 		nombre  string
 		destino Destino
 		nuevo   bool
 	}{
-		{"sin adjudicados del año anterior es nuevo", destinoValido(), true},
-		{"con adjudicados del año anterior no es nuevo", destinoCon(func(destino *Destino) { destino.notasTotales = []float64{8} }), false},
+		{"sin adjudicados del año anterior es nuevo", aachenTeleco, true},
+		{"con adjudicados del año anterior no es nuevo", destinoCon(aachenTeleco, func(destino *Destino) { destino.notasTotales = []float64{8} }), false},
 	}
 	for _, caso := range casos {
 		t.Run(caso.nombre, func(t *testing.T) {
-			viables, _ := ListadoDestinos{destinos: map[int]Destino{6: caso.destino}}.DestinosViables(Estudiante{NotaMedia: 8, Niveles: nivelesQueCumplen()})
-			assert.Equal(t, caso.nuevo, viables[6].EsNuevo())
+			viables, _ := ListadoDestinos{destinos: map[int]Destino{numeroAachenTeleco: caso.destino}}.DestinosViables(Estudiante{NotaMedia: 8, Niveles: nivelesQueCumplen()})
+			assert.Equal(t, caso.nuevo, viables[numeroAachenTeleco].EsNuevo())
 		})
 	}
 }
 
 func TestNotaPonderadaEnDestinosReales(t *testing.T) {
-	destinos := leerListadoReal(t)
+	_, politecnicoDiBari := destinoDelListado(t, "POLITECNICO DI BARI", Telecomunicaciones)
+	_, uclouvain := destinoDelListado(t, "Uclouvain", Telecomunicaciones)
+	notaMedia := 7.0
 	ingles := map[string]NivelIdioma{"INGLES": NivelB2}
-	assert.Equal(t, 8.0, destinos[23].notaPonderada(7, ingles))
-	assert.Equal(t, 7.0, destinos[1].notaPonderada(7, ingles))
+	notaConBonificacionB2 := 8.0
+	assert.Equal(t, notaConBonificacionB2, politecnicoDiBari.notaPonderada(notaMedia, ingles))
+	assert.Equal(t, notaMedia, uclouvain.notaPonderada(notaMedia, ingles))
 }
 
 func TestDestinosViablesConDatosReales(t *testing.T) {
@@ -180,10 +190,10 @@ func TestDestinosViablesConDatosReales(t *testing.T) {
 	estudiante := Estudiante{NotaMedia: 5, Niveles: map[string]NivelIdioma{"PORTUGUES": NivelB2}}
 	viables, err := listado.DestinosViables(estudiante)
 	assert.Equal(t, nil, err)
-	politecnicoDiMilano := numeroOrdenDe(t, "POLITECNICO DI MILANO", Telecomunicaciones)
-	politecnicoDiBari := numeroOrdenDe(t, "POLITECNICO DI BARI", IngenieriaInformatica)
-	yildiz := numeroOrdenDe(t, "YILDIZ TECHNICAL UNIVERSITY", IngenieriaInformatica)
-	ankara := numeroOrdenDe(t, "ANKARA UNIVERSITY", IngenieriaInformatica)
+	politecnicoDiMilano, _ := destinoDelListado(t, "POLITECNICO DI MILANO", Telecomunicaciones)
+	politecnicoDiBari, _ := destinoDelListado(t, "POLITECNICO DI BARI", IngenieriaInformatica)
+	yildiz, _ := destinoDelListado(t, "YILDIZ TECHNICAL UNIVERSITY", IngenieriaInformatica)
+	ankara, _ := destinoDelListado(t, "ANKARA UNIVERSITY", IngenieriaInformatica)
 	esperados := []int{politecnicoDiMilano, politecnicoDiBari, yildiz, ankara}
 	assert.Equal(t, slices.Sorted(slices.Values(esperados)), slices.Sorted(maps.Keys(viables)))
 	assert.Equal(t, false, viables[politecnicoDiMilano].EsNuevo())

@@ -19,15 +19,15 @@ func leerListadoReal(t *testing.T) map[int]Destino {
 	return destinos
 }
 
-func numeroOrdenDe(t *testing.T, institucion string, titulacion Titulacion) int {
+func destinoDelListado(t *testing.T, institucion string, titulacion Titulacion) (int, Destino) {
 	coincidencias := leerListadoReal(t)
 	maps.DeleteFunc(coincidencias, func(_ int, destino Destino) bool {
-		_, ofertada := destino.cursos[titulacion]
-		return destino.institucion != institucion || !ofertada
+		_, ofertado := destino.cursos[titulacion]
+		return destino.institucion != institucion || !ofertado
 	})
 	numerosOrden := slices.Collect(maps.Keys(coincidencias))
 	assert.Equal(t, 1, len(numerosOrden))
-	return numerosOrden[0]
+	return numerosOrden[0], coincidencias[numerosOrden[0]]
 }
 
 func TestLeerDestinos(t *testing.T) {
