@@ -28,6 +28,14 @@ func (e *PlazasNoPositivasError) Error() string {
 	return fmt.Sprintf("las plazas son %d y tienen que ser más de 0", e.Plazas)
 }
 
+type DuracionNoPositivaError struct {
+	Duracion int
+}
+
+func (e *DuracionNoPositivaError) Error() string {
+	return fmt.Sprintf("la duración es de %d meses y tiene que ser más de 0", e.Duracion)
+}
+
 type CursoNoPositivoError struct {
 	Curso int
 }
@@ -55,6 +63,7 @@ func (d Destino) comprobar() error {
 	return errors.Join(
 		errorSi(strings.TrimSpace(d.institucion) == "", ErrDestinoSinInstitucion),
 		errorSi(d.plazas <= 0, &PlazasNoPositivasError{Plazas: d.plazas}),
+		errorSi(d.duracion <= 0, &DuracionNoPositivaError{Duracion: d.duracion}),
 		errorSi(!notaEnRango(d.notaMinima, notaExpedienteMaxima), &NotaMinimaFueraDeRangoError{Nota: d.notaMinima}),
 		errorDeCada(slices.Concat(slices.Collect(maps.Values(d.cursos))...), func(_ int, curso int) error {
 			return errorSi(curso <= 0, &CursoNoPositivoError{Curso: curso})

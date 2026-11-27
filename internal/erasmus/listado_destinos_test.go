@@ -40,6 +40,7 @@ func TestNewListadoDestinos(t *testing.T) {
 		{"notas de un destino que no está en el listado", map[int]Destino{numeroAachenTeleco: aachenTeleco}, Adjudicaciones{{"ESTUDIANTE 1": {numeroOrden: numeroAachenInformatica, notaTotal: 8}}}, errors.Join(&NotasSinDestinoError{NumeroOrden: numeroAachenInformatica})},
 		{"nota imposible de un destino", map[int]Destino{numeroAachenTeleco: aachenTeleco}, Adjudicaciones{{"ESTUDIANTE 1": {numeroOrden: numeroAachenTeleco, notaTotal: 15}}}, errors.Join(errors.Join(errors.Join(&NotaConBonificacionFueraDeRangoError{Nota: 15, Posicion: 1})))},
 		{"destino sin institución", map[int]Destino{numeroAachenTeleco: destinoCon(aachenTeleco, func(destino *Destino) { destino.institucion = " " })}, nil, errors.Join(errors.Join(ErrDestinoSinInstitucion))},
+		{"duración no positiva", map[int]Destino{numeroAachenTeleco: destinoCon(aachenTeleco, func(destino *Destino) { destino.duracion = 0 })}, nil, errors.Join(errors.Join(&DuracionNoPositivaError{Duracion: 0}))},
 		{"curso no positivo", map[int]Destino{numeroAachenTeleco: destinoCon(aachenTeleco, func(destino *Destino) { destino.cursos = map[Titulacion][]int{Telecomunicaciones: {0}} })}, nil, errors.Join(errors.Join(errors.Join(&CursoNoPositivoError{Curso: 0})))},
 		{"nota mínima imposible", map[int]Destino{numeroAachenTeleco: destinoCon(aachenTeleco, func(destino *Destino) { destino.notaMinima = 11 })}, nil, errors.Join(errors.Join(&NotaMinimaFueraDeRangoError{Nota: 11}))},
 	}
