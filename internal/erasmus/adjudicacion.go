@@ -14,7 +14,7 @@ type PlazaAdjudicada struct {
 
 type Adjudicaciones []map[string]PlazaAdjudicada
 
-var filaAdjudicacion = regexp.MustCompile(`(?m)^(\S.*?) +\d+\.\d{3} +\d\.\d{3} +(\d+\.\d{3}) .*?015-(\d{3})`)
+var filaAdjudicacion = regexp.MustCompile(`(?m)^(?P<estudiante>\S.*?) +\d+\.\d{3} +\d\.\d{3} +(?P<notaTotal>\d+\.\d{3}) .*?015-(?P<numeroOrden>\d{3})`)
 
 func LeerAdjudicaciones(rutas ...string) (Adjudicaciones, error) {
 	adjudicaciones := make(Adjudicaciones, len(rutas))
@@ -28,8 +28,8 @@ func LeerAdjudicaciones(rutas ...string) (Adjudicaciones, error) {
 func leerAdjudicacion(ruta string) (map[string]PlazaAdjudicada, error) {
 	contenido, err := os.ReadFile(ruta)
 	plazas := map[string]PlazaAdjudicada{}
-	for _, fila := range filaAdjudicacion.FindAllStringSubmatch(string(contenido), -1) {
-		plazas[fila[1]] = PlazaAdjudicada{numeroOrden: entero(fila[3]), notaTotal: decimal(fila[2])}
+	for _, fila := range buscarTodas(filaAdjudicacion, string(contenido)) {
+		plazas[fila["estudiante"]] = PlazaAdjudicada{numeroOrden: entero(fila["numeroOrden"]), notaTotal: decimal(fila["notaTotal"])}
 	}
 	return plazas, err
 }
