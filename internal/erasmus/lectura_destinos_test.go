@@ -31,7 +31,8 @@ func destinoDelListado(t *testing.T, institucion string, titulacion Titulacion) 
 }
 
 func TestLeerDestinos(t *testing.T) {
-	destinos := leerListadoReal(t)
+	_, hesSo := destinoDelListado(t, "HES-SO HAUTE ÉCOLE SPÉCIALISÉE DE SUISSE OCCIDENTALE", Telecomunicaciones)
+	_, oporto := destinoDelListado(t, "UNIVERSIDADE DO PORTO", IngenieriaInformatica)
 	assert.Equal(t, Destino{
 		institucion: "HES-SO HAUTE ÉCOLE SPÉCIALISÉE DE SUISSE OCCIDENTALE",
 		plazas:      2,
@@ -39,18 +40,18 @@ func TestLeerDestinos(t *testing.T) {
 		cursos:      map[Titulacion][]int{Telecomunicaciones: {3, 4}},
 		notaMinima:  7,
 		idiomas:     map[string]NivelIdioma{"FRANCES": NivelB1},
-	}, destinos[2])
+	}, hesSo)
 	assert.Equal(t, Destino{
 		institucion: "UNIVERSIDADE DO PORTO",
 		plazas:      2,
 		duracion:    9,
 		cursos:      map[Titulacion][]int{InformaticaYADE: {3, 4}, IngenieriaInformatica: {3, 4}, InformaticaYMatematicas: {3, 4}},
 		idiomas:     map[string]NivelIdioma{"INGLES": NivelB1, "PORTUGUES": NivelB1},
-	}, destinos[106])
+	}, oporto)
 }
 
 func TestLeerCursosDeCadaTitulacion(t *testing.T) {
-	yildiz := leerListadoReal(t)[120]
+	_, yildiz := destinoDelListado(t, "YILDIZ TECHNICAL UNIVERSITY", IngenieriaInformatica)
 	assert.Equal(t, map[Titulacion][]int{
 		IngenieriaInformatica:   {2, 3},
 		InformaticaYADE:         {3, 4},
@@ -60,23 +61,26 @@ func TestLeerCursosDeCadaTitulacion(t *testing.T) {
 
 func TestLeerTodoElListado(t *testing.T) {
 	destinos := leerListadoReal(t)
+	destinosEnElPdf := 133
 	_, err := NewListadoDestinos(destinos, nil)
-	assert.Equal(t, 133, len(destinos))
+	assert.Equal(t, destinosEnElPdf, len(destinos))
 	assert.Equal(t, nil, err)
 }
 
 func TestLeerDestinoSinLineas(t *testing.T) {
+	primerBloque := 1
 	_, err := LeerDestinos(strings.NewReader("cabecera\n 015-texto que no es un destino\n"))
 	assert.Equal(t, errors.Join(errors.Join(
-		&LineaNoEncontradaError{Bloque: 1, Linea: "destino"},
-		&LineaNoEncontradaError{Bloque: 1, Linea: "cursos"},
-		&LineaNoEncontradaError{Bloque: 1, Linea: "idiomas"},
+		&LineaNoEncontradaError{Bloque: primerBloque, Linea: "destino"},
+		&LineaNoEncontradaError{Bloque: primerBloque, Linea: "cursos"},
+		&LineaNoEncontradaError{Bloque: primerBloque, Linea: "idiomas"},
 	)), err)
 }
 
 func TestLeerNotaMinimaQueNoEsNumero(t *testing.T) {
+	primerBloque := 1
 	for _, nota := range []string{"7,5x", "7,5 x"} {
 		_, err := LeerDestinos(strings.NewReader("cabecera\n 015-001   B LOUVAIN01    Uclouvain    2   9   OBSERVACIONES   " + nota + "\nCursos  Titulación\n 3,4  2TC\nIdiomas\n FRANCES (B2)\n"))
-		assert.Equal(t, errors.Join(errors.Join(&NotaMinimaIlegibleError{Bloque: 1, Texto: nota})), err)
+		assert.Equal(t, errors.Join(errors.Join(&NotaMinimaIlegibleError{Bloque: primerBloque, Texto: nota})), err)
 	}
 }
