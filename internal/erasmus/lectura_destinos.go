@@ -10,14 +10,14 @@ import (
 )
 
 var (
-	lineaDestino        = regexp.MustCompile(`^(\d{3}) +\S+ +\S+ +(.+?) {2,}(\d+) +(\d+)\b.*?(?: {3,}(\S+(?: \S+)?))? *\n`)
-	tablaCursos         = regexp.MustCompile(`Cursos .*\n((?: *\d.*\n)+)`)
-	filaCursos          = regexp.MustCompile(`(?m)^ *(.+?) {2,}(.+)$`)
-	codigoTitulacion    = regexp.MustCompile(`(\w+)/\d{2}`)
+	lineaDestino        = regexp.MustCompile(`^(?P<numeroOrden>\d{3}) +\S+ +\S+ +(?P<institucion>.+?) {2,}(?P<plazas>\d+) +(?P<duracion>\d+)\b.*?(?: {3,}(?P<notaMinima>\S+(?: \S+)?))? *\n`)
+	tablaCursos         = regexp.MustCompile(`Cursos .*\n(?P<filas>(?: *\d.*\n)+)`)
+	filaCursos          = regexp.MustCompile(`(?m)^ *(?P<cursos>.+?) {2,}(?P<titulaciones>.+)$`)
+	codigoTitulacion    = regexp.MustCompile(`(?P<codigo>\w+)/\d{2}`)
 	numeroDecimal       = regexp.MustCompile(`^(\d+([.,]\d+)?)?$`)
-	digito              = regexp.MustCompile(`\d`)
-	lineaIdiomas        = regexp.MustCompile(`Idiomas *\n(.*)`)
-	idiomaConNivel      = regexp.MustCompile(`(\p{Lu}+) \((B1|B2|C1|C2)\)`)
+	digito              = regexp.MustCompile(`(?P<numero>\d)`)
+	lineaIdiomas        = regexp.MustCompile(`Idiomas *\n(?P<idiomas>.*)`)
+	idiomaConNivel      = regexp.MustCompile(`(?P<idioma>\p{Lu}+) \((?P<nivel>B1|B2|C1|C2)\)`)
 	nivelPorNombre      = map[string]NivelIdioma{"B1": NivelB1, "B2": NivelB2, "C1": NivelC1, "C2": NivelC2}
 	titulacionPorCodigo = map[string]Titulacion{
 		"296": IngenieriaInformatica,
@@ -69,9 +69,9 @@ func decimal(texto string) float64 {
 
 func leerCursos(bloque string) map[Titulacion][]int {
 	cursos := map[Titulacion][]int{}
-	for _, fila := range filaCursos.FindAllStringSubmatch(buscar(tablaCursos, bloque)[1], -1) {
-		for _, titulacion := range leerTitulaciones(fila[2]) {
-			cursos[titulacion] = leerNumeros(fila[1])
+	for _, fila := range buscarTodas(filaCursos, buscar(tablaCursos, bloque)["filas"]) {
+		for _, titulacion := range leerTitulaciones(fila["titulaciones"]) {
+			cursos[titulacion] = leerNumeros(fila["cursos"])
 		}
 	}
 	return cursos
@@ -79,8 +79,8 @@ func leerCursos(bloque string) map[Titulacion][]int {
 
 func leerTitulaciones(texto string) []Titulacion {
 	titulaciones := []Titulacion{}
-	for _, codigo := range codigoTitulacion.FindAllStringSubmatch(texto, -1) {
-		titulacion, deGrado := titulacionPorCodigo[codigo[1]]
+	for _, codigo := range buscarTodas(codigoTitulacion, texto) {
+		titulacion, deGrado := titulacionPorCodigo[codigo["codigo"]]
 		if deGrado {
 			titulaciones = append(titulaciones, titulacion)
 		}
@@ -90,38 +90,53 @@ func leerTitulaciones(texto string) []Titulacion {
 
 func leerNumeros(texto string) []int {
 	numeros := []int{}
-	for _, numero := range digito.FindAllString(texto, -1) {
-		numeros = append(numeros, entero(numero))
+	for _, numero := range buscarTodas(digito, texto) {
+		numeros = append(numeros, entero(numero["numero"]))
 	}
 	return numeros
 }
 
 func leerIdiomas(bloque string) map[string]NivelIdioma {
 	idiomas := map[string]NivelIdioma{}
-	for _, idioma := range idiomaConNivel.FindAllStringSubmatch(buscar(lineaIdiomas, bloque)[1], -1) {
-		idiomas[idioma[1]] = nivelPorNombre[idioma[2]]
+	for _, idioma := range buscarTodas(idiomaConNivel, buscar(lineaIdiomas, bloque)["idiomas"]) {
+		idiomas[idioma["idioma"]] = nivelPorNombre[idioma["nivel"]]
 	}
 	return idiomas
 }
 
 func leerDestino(posicion int, bloque string) (int, Destino, error) {
 	campos := buscar(lineaDestino, bloque)
-	return entero(campos[1]), Destino{
-		institucion: campos[2],
-		plazas:      entero(campos[3]),
-		duracion:    entero(campos[4]),
-		notaMinima:  decimal(campos[5]),
+	return entero(campos["numeroOrden"]), Destino{
+		institucion: campos["institucion"],
+		plazas:      entero(campos["plazas"]),
+		duracion:    entero(campos["duracion"]),
+		notaMinima:  decimal(campos["notaMinima"]),
 		cursos:      leerCursos(bloque),
 		idiomas:     leerIdiomas(bloque),
 	}, errors.Join(
-		errorSi(!numeroDecimal.MatchString(campos[5]), &NotaMinimaIlegibleError{Bloque: posicion, Texto: campos[5]}),
+		errorSi(!numeroDecimal.MatchString(campos["notaMinima"]), &NotaMinimaIlegibleError{Bloque: posicion, Texto: campos["notaMinima"]}),
 		errorSi(!lineaDestino.MatchString(bloque), &LineaNoEncontradaError{Bloque: posicion, Linea: "destino"}),
 		errorSi(!tablaCursos.MatchString(bloque), &LineaNoEncontradaError{Bloque: posicion, Linea: "cursos"}),
 		errorSi(!lineaIdiomas.MatchString(bloque), &LineaNoEncontradaError{Bloque: posicion, Linea: "idiomas"}),
 	)
 }
 
-func buscar(linea *regexp.Regexp, bloque string) []string {
-	campos := linea.FindStringSubmatch(bloque)
-	return append(campos, make([]string, linea.NumSubexp()+1-len(campos))...)
+func buscar(linea *regexp.Regexp, texto string) map[string]string {
+	return camposPorNombre(linea, linea.FindStringSubmatch(texto))
+}
+
+func buscarTodas(linea *regexp.Regexp, texto string) []map[string]string {
+	todas := []map[string]string{}
+	for _, coincidencia := range linea.FindAllStringSubmatch(texto, -1) {
+		todas = append(todas, camposPorNombre(linea, coincidencia))
+	}
+	return todas
+}
+
+func camposPorNombre(linea *regexp.Regexp, coincidencia []string) map[string]string {
+	campos := map[string]string{}
+	for posicion, valor := range coincidencia {
+		campos[linea.SubexpNames()[posicion]] = valor
+	}
+	return campos
 }
