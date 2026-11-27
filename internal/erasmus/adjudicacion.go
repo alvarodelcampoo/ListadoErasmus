@@ -1,6 +1,7 @@
 package erasmus
 
 import (
+	"errors"
 	"io"
 	"maps"
 	"regexp"
@@ -11,9 +12,20 @@ type PlazaAdjudicada struct {
 	notaTotal   float64
 }
 
+type Adjudicaciones []map[string]PlazaAdjudicada
+
 var filaAdjudicacion = regexp.MustCompile(`(?m)^(\S.*?) +\d+\.\d{3} +\d\.\d{3} +(\d+\.\d{3}) .*?015-(\d{3})`)
 
-func LeerAdjudicacion(texto io.Reader) (map[string]PlazaAdjudicada, error) {
+func LeerAdjudicaciones(textos ...io.Reader) (Adjudicaciones, error) {
+	adjudicaciones := make(Adjudicaciones, len(textos))
+	errores := make([]error, len(textos))
+	for i, texto := range textos {
+		adjudicaciones[i], errores[i] = leerAdjudicacion(texto)
+	}
+	return adjudicaciones, errors.Join(errores...)
+}
+
+func leerAdjudicacion(texto io.Reader) (map[string]PlazaAdjudicada, error) {
 	contenido, err := io.ReadAll(texto)
 	plazas := map[string]PlazaAdjudicada{}
 	for _, fila := range filaAdjudicacion.FindAllStringSubmatch(string(contenido), -1) {
