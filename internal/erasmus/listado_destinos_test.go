@@ -173,10 +173,21 @@ func TestNotaPonderadaEnDestinosReales(t *testing.T) {
 }
 
 func TestDestinosViablesConDatosReales(t *testing.T) {
-	listado, err := NewListadoDestinos(leerListadoReal(t), leerAdjudicacionesReales(t))
+	destinos := leerListadoReal(t)
+	adjudicaciones := leerAdjudicacionesReales(t)
+	listado, err := NewListadoDestinos(destinos, adjudicaciones)
 	assert.Equal(t, nil, err)
-	viables, err := listado.DestinosViables(Estudiante{NotaMedia: 5, Niveles: map[string]NivelIdioma{"PORTUGUES": NivelB2}})
+	estudiante := Estudiante{NotaMedia: 5, Niveles: map[string]NivelIdioma{"PORTUGUES": NivelB2}}
+	viables, err := listado.DestinosViables(estudiante)
 	assert.Equal(t, nil, err)
-	assert.Equal(t, []int{27, 82, 120, 151}, slices.Sorted(maps.Keys(viables)))
-	assert.Equal(t, []bool{false, true, false, true}, []bool{viables[27].EsNuevo(), viables[82].EsNuevo(), viables[120].EsNuevo(), viables[151].EsNuevo()})
+	politecnicoDiMilano := numeroOrdenDe(t, "POLITECNICO DI MILANO", Telecomunicaciones)
+	politecnicoDiBari := numeroOrdenDe(t, "POLITECNICO DI BARI", IngenieriaInformatica)
+	yildiz := numeroOrdenDe(t, "YILDIZ TECHNICAL UNIVERSITY", IngenieriaInformatica)
+	ankara := numeroOrdenDe(t, "ANKARA UNIVERSITY", IngenieriaInformatica)
+	esperados := []int{politecnicoDiMilano, politecnicoDiBari, yildiz, ankara}
+	assert.Equal(t, slices.Sorted(slices.Values(esperados)), slices.Sorted(maps.Keys(viables)))
+	assert.Equal(t, false, viables[politecnicoDiMilano].EsNuevo())
+	assert.Equal(t, true, viables[politecnicoDiBari].EsNuevo())
+	assert.Equal(t, false, viables[yildiz].EsNuevo())
+	assert.Equal(t, true, viables[ankara].EsNuevo())
 }

@@ -2,7 +2,9 @@ package erasmus
 
 import (
 	"errors"
+	"maps"
 	"os"
+	"slices"
 	"strings"
 	"testing"
 
@@ -15,6 +17,17 @@ func leerListadoReal(t *testing.T) map[int]Destino {
 	destinos, err := LeerDestinos(fichero)
 	assert.Equal(t, nil, err)
 	return destinos
+}
+
+func numeroOrdenDe(t *testing.T, institucion string, titulacion Titulacion) int {
+	coincidencias := leerListadoReal(t)
+	maps.DeleteFunc(coincidencias, func(_ int, destino Destino) bool {
+		_, ofertada := destino.cursos[titulacion]
+		return destino.institucion != institucion || !ofertada
+	})
+	numerosOrden := slices.Collect(maps.Keys(coincidencias))
+	assert.Equal(t, 1, len(numerosOrden))
+	return numerosOrden[0]
 }
 
 func TestLeerDestinos(t *testing.T) {
