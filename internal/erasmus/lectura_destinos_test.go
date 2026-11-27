@@ -36,6 +36,15 @@ func TestLeerDestinos(t *testing.T) {
 	}, destinos[106])
 }
 
+func TestLeerCursosDeCadaTitulacion(t *testing.T) {
+	yildiz := leerListadoReal(t)[120]
+	assert.Equal(t, map[Titulacion][]int{
+		IngenieriaInformatica:   {2, 3},
+		InformaticaYADE:         {3, 4},
+		InformaticaYMatematicas: {3, 4},
+	}, yildiz.cursos)
+}
+
 func TestLeerTodoElListado(t *testing.T) {
 	destinos := leerListadoReal(t)
 	_, err := NewListadoDestinos(destinos, nil)
