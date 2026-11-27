@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"maps"
+	"slices"
 )
 
 type ListadoDestinos struct {
@@ -28,18 +29,34 @@ func (e *NotasSinDestinoError) Error() string {
 
 func NewListadoDestinos(destinos map[int]Destino, adjudicaciones Adjudicaciones) (ListadoDestinos, error) {
 	notas := adjudicaciones.notasPorDestino()
-	listado := ListadoDestinos{destinos: map[int]Destino{}}
-	errores := make([]error, 0, 2*len(destinos)+len(notas))
+	destinosConNotas := repartirNotas(destinos, notas)
+	return ListadoDestinos{destinos: destinosConNotas}, errors.Join(slices.Concat(erroresDeDestinos(destinosConNotas), notasSinDestino(notas, destinos))...)
+}
+
+func repartirNotas(destinos map[int]Destino, notas map[int][]float64) map[int]Destino {
+	destinosConNotas := map[int]Destino{}
 	for numeroOrden, destino := range destinos {
 		destino.notasTotales = notas[numeroOrden]
-		listado.destinos[numeroOrden] = destino
+		destinosConNotas[numeroOrden] = destino
+	}
+	return destinosConNotas
+}
+
+func erroresDeDestinos(destinos map[int]Destino) []error {
+	errores := []error{}
+	for numeroOrden, destino := range destinos {
 		errores = append(errores, errorSi(numeroOrden <= 0, &NumeroOrdenNoPositivoError{NumeroOrden: numeroOrden}), destino.comprobar())
 	}
+	return errores
+}
+
+func notasSinDestino(notas map[int][]float64, destinos map[int]Destino) []error {
+	errores := []error{}
 	for numeroOrden := range notas {
 		_, enElListado := destinos[numeroOrden]
 		errores = append(errores, errorSi(!enElListado, &NotasSinDestinoError{NumeroOrden: numeroOrden}))
 	}
-	return listado, errors.Join(errores...)
+	return errores
 }
 
 func (listado ListadoDestinos) DestinosViables(estudiante Estudiante) (map[int]Destino, error) {
