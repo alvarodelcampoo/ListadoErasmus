@@ -113,8 +113,12 @@ func leerDestino(posicion int, bloque string) (int, Destino, error) {
 		notaMinima:  decimal(campos["notaMinima"]),
 		cursos:      leerCursos(bloque),
 		idiomas:     leerIdiomas(bloque),
-	}, errors.Join(
-		errorSi(!numeroDecimal.MatchString(campos["notaMinima"]), &NotaMinimaIlegibleError{Bloque: posicion, Texto: campos["notaMinima"]}),
+	}, comprobarBloque(posicion, bloque, campos["notaMinima"])
+}
+
+func comprobarBloque(posicion int, bloque string, notaMinima string) error {
+	return errors.Join(
+		errorSi(!numeroDecimal.MatchString(notaMinima), &NotaMinimaIlegibleError{Bloque: posicion, Texto: notaMinima}),
 		errorSi(!lineaDestino.MatchString(bloque), &LineaNoEncontradaError{Bloque: posicion, Linea: "destino"}),
 		errorSi(!tablaCursos.MatchString(bloque), &LineaNoEncontradaError{Bloque: posicion, Linea: "cursos"}),
 		errorSi(!lineaIdiomas.MatchString(bloque), &LineaNoEncontradaError{Bloque: posicion, Linea: "idiomas"}),
