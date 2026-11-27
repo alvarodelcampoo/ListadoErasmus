@@ -29,33 +29,33 @@ func destinoCon(cambio func(*Destino)) Destino {
 func TestNewListadoDestinos(t *testing.T) {
 	sinPlazas := destinoCon(func(destino *Destino) { destino.plazas = 0 })
 	casos := []struct {
-		nombre        string
-		destinos      map[int]Destino
-		adjudicacion  map[string]PlazaAdjudicada
-		errorEsperado error
+		nombre         string
+		destinos       map[int]Destino
+		adjudicaciones Adjudicaciones
+		errorEsperado  error
 	}{
 		{"destino real con su nº de orden", map[int]Destino{6: destinoValido()}, nil, nil},
 		{"nº de orden mínimo permitido", map[int]Destino{1: destinoValido()}, nil, nil},
 		{"nº de orden no positivo", map[int]Destino{0: destinoValido()}, nil, errors.Join(&NumeroOrdenNoPositivoError{NumeroOrden: 0})},
 		{"destino con datos imposibles", map[int]Destino{6: sinPlazas}, nil, errors.Join(errors.Join(&PlazasNoPositivasError{Plazas: 0}))},
 		{"un destino imposible entre varios válidos", map[int]Destino{1: destinoValido(), 2: destinoValido(), 6: sinPlazas}, nil, errors.Join(errors.Join(&PlazasNoPositivasError{Plazas: 0}))},
-		{"notas de un destino del listado", map[int]Destino{6: destinoValido()}, map[string]PlazaAdjudicada{"ESTUDIANTE 1": {6, 9.5}, "ESTUDIANTE 2": {6, 8}}, nil},
-		{"notas de un destino que no está en el listado", map[int]Destino{6: destinoValido()}, map[string]PlazaAdjudicada{"ESTUDIANTE 1": {7, 8}}, errors.Join(&NotasSinDestinoError{NumeroOrden: 7})},
-		{"nota imposible de un destino", map[int]Destino{6: destinoValido()}, map[string]PlazaAdjudicada{"ESTUDIANTE 1": {6, 15}}, errors.Join(errors.Join(errors.Join(&NotaConBonificacionFueraDeRangoError{Nota: 15, Posicion: 1})))},
+		{"notas de un destino del listado", map[int]Destino{6: destinoValido()}, Adjudicaciones{{"ESTUDIANTE 1": {6, 9.5}, "ESTUDIANTE 2": {6, 8}}}, nil},
+		{"notas de un destino que no está en el listado", map[int]Destino{6: destinoValido()}, Adjudicaciones{{"ESTUDIANTE 1": {7, 8}}}, errors.Join(&NotasSinDestinoError{NumeroOrden: 7})},
+		{"nota imposible de un destino", map[int]Destino{6: destinoValido()}, Adjudicaciones{{"ESTUDIANTE 1": {6, 15}}}, errors.Join(errors.Join(errors.Join(&NotaConBonificacionFueraDeRangoError{Nota: 15, Posicion: 1})))},
 		{"destino sin institución", map[int]Destino{6: destinoCon(func(destino *Destino) { destino.institucion = " " })}, nil, errors.Join(errors.Join(ErrDestinoSinInstitucion))},
 		{"curso no positivo", map[int]Destino{6: destinoCon(func(destino *Destino) { destino.cursos = []int{0} })}, nil, errors.Join(errors.Join(errors.Join(&CursoNoPositivoError{Curso: 0})))},
 		{"nota mínima imposible", map[int]Destino{6: destinoCon(func(destino *Destino) { destino.notaMinima = 11 })}, nil, errors.Join(errors.Join(&NotaMinimaFueraDeRangoError{Nota: 11}))},
 	}
 	for _, caso := range casos {
 		t.Run(caso.nombre, func(t *testing.T) {
-			_, err := NewListadoDestinos(caso.destinos, caso.adjudicacion)
+			_, err := NewListadoDestinos(caso.destinos, caso.adjudicaciones)
 			assert.Equal(t, caso.errorEsperado, err)
 		})
 	}
 }
 
 func TestListadoGuardaLasNotasDeCadaDestino(t *testing.T) {
-	listado, _ := NewListadoDestinos(map[int]Destino{6: destinoValido(), 7: destinoValido()}, map[string]PlazaAdjudicada{"ESTUDIANTE 1": {6, 9.5}, "ESTUDIANTE 2": {6, 8}})
+	listado, _ := NewListadoDestinos(map[int]Destino{6: destinoValido(), 7: destinoValido()}, Adjudicaciones{{"ESTUDIANTE 1": {6, 9.5}, "ESTUDIANTE 2": {6, 8}}})
 	assert.Equal(t, []float64{8, 9.5}, slices.Sorted(slices.Values(listado.destinos[6].notasTotales)))
 	assert.Equal(t, true, listado.destinos[7].EsNuevo())
 }
@@ -173,7 +173,7 @@ func TestNotaPonderadaEnDestinosReales(t *testing.T) {
 }
 
 func TestDestinosViablesConDatosReales(t *testing.T) {
-	listado, err := NewListadoDestinos(leerListadoReal(t), leerAdjudicacionesReales(t)...)
+	listado, err := NewListadoDestinos(leerListadoReal(t), leerAdjudicacionesReales(t))
 	assert.Equal(t, nil, err)
 	viables, err := listado.DestinosViables(Estudiante{NotaMedia: 5, Niveles: map[string]NivelIdioma{"PORTUGUES": NivelB2}})
 	assert.Equal(t, nil, err)

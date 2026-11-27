@@ -38,7 +38,7 @@ func TestLeerDestinos(t *testing.T) {
 
 func TestLeerTodoElListado(t *testing.T) {
 	destinos := leerListadoReal(t)
-	_, err := NewListadoDestinos(destinos)
+	_, err := NewListadoDestinos(destinos, nil)
 	assert.Equal(t, 133, len(destinos))
 	assert.Equal(t, nil, err)
 }
