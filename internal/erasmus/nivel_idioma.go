@@ -8,3 +8,7 @@ const (
 	NivelC1
 	NivelC2
 )
+
+func (n NivelIdioma) bonificacion() float64 {
+	return float64(n) * bonificacionIdiomaMaxima / float64(NivelC2)
+}
