@@ -18,9 +18,10 @@ func leerAdjudicacionesReales(t *testing.T) Adjudicaciones {
 }
 
 func TestLeerAdjudicacion(t *testing.T) {
+	pdf := leerListadoReal(t)
 	tercera := leerAdjudicacionesReales(t)[2]
-	munich, _ := destinoDelListado(t, "TECHNISCHE UNIVERSITÄT MÜNCHEN", IngenieriaInformatica)
-	stip, _ := destinoDelListado(t, "REPUBLIC OF MACEDONIA GOCE DELCEV STATE UNIVERSITY STIP", IngenieriaInformatica)
+	munich, _ := pdf.buscarDestino(t, "TECHNISCHE UNIVERSITÄT MÜNCHEN", IngenieriaInformatica)
+	stip, _ := pdf.buscarDestino(t, "REPUBLIC OF MACEDONIA GOCE DELCEV STATE UNIVERSITY STIP", IngenieriaInformatica)
 	assert.Equal(t, PlazaAdjudicada{numeroOrden: munich, notaTotal: 8.221}, tercera["ESTUDIANTE 166"])
 	assert.Equal(t, PlazaAdjudicada{numeroOrden: stip, notaTotal: 5.992}, tercera["ESTUDIANTE 021"])
 }
@@ -37,16 +38,18 @@ func TestLeerTodasLasAdjudicaciones(t *testing.T) {
 }
 
 func TestUltimaPlazaDeCadaEstudiante(t *testing.T) {
+	pdf := leerListadoReal(t)
 	plazas := leerAdjudicacionesReales(t).ultimaPlazaDeCadaEstudiante()
-	aachenInformatica, _ := destinoDelListado(t, institucionAachen, IngenieriaInformatica)
+	aachenInformatica, _ := pdf.buscarDestino(t, institucionAachen, IngenieriaInformatica)
 	estudiantesDistintos := 172
 	assert.Equal(t, estudiantesDistintos, len(plazas))
 	assert.Equal(t, PlazaAdjudicada{numeroOrden: aachenInformatica, notaTotal: 8.13}, plazas["ESTUDIANTE 020"])
 }
 
 func TestNotasPorDestino(t *testing.T) {
+	pdf := leerListadoReal(t)
 	notas := leerAdjudicacionesReales(t).notasPorDestino()
-	aachenInformatica, _ := destinoDelListado(t, institucionAachen, IngenieriaInformatica)
+	aachenInformatica, _ := pdf.buscarDestino(t, institucionAachen, IngenieriaInformatica)
 	destinosConAdjudicados := 84
 	assert.Equal(t, destinosConAdjudicados, len(notas))
 	assert.Equal(t, []float64{8.13, 8.978, 9.019}, slices.Sorted(slices.Values(notas[aachenInformatica])))

@@ -11,7 +11,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func leerListadoReal(t *testing.T) map[int]Destino {
+type destinosDelPdf map[int]Destino
+
+func leerListadoReal(t *testing.T) destinosDelPdf {
 	fichero, _ := os.Open("../../datos/destinos.txt")
 	defer fichero.Close()
 	destinos, err := LeerDestinos(fichero)
@@ -19,8 +21,8 @@ func leerListadoReal(t *testing.T) map[int]Destino {
 	return destinos
 }
 
-func destinoDelListado(t *testing.T, institucion string, titulacion Titulacion) (int, Destino) {
-	coincidencias := leerListadoReal(t)
+func (pdf destinosDelPdf) buscarDestino(t *testing.T, institucion string, titulacion Titulacion) (int, Destino) {
+	coincidencias := maps.Clone(pdf)
 	maps.DeleteFunc(coincidencias, func(_ int, destino Destino) bool {
 		_, ofertado := destino.cursos[titulacion]
 		return destino.institucion != institucion || !ofertado
@@ -31,8 +33,9 @@ func destinoDelListado(t *testing.T, institucion string, titulacion Titulacion) 
 }
 
 func TestLeerDestinos(t *testing.T) {
-	_, hesSo := destinoDelListado(t, "HES-SO HAUTE ÉCOLE SPÉCIALISÉE DE SUISSE OCCIDENTALE", Telecomunicaciones)
-	_, oporto := destinoDelListado(t, "UNIVERSIDADE DO PORTO", IngenieriaInformatica)
+	pdf := leerListadoReal(t)
+	_, hesSo := pdf.buscarDestino(t, "HES-SO HAUTE ÉCOLE SPÉCIALISÉE DE SUISSE OCCIDENTALE", Telecomunicaciones)
+	_, oporto := pdf.buscarDestino(t, "UNIVERSIDADE DO PORTO", IngenieriaInformatica)
 	assert.Equal(t, Destino{
 		institucion: "HES-SO HAUTE ÉCOLE SPÉCIALISÉE DE SUISSE OCCIDENTALE",
 		plazas:      2,
@@ -51,7 +54,8 @@ func TestLeerDestinos(t *testing.T) {
 }
 
 func TestLeerCursosDeCadaTitulacion(t *testing.T) {
-	_, yildiz := destinoDelListado(t, "YILDIZ TECHNICAL UNIVERSITY", IngenieriaInformatica)
+	pdf := leerListadoReal(t)
+	_, yildiz := pdf.buscarDestino(t, "YILDIZ TECHNICAL UNIVERSITY", IngenieriaInformatica)
 	assert.Equal(t, map[Titulacion][]int{
 		IngenieriaInformatica:   {2, 3},
 		InformaticaYADE:         {3, 4},

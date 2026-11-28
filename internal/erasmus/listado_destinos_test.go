@@ -17,13 +17,15 @@ func destinoCon(destino Destino, cambio func(*Destino)) Destino {
 }
 
 func soloAachenTeleco(t *testing.T) map[int]Destino {
-	numeroAachenTeleco, aachenTeleco := destinoDelListado(t, institucionAachen, Telecomunicaciones)
+	pdf := leerListadoReal(t)
+	numeroAachenTeleco, aachenTeleco := pdf.buscarDestino(t, institucionAachen, Telecomunicaciones)
 	return map[int]Destino{numeroAachenTeleco: aachenTeleco}
 }
 
 func TestNewListadoDestinos(t *testing.T) {
-	numeroAachenTeleco, aachenTeleco := destinoDelListado(t, institucionAachen, Telecomunicaciones)
-	numeroAachenInformatica, aachenInformatica := destinoDelListado(t, institucionAachen, IngenieriaInformatica)
+	pdf := leerListadoReal(t)
+	numeroAachenTeleco, aachenTeleco := pdf.buscarDestino(t, institucionAachen, Telecomunicaciones)
+	numeroAachenInformatica, aachenInformatica := pdf.buscarDestino(t, institucionAachen, IngenieriaInformatica)
 	sinPlazas := destinoCon(aachenTeleco, func(destino *Destino) { destino.plazas = 0 })
 	casos := []struct {
 		nombre         string
@@ -53,8 +55,9 @@ func TestNewListadoDestinos(t *testing.T) {
 }
 
 func TestListadoGuardaLasNotasDeCadaDestino(t *testing.T) {
-	numeroAachenTeleco, aachenTeleco := destinoDelListado(t, institucionAachen, Telecomunicaciones)
-	numeroAachenInformatica, aachenInformatica := destinoDelListado(t, institucionAachen, IngenieriaInformatica)
+	pdf := leerListadoReal(t)
+	numeroAachenTeleco, aachenTeleco := pdf.buscarDestino(t, institucionAachen, Telecomunicaciones)
+	numeroAachenInformatica, aachenInformatica := pdf.buscarDestino(t, institucionAachen, IngenieriaInformatica)
 	destinos := map[int]Destino{numeroAachenTeleco: aachenTeleco, numeroAachenInformatica: aachenInformatica}
 	adjudicaciones := Adjudicaciones{{"ESTUDIANTE 1": {numeroOrden: numeroAachenTeleco, notaTotal: 9.5}, "ESTUDIANTE 2": {numeroOrden: numeroAachenTeleco, notaTotal: 8}}}
 	listado, _ := NewListadoDestinos(destinos, adjudicaciones)
@@ -112,7 +115,8 @@ func TestNotaMinimaDelDestino(t *testing.T) {
 }
 
 func TestNotaPonderada(t *testing.T) {
-	_, aachenTeleco := destinoDelListado(t, institucionAachen, Telecomunicaciones)
+	pdf := leerListadoReal(t)
+	_, aachenTeleco := pdf.buscarDestino(t, institucionAachen, Telecomunicaciones)
 	casos := []struct {
 		nombre        string
 		destino       Destino
@@ -134,7 +138,8 @@ func TestNotaPonderada(t *testing.T) {
 }
 
 func TestNotaDeCorte(t *testing.T) {
-	_, aachenTeleco := destinoDelListado(t, institucionAachen, Telecomunicaciones)
+	pdf := leerListadoReal(t)
+	_, aachenTeleco := pdf.buscarDestino(t, institucionAachen, Telecomunicaciones)
 	conAdjudicados := destinoCon(aachenTeleco, func(destino *Destino) { destino.notasTotales = []float64{9.5, 8} })
 	casos := []struct {
 		nombre    string
@@ -156,7 +161,8 @@ func TestNotaDeCorte(t *testing.T) {
 }
 
 func TestDestinoNuevo(t *testing.T) {
-	numeroAachenTeleco, aachenTeleco := destinoDelListado(t, institucionAachen, Telecomunicaciones)
+	pdf := leerListadoReal(t)
+	numeroAachenTeleco, aachenTeleco := pdf.buscarDestino(t, institucionAachen, Telecomunicaciones)
 	casos := []struct {
 		nombre  string
 		destino Destino
@@ -174,8 +180,9 @@ func TestDestinoNuevo(t *testing.T) {
 }
 
 func TestNotaPonderadaEnDestinosReales(t *testing.T) {
-	_, politecnicoDiBari := destinoDelListado(t, "POLITECNICO DI BARI", Telecomunicaciones)
-	_, uclouvain := destinoDelListado(t, "Uclouvain", Telecomunicaciones)
+	pdf := leerListadoReal(t)
+	_, politecnicoDiBari := pdf.buscarDestino(t, "POLITECNICO DI BARI", Telecomunicaciones)
+	_, uclouvain := pdf.buscarDestino(t, "Uclouvain", Telecomunicaciones)
 	notaMedia := 7.0
 	ingles := map[string]NivelIdioma{"INGLES": NivelB2}
 	notaConBonificacionB2 := 8.0
@@ -184,17 +191,17 @@ func TestNotaPonderadaEnDestinosReales(t *testing.T) {
 }
 
 func TestDestinosViablesConDatosReales(t *testing.T) {
-	destinos := leerListadoReal(t)
+	pdf := leerListadoReal(t)
 	adjudicaciones := leerAdjudicacionesReales(t)
-	listado, err := NewListadoDestinos(destinos, adjudicaciones)
+	listado, err := NewListadoDestinos(pdf, adjudicaciones)
 	assert.Equal(t, nil, err)
 	estudiante := Estudiante{NotaMedia: 5, Niveles: map[string]NivelIdioma{"PORTUGUES": NivelB2}}
 	viables, err := listado.DestinosViables(estudiante)
 	assert.Equal(t, nil, err)
-	politecnicoDiMilano, _ := destinoDelListado(t, "POLITECNICO DI MILANO", Telecomunicaciones)
-	politecnicoDiBari, _ := destinoDelListado(t, "POLITECNICO DI BARI", IngenieriaInformatica)
-	yildiz, _ := destinoDelListado(t, "YILDIZ TECHNICAL UNIVERSITY", IngenieriaInformatica)
-	ankara, _ := destinoDelListado(t, "ANKARA UNIVERSITY", IngenieriaInformatica)
+	politecnicoDiMilano, _ := pdf.buscarDestino(t, "POLITECNICO DI MILANO", Telecomunicaciones)
+	politecnicoDiBari, _ := pdf.buscarDestino(t, "POLITECNICO DI BARI", IngenieriaInformatica)
+	yildiz, _ := pdf.buscarDestino(t, "YILDIZ TECHNICAL UNIVERSITY", IngenieriaInformatica)
+	ankara, _ := pdf.buscarDestino(t, "ANKARA UNIVERSITY", IngenieriaInformatica)
 	esperados := []int{politecnicoDiMilano, politecnicoDiBari, yildiz, ankara}
 	assert.Equal(t, slices.Sorted(slices.Values(esperados)), slices.Sorted(maps.Keys(viables)))
 	assert.Equal(t, false, viables[politecnicoDiMilano].EsNuevo())
