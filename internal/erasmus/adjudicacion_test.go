@@ -1,6 +1,8 @@
 package erasmus
 
 import (
+	"errors"
+	"os"
 	"path/filepath"
 	"slices"
 	"testing"
@@ -48,4 +50,12 @@ func TestNotasPorDestino(t *testing.T) {
 	destinosConAdjudicados := 84
 	assert.Equal(t, destinosConAdjudicados, len(notas))
 	assert.Equal(t, []float64{8.13, 8.978, 9.019}, slices.Sorted(slices.Values(notas[aachenInformatica])))
+}
+
+func TestLeerFilaDeAdjudicacionIlegible(t *testing.T) {
+	ruta := filepath.Join(t.TempDir(), "adjudicacion.txt")
+	os.WriteFile(ruta, []byte("cabecera\nESTUDIANTE 001   8,000 2.000   10.000 B LOUVAIN01   015-041   1   216   9   1\n"), os.ModePerm)
+	lineaDelEstudiante := 2
+	_, err := LeerAdjudicaciones(ruta)
+	assert.Equal(t, errors.Join(errors.Join(errors.Join(&FilaIlegibleError{Ruta: ruta, Linea: lineaDelEstudiante}))), err)
 }

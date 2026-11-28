@@ -2,9 +2,11 @@ package erasmus
 
 import (
 	"errors"
+	"fmt"
 	"maps"
 	"os"
 	"regexp"
+	"strings"
 )
 
 type PlazaAdjudicada struct {
@@ -14,7 +16,19 @@ type PlazaAdjudicada struct {
 
 type Adjudicaciones []map[string]PlazaAdjudicada
 
-var filaAdjudicacion = regexp.MustCompile(`(?m)^(?P<estudiante>\S.*?) +\d+\.\d{3} +\d\.\d{3} +(?P<notaTotal>\d+\.\d{3}) .*?015-(?P<numeroOrden>\d{3})`)
+var (
+	filaAdjudicacion  = regexp.MustCompile(`(?m)^(?P<estudiante>\S.*?) +\d+\.\d{3} +\d\.\d{3} +(?P<notaTotal>\d+\.\d{3}) .*?015-(?P<numeroOrden>\d{3})`)
+	destinoAdjudicado = regexp.MustCompile(`015-\d{3}`)
+)
+
+type FilaIlegibleError struct {
+	Ruta  string
+	Linea int
+}
+
+func (e *FilaIlegibleError) Error() string {
+	return fmt.Sprintf("la línea %d de %s tiene un destino adjudicado pero no se ha podido leer", e.Linea, e.Ruta)
+}
 
 func LeerAdjudicaciones(rutas ...string) (Adjudicaciones, error) {
 	adjudicaciones := make(Adjudicaciones, len(rutas))
@@ -31,7 +45,13 @@ func leerAdjudicacion(ruta string) (map[string]PlazaAdjudicada, error) {
 	for _, fila := range buscarTodas(filaAdjudicacion, string(contenido)) {
 		plazas[fila["estudiante"]] = PlazaAdjudicada{numeroOrden: entero(fila["numeroOrden"]), notaTotal: decimal(fila["notaTotal"])}
 	}
-	return plazas, err
+	return plazas, errors.Join(err, comprobarFilas(ruta, string(contenido)))
+}
+
+func comprobarFilas(ruta string, contenido string) error {
+	return errorDeCada(strings.Split(contenido, "\n"), func(posicion int, linea string) error {
+		return errorSi(destinoAdjudicado.MatchString(linea) && !filaAdjudicacion.MatchString(linea), &FilaIlegibleError{Ruta: ruta, Linea: posicion + 1})
+	})
 }
 
 func (adjudicaciones Adjudicaciones) ultimaPlazaDeCadaEstudiante() map[string]PlazaAdjudicada {
